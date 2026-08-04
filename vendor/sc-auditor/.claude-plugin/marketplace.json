@@ -1,0 +1,16 @@
+{
+  "name": "sc-auditor-marketplace",
+  "owner": { "name": "Archethect" },
+  "metadata": {
+    "description": "AI-powered smart contract security auditor with parallel hunt lanes, Devil's Advocate verification, static analysis (Slither, Aderyn), fuzz testing (Echidna, Medusa), symbolic execution (Halmos), Solodit intelligence, and interactive Map-Hunt-Attack methodology"
+  },
+  "plugins": [
+    {
+      "name": "sc-auditor",
+      "version": "2.0.0",
+      "description": "AI-powered smart contract security auditor with parallel hunt lanes, Devil's Advocate verification, static analysis (Slither, Aderyn), fuzz testing (Echidna, Medusa), symbolic execution (Halmos), Solodit intelligence, and interactive Map-Hunt-Attack methodology",
+      "keywords": ["security", "audit", "solidity", "smart-contracts", "static-analysis", "solodit", "cyfrin"],
+      "source": "./"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+=== arrow (https://arrowfinance.io) ===
+== STEP 2B: bundle grep ==
+WEBSITE: https://arrowfinance.io
+GATE: FAIL — could not fetch website: curl: (28) Connection timed out after 45000 milliseconds

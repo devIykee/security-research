@@ -1,0 +1,7 @@
+== STEP 3: verification gate + surface map ==
+contract: 0xA5aAb3F0c6EeadF30Ef1D3Eb997108E976351feB  chainId: 4663
+balance (wei): 0   # funds at risk. ~0 and no downstream value => weak target
+code size (chars of hex dump): 48708   # size => complexity
+wrote code.hex
+Sourcify: https://sourcify.dev/server/v2/contract/4663/0xA5aAb3F0c6EeadF30Ef1D3Eb997108E976351feB?fields=sources,compilation
+/root/coding/secres/.grok/skills/iykes-web3-bughunt-skill/tools/step3_surface_map.sh: line 86: /dev/fd/63: No such file or directory

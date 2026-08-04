@@ -1,0 +1,4 @@
+=== arcus (https://arcus.xyz) ===
+== STEP 2B: bundle grep ==
+WEBSITE: https://arcus.xyz
+GATE: FAIL — could not fetch website: curl: (28) Operation timed out after 45000 milliseconds with 555194 bytes received

@@ -1,0 +1,6 @@
+=== long (https://app.long.xyz) ===
+== STEP 2B: bundle grep ==
+WEBSITE: https://app.long.xyz
+/root/coding/secres/.grok/skills/iykes-web3-bughunt-skill/tools/step2_bundle_grep.sh: line 40: /dev/fd/63: No such file or directory
+grep: app.html: No such file or directory
+grep: app.html: No such file or directory

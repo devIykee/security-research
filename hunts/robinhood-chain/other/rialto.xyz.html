@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/Logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rialto</title>
+    <!-- Blocking theme init before paint — keep in sync with src/lib/theme.ts -->
+    <script>
+      try {
+        if (localStorage.getItem("theme") === "light") {
+          document.documentElement.classList.remove("dark");
+        }
+      } catch {}
+    </script>
+    <script type="module" crossorigin src="/assets/index-DS-Ho5hP.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DcgiMYog.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
