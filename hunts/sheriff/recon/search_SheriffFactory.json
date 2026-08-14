@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "address_hash": "0x10F7D1eF77f58181484936170430DF13539C5162",
+      "certified": false,
+      "ens_info": null,
+      "is_smart_contract_address": true,
+      "is_smart_contract_verified": true,
+      "name": "SheriffFactory",
+      "priority": 0,
+      "reputation": "ok",
+      "type": "contract",
+      "url": "/address/0x10F7D1eF77f58181484936170430DF13539C5162"
+    }
+  ],
+  "next_page_params": null
+}

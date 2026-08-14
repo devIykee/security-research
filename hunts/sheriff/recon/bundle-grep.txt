@@ -1,0 +1,4 @@
+== STEP 2B: bundle grep ==
+WEBSITE: https://sheriff.money
+No JS asset paths found in HTML. Try browser network tab (Step 2C).
+GATE: no bundle paths — fall through to browser/explorer methods.

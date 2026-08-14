@@ -1,0 +1,21 @@
+- Detected blockchain: EVM/Solidity 0.8.24 Foundry
+- Detected protocol type: yield aggregator / multi-strategy ERC-4626 vault + RWA adapter
+- Applied: forefy smart-contract-audit + tiny-auditor + foundry-poc; yield.md + rwa patterns
+- Scope: AumoPool, AumoVault, AaveV3Adapter, RwaUsdgAdapter (contracts/src)
+- Out of scope for this pass: agent TS LLM path (reviewed earlier), web bridge quoting
+- Skills loaded: tiny-auditor severity formula, foundry-poc runnable tests, multi-angle adversarial prompts
+- Angle1 malicious drain: preferential redeem PASS; stranger blocked PASS; agent cannot self-send PASS
+- Angle1 freeze: all venues stuck soft-locks redeem PASS; NAV still full while unwithdrawable
+- Angle1 owner: forceRemove writes off NAV, stranded aTokens, redeem out=0 PASS
+- Angle2 donation: donor cannot profit beyond capital with offset-6 PASS (no free mint)
+- Angle2 rounding dust cycles: no free mint PASS
+- Angle2 gross vs live allocate desync PASS
+- Angle3 reentrancy: nonReentrant blocks reenter allocate from venue deposit PASS
+- Angle4 many venues n=15 totalAssets OK PASS (gas scales O(n) latent)
+- Angle5 stuck venue isolated redeem from healthy PASS
+- Angle5 balanceOf revert bricks _ensureIdle when idle=0 PASS
+- Prior logic suite AumoPoolLogicBugsTest 8/8 (L2-L8)
+- Prior residual R1/R2 2/2; critical hunt 10/10 no Critical
+- Slither High reentrancy-balance triaged FP
+- Decision: no new Critical; Highs remain R1/L2/L3/L8 class
+- forge test AumoPoolAdversarialAnglesTest 12 passed

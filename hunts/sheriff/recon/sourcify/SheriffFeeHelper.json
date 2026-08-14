@@ -1,0 +1,15 @@
+{
+  "match": "exact_match",
+  "name": "SheriffFeeHelper",
+  "files": [
+    "@cryptoalgebra/integral-core/contracts/interfaces/pool/IAlgebraPoolErrors.sol",
+    "@cryptoalgebra/integral-core/contracts/libraries/FullMath.sol",
+    "@cryptoalgebra/integral-core/contracts/libraries/TickMath.sol",
+    "contracts/base/AlgebraFeeConfiguration.sol",
+    "contracts/helpers/SheriffFeeHelper.sol",
+    "contracts/interfaces/IAlgebraPoolMinimal.sol",
+    "contracts/interfaces/ISheriffPlugin.sol",
+    "contracts/libraries/AdaptiveFee.sol",
+    "contracts/types/AlgebraFeeConfigurationU144.sol"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "match": "exact_match",
+  "name": "ProxyAdmin",
+  "files": [
+    "@openzeppelin/access/Ownable.sol",
+    "@openzeppelin/interfaces/IERC1967.sol",
+    "@openzeppelin/proxy/ERC1967/ERC1967Proxy.sol",
+    "@openzeppelin/proxy/ERC1967/ERC1967Utils.sol",
+    "@openzeppelin/proxy/Proxy.sol",
+    "@openzeppelin/proxy/beacon/IBeacon.sol",
+    "@openzeppelin/proxy/transparent/ProxyAdmin.sol",
+    "@openzeppelin/proxy/transparent/TransparentUpgradeableProxy.sol",
+    "@openzeppelin/utils/Address.sol",
+    "@openzeppelin/utils/Context.sol",
+    "@openzeppelin/utils/StorageSlot.sol"
+  ]
+}

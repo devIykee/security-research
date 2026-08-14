@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "address_hash": "0x28A57A4000049cCb5a2F272DCb5483Bc692f304E",
+      "certified": false,
+      "ens_info": null,
+      "is_smart_contract_address": true,
+      "is_smart_contract_verified": true,
+      "name": "AlgebraFactory",
+      "priority": 0,
+      "reputation": "ok",
+      "type": "contract",
+      "url": "/address/0x28A57A4000049cCb5a2F272DCb5483Bc692f304E"
+    },
+    {
+      "address_hash": "0x21Fd9aB06cc927E66013e89b045c26b3eDE7bB20",
+      "certified": false,
+      "ens_info": null,
+      "is_smart_contract_address": true,
+      "is_smart_contract_verified": true,
+      "name": "AlgebraFactory",
+      "priority": 0,
+      "reputation": "ok",
+      "type": "contract",
+      "url": "/address/0x21Fd9aB06cc927E66013e89b045c26b3eDE7bB20"
+    }
+  ],
+  "next_page_params": null
+}

@@ -1,0 +1,25 @@
+{
+  "match": "exact_match",
+  "name": "SheriffYakRouter",
+  "files": [
+    "@openzeppelin/contracts/access/AccessControl.sol",
+    "@openzeppelin/contracts/access/IAccessControl.sol",
+    "@openzeppelin/contracts/utils/Context.sol",
+    "@openzeppelin/contracts/utils/Strings.sol",
+    "@openzeppelin/contracts/utils/introspection/ERC165.sol",
+    "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+    "@openzeppelin/contracts/utils/math/Math.sol",
+    "@openzeppelin/contracts/utils/math/SignedMath.sol",
+    "contracts/SheriffYakRouter.sol",
+    "contracts/interface/IAdapter.sol",
+    "contracts/interface/IAlgebraV2Adapter.sol",
+    "contracts/interface/IERC20.sol",
+    "contracts/interface/IWETH.sol",
+    "contracts/interface/IYakRouter.sol",
+    "contracts/lib/Maintainable.sol",
+    "contracts/lib/Recoverable.sol",
+    "contracts/lib/SafeERC20.sol",
+    "contracts/lib/TypeConversion.sol",
+    "contracts/lib/YakViewUtils.sol"
+  ]
+}

@@ -7,7 +7,11 @@ description: >-
   order. Mechanical probes live in tools/; each step has decision gates and
   fill-in templates for the PoC, report, and disclosure message. Verification is
   fork / eth_call ONLY. Never exploit mainnet. Be token-conservative; use smaller
-  models for capable subtasks.
+  models for capable subtasks. After surface map, run foundation maps, multi-angle
+  adversarial passes, dual-ledger / complex-logic hunts, and honest severity
+  (including kill temporary-vs-persistent conditions). Maintain coverage.md
+  incrementally (files opened, paths traced, %, exclusions); never imply a
+  complete audit when coverage is low.
   Use when the user names a target (project, handle, or website) and wants it
   audited for bounties, or says "hunt", "audit this", "find bugs".
 ---
@@ -25,8 +29,23 @@ and follow its routing table. Always pull `evm-audit-general` +
 `evm-audit-precision-math`. For launchpads also load `evm-audit-defi-amm`,
 `evm-audit-erc20`, `evm-audit-access-control`, `evm-audit-dos`, and usually
 `evm-audit-flashloans` + `evm-audit-chain-specific` (Robinhood Chain is an L2).
+For multi-strategy / ERC-4626 / agent vaults also load `evm-audit-erc4626`,
+`evm-audit-defi-amm` (if swaps), and `evm-audit-oracles` if any external price.
 Use audit checklists to find bugs; use this playbook for intake, fork PoC, severity
 bound, report (researcher deviykee / Iyke), and private disclosure DM.
+
+### Optional: forefy /.context skills
+
+If installed (e.g. from `forefy/.context`), you may also load:
+
+| Skill | When |
+|---|---|
+| `smart-contract-audit` | Full multi-expert pass; write outputs under project `.context/outputs/N/` |
+| `tiny-auditor` | Critical-only, low false-positive finding format and severity formula |
+| `foundry-poc` | Runnable Foundry tests that prove net fund impact, not pseudocode |
+
+This playbook stays the **lead** for bounty hunt intake, gates, disclosure, and
+honest bounds. Companion skills deepen analysis; they do not replace Steps 1–10.
 
 ### Token budget and model routing (apply on every hunt)
 
@@ -42,6 +61,7 @@ for judgment-heavy steps only.
 | File search, log tails, compiling forge, running tests | Novel attack design and exploit sequencing |
 | Drafting report/DM from a filled template | Final report accuracy and bound honesty |
 | Parallel explore lanes with narrow prompts | Disclosure strategy if ambiguous |
+| Slither / static JSON triage of Low noise | Complex multi-tx economic logic |
 
 Rules:
 1. **Do not re-read entire skills** every turn. Load this playbook once per hunt;
@@ -60,6 +80,11 @@ Rules:
    on-chain magnitude over multi-hour full-holder forks when RPC is slow.
 7. **User updates:** short status (what proven, what next). No essay recaps of
    tool logs.
+8. **Chunk, do not dump.** For complex logic, feed one mechanism at a time
+   (redeem path, allocate/budget path, one adapter) with a single adversarial
+   question. Full-repo paste increases hallucination and misses interactions.
+9. **Coverage tracking is mandatory.** Update `coverage.md` as you read files and
+   trace paths (see **Coverage tracking** below). Do not invent thoroughness.
 
 ---
 
@@ -80,7 +105,7 @@ RPC            : <https://...>               # confirm in Step 1
 CHAIN_ID       : <e.g. 4663>
 EXPLORER       : <Blockscout base>
 KNOWN_ADDRS    : <role=0x... pairs; omit line if none known>
-PRODUCT_TYPE   : <launchpad | lending/CDP | vault | perps | distribution/index | other>
+PRODUCT_TYPE   : <launchpad | lending/CDP | vault | multi-strategy-vault | perps | distribution/index | other>
 BOUNTY/CONTEST : <live program? amount? or "none / discretionary">
 NOTES          : <optional extras; omit if empty>
 RESEARCHER     : deviykee
@@ -99,7 +124,8 @@ RPC="<RPC>"; CID="<CHAIN_ID>"; BS="<EXPLORER>/api/v2"
 1. **Fork / `eth_call` verification only. Never move real funds on mainnet.** A
    passing fork test is the proof. This does not bend for revenge, "I'll give it
    back", or "just to prove it".
-2. **Honest severity.** State the bound. A Medium is a Medium.
+2. **Honest severity.** State the bound. A Medium is a Medium. Do not upgrade High
+   to Critical because the story is dramatic.
 3. **Ask, never threaten.** No "pay or I release/exploit". That's extortion.
 4. **Kill your own finding if it doesn't hold up.** Disproving yourself is the job.
 5. **Never publish a live, unpatched bug.** Private channel + private repo until fixed.
@@ -109,6 +135,114 @@ RPC="<RPC>"; CID="<CHAIN_ID>"; BS="<EXPLORER>/api/v2"
 7. **Token-conservative; smaller models when capable.** Every hunt. See
    "Token budget and model routing" above. Do not burn context on bulk RPC spam,
    full-file dumps, or re-loading every skill for mechanical steps.
+8. **Separate trust-root from permissionless.** Owner/agent-by-design power is not
+   a Critical stranger exploit. Label Trust/centralization honestly.
+9. **Temporary condition != permanent condition.** One-block price manip that is
+   restored often leaves victims whole. Persistent stuck/depeg while NAV still
+   marks face value is a different finding. Kill the first before claiming the second.
+10. **Coverage tracking.** Maintain `coverage.md` for the whole hunt. Update it
+    **when you open a file or finish tracing a path**, not only at the end. Opening
+    a file without tracing its value-moving logic does not count as path coverage.
+    If coverage is low, say so explicitly in the report and user status; never
+    imply a complete audit was performed.
+
+---
+
+## Coverage tracking (mandatory every hunt)
+
+During any bug-hunting or security-audit session, maintain a **`coverage.md`**
+file that tracks what was actually examined.
+
+### Where to put it
+
+Prefer one of (first match wins for the session):
+
+1. Hunt workspace root: e.g. `hunts/<project>/coverage.md`
+2. Audit output dir: e.g. `.context/outputs/<N>/coverage.md` or `hunts/<project>/audit/coverage.md`
+3. Repo root of the target under audit (only if that repo is a private hunt workspace)
+
+Do **not** leave coverage only in chat. It must be a file on disk.
+
+### What to track
+
+1. **Files opened** — every source file read during the audit, with path (relative
+   to the target repo when possible).
+2. **Code paths followed** — not just files touched, but which functions/flows were
+   actually traced (e.g. `deposit → _withdraw → _ensureIdle → retreatSelf →
+   adapter.withdraw → Uni swap` across `AumoPool.sol` + `RwaUsdgAdapter.sol`).
+   A file can be opened without its logic being understood; say so in Notes if
+   only skimming.
+3. **Coverage percentage** — `files read / total relevant files` in scope, updated
+   as the audit progresses. Define the denominator early (e.g. all `src/**/*.sol`
+   excluding `lib/`, or all app modules excluding tests).
+4. **Explicitly excluded areas** — files/modules deliberately skipped, with a
+   one-line reason (e.g. `excluded: test fixtures`, `excluded: generated types`,
+   `excluded: vendor OZ under lib/`).
+
+### Format (running table)
+
+Keep a **summary line at the top**, then the table, then exclusions.
+
+```markdown
+# Coverage — <PROJECT>
+
+Coverage: X/Y files (Z%).
+
+Last updated: <ISO date or step name>
+
+| File | Read? | Paths traced | Notes |
+|------|-------|--------------|-------|
+| src/Foo.sol | yes | `bar()` → `baz()` value path | full read |
+| src/Bar.sol | partial | skim only | not traced |
+
+## Explicitly excluded
+
+| Path / area | Reason |
+|-------------|--------|
+| lib/** | vendored dependencies |
+| test/** | fixtures / unit tests (unless hunting test-only bugs) |
+```
+
+### Update rules
+
+- **Incremental, not retroactive.** When you `read` a file or finish tracing a flow,
+  update the row the same turn (or immediately after the batch of reads).
+- **Read? values:** `yes` | `partial` | `no` (no only for planned-but-not-yet).
+- **Paths traced** empty or `—` means file opened but logic not followed; that does
+  **not** inflate the “understood” claim. For Z%, count a file as covered only if
+  `Read?` is `yes` or `partial` with at least one real path traced; optional:
+  report both “opened %” and “traced %” if partials dominate.
+- **Denominator Y:** set after inventory (Step 3 / source tree). If Y changes
+  (new modules found), update Y and Z.
+- **Low coverage gate:** before Step 9 / final user summary, if Z < 50% of
+  in-scope production code (or fewer than the core value-moving files), state
+  explicitly: `Coverage incomplete: Z% (X/Y). Findings apply to examined paths
+  only.` Do not use language that implies a full audit.
+- **Token budget:** coverage.md is short tables; do not dump file contents into it.
+
+### Template bootstrap (create at hunt start)
+
+```bash
+# after INTAKE, once PROJECT_NAME and hunt dir are known
+# HUNT_DIR=hunts/<project>   # or audit output dir
+cat > "$HUNT_DIR/coverage.md" <<'EOF'
+# Coverage — <PROJECT_NAME>
+
+Coverage: 0/Y files (0%).  # set Y after inventory
+
+Last updated: intake
+
+| File | Read? | Paths traced | Notes |
+|------|-------|--------------|-------|
+
+## Explicitly excluded
+
+| Path / area | Reason |
+|-------------|--------|
+| lib/** or node_modules/** | vendored |
+| test/** or **/*_test* | tests (exclude unless in scope) |
+EOF
+```
 
 ---
 
@@ -126,9 +260,13 @@ instead of hanging. Smoke-check: `./tools/selftest.sh`.
 | `tools/step3_surface_map.sh` | 3 | `<RPC> <CID> <CONTRACT> [BS]` | balance, code size, Sourcify / selectors | Verified vs unverified path |
 | `tools/step4_auth_triage.sh` | 4 | `<RPC> <CONTRACT> [extra_sig ...]` | per-sig `guarded` / `OPEN <-- CHECK` | Free-win missing-auth check |
 | `tools/step7_poc_scaffold.sh` | 7 | `<RPC> <TARGET> [POC_DIR]` | Foundry PoC skeleton + fork `forge test` cmd | Repeatable fork-only proof setup |
-| `tools/step9_report_skeleton.py` | 9 | INTAKE + severity + title (+ optional) | filled Step 9 report markdown | Same report shape every hunt |
+| `tools/step9_report_skeleton.py` | 9 | INTAKE + severity + title (+ optional) | filled Step 9 report skeleton | Same report shape every hunt |
 | `tools/step10_dm_skeleton.py` | 10 | project/severity/chain/component/impact | filled first DM text | Consistent private first contact |
 | `tools/selftest.sh` | — | none | usage/exit smoke for all tools | Catch broken tools before a hunt |
+
+Optional static pass (when available): `slither . --filter-paths 'lib|test|script' --json slither-report.json`.
+Triage every High/Medium as genuine vs false positive before writing a finding.
+Do not promote a Slither High to Critical without a working PoC.
 
 ---
 
@@ -182,6 +320,11 @@ maps PUSH4 selectors and top tx-history selectors.
 Gate:
 - **Verified** → pull the source files from `src.json` and read them (30-min path).
 - **Unverified** → use the script's selector map (bytecode + tx history) and continue.
+- **Source-only / pre-deploy** (repo audit, no mainnet address yet) → treat repo as
+  scope; still run local unit PoCs; note pre-launch in the report Status line.
+
+After inventory: set **Y** (total relevant production files) in `coverage.md` and list
+exclusions. Update coverage as each source file is read.
 
 ---
 
@@ -196,9 +339,119 @@ it does NOT revert, the access control is missing = likely Critical.
 ```
 Probes default admin/keeper sigs from `0x…dEaD`; prints `guarded` or `OPEN <-- CHECK`.
 
+Also list every `onlyOwner` / `onlyAgent` / role gate from source. Confirm siblings
+of guarded functions are not missing the same modifier (classic free win).
+
 ---
 
-## STEP 5 - Read with attack questions (by PRODUCT_TYPE)
+## STEP 5 - Foundation map (before deep findings)
+
+Before writing findings, map the system. Keep this short; store in hunt notes.
+
+### 5A. State who-writes
+
+For each storage variable: who can change it (owner / agent / public / internal)?
+
+### 5B. External call order
+
+For each value path, list checks → effects → interactions. Flag CEI inversions
+and any external call inside a loop.
+
+### 5C. Token paths (entry → exit)
+
+Draw cash flow: user → vault/pool → adapter/venue → back. Note any path to an
+arbitrary EOA (agent, owner, stranger).
+
+### 5D. Access control gates
+
+Table: function → modifier / require → pausable?
+
+### 5E. Structured first-pass checklist
+
+For each item return **PASS / FAIL / UNCLEAR** with one sentence:
+
+- [ ] Reentrancy / CEI on all fund paths
+- [ ] Access control on privileged state changers
+- [ ] Oracle / pricing freshness (or explicit face-value assumptions)
+- [ ] Slippage on DEX interactions
+- [ ] Frontrun / sandwich surface on agent or public swaps
+- [ ] Init / proxy (uninitialized implementation?)
+- [ ] Upgrade storage safety (if upgradeable)
+- [ ] Pause semantics (what still works while paused?)
+- [ ] Events on policy / risk parameter changes
+
+---
+
+## STEP 5.5 - Multi-angle adversarial pass (complex logic)
+
+After the foundation map, force interaction bugs with **role-based angles**. Run on
+**one chunk at a time** (e.g. only redeem + totalAssets; only allocate + budgets;
+only one adapter). Do not dump the whole codebase into one prompt.
+
+### Angle 1 — Malicious actor (payout)
+
+- Walk three hypothetical drain paths focused on deposit/withdraw/redeem/allocate.
+- How would you **permanently lock** funds or freeze exits (DoS)?
+- If Admin/Owner is compromised, what is max damage, and what cannot be bypassed?
+
+### Angle 2 — Economic and math
+
+- Rounding, precision, fee, reward, share conversion: free mint or leak?
+- Flash loan / temporary balance inflation: how does `totalAssets` / NAV react?
+- Can **internal books** desync from **actual token balances** or venue face value?
+
+### Angle 3 — State and access
+
+- Every state writer: missing modifier?
+- External calls: state before or after? Cross-function reentrancy under one lock?
+- Re-init / proxy hijack?
+
+### Angle 4 — Edges
+
+- Unbounded arrays / loops vs block gas?
+- `block.timestamp` advantage on epochs / auctions?
+- Overflow/underflow on balances or time locks (note 0.8+ checked math still has
+  logic skew)?
+
+### Angle 5 — External integrations
+
+- Uniswap / Aave / Chainlink / custom adapter: pause, revert, unexpected return?
+- Weird ERC20: fee-on-transfer, rebase, no-return bool, approve race?
+
+For each angle, record: **path attempted → blocked by X** or **confirmed with PoC**.
+Killed paths are as valuable as open ones (they prevent false Criticals).
+
+---
+
+## STEP 5.6 - Dual-ledger / multi-strategy vault hunt
+
+When PRODUCT_TYPE is `vault` or `multi-strategy-vault` (ERC-4626, strategies,
+adapters, agent allocators), hunt the **three notions of value** separately:
+
+| Ledger | Typical source | Failure mode |
+|---|---|---|
+| **Principal book** | `allocated`, `totalDeployed`, internal shares of strategy | Updated on call success even if cash not moved |
+| **NAV / share price** | `totalAssets()`, adapter `balanceOf`, oracle | Counts unrealizable or discounted units wrong |
+| **Cash returned** | `balanceOf` delta after withdraw/transfer | Silent zero return; under-delivery |
+
+**Complex-logic questions (force these):**
+
+1. Does `allocate` book **gross input** or **post-fee supplied** amount?
+2. Does loss/churn budget compare returned cash to **gross book** (double-counting
+   entry loss already taken in NAV)?
+3. Does redeem isolation (`try/catch` skip stuck venue) still **price** that venue
+   in `totalAssets` / `maxWithdraw`? (preferential exit / bank-run on healthy leg)
+4. Is temporary depeg-then-restore actually theft, or only **persistent** stuck+face NAV?
+5. Does `withdraw` returning 0 **without revert** still decrement principal?
+6. Is `maxWithdraw` / `previewRedeem` overstating liquid assets?
+7. Are `balanceOf` view failures try/caught in pricing but **not** in pull loops?
+8. Do shared epoch lengths couple unrelated rate limits with uncoupled resets?
+9. Does last-pass full liquidation (`type(uint256).max`) over-burn a lossy venue
+   when a healthy venue could cover dust?
+
+---
+
+## STEP 6 - Read with attack questions (by PRODUCT_TYPE)
 
 Ask a fixed list. Hunt **one wrong assumption at the one moment value moves.**
 
@@ -211,7 +464,10 @@ someone pay less / receive more; external call before state update (reentrancy).
 - **lending/CDP** → oracle (staleness, manipulation, closed-market for equities);
   liquidation math; health factor; LTV; interest; stablecoin peg.
 - **vault** → first-depositor / share inflation; rounding direction; donation
-  attack; deposit/withdraw accounting.
+  attack; deposit/withdraw accounting; virtual shares offset.
+- **multi-strategy-vault** → all vault items, plus dual-ledger (Step 5.6);
+  adapter allowlist trust; agent caps vs unmetered user redeem; realizability
+  of strategy `balanceOf`; loss/deploy budgets; pause leaves redeem open or not.
 - **perps** → is it its own engine or a wrapper (wrapper = smaller surface);
   oracle; funding; liquidation; margin accounting.
 - **distribution/index** → snapshot weighting; permissionless crank; flash-inflatable
@@ -219,7 +475,7 @@ someone pay less / receive more; external call before state update (reentrancy).
 
 ---
 
-## STEP 6 - Bug-class detection playbook
+## STEP 6.5 - Bug-class detection playbook
 
 Each = the pattern, the detection, the fix.
 
@@ -248,7 +504,23 @@ Each = the pattern, the detection, the fix.
    per-position snapshot/freeze.
 7. **First-depositor / share inflation (vaults).** Tiny deposit + direct donation
    inflates share price; next depositor rounds to 0 shares. *Fix:* virtual
-   shares/dead shares.
+   shares/dead shares (`_decimalsOffset` or dead mint).
+8. **Unrealizable NAV + preferential exit (multi-strategy vaults).** Strategy
+   still counted in `totalAssets` while `withdraw` reverts; redeem isolation
+   skips it and pays from healthy venues. *Detect:* try/catch on withdraw without
+   zeroing NAV; `maxWithdraw` >> liquid. *Kill if* only temporary manip that
+   restores. *Fix:* realizability-aware NAV, honest maxWithdraw, pro-rata venue exits.
+9. **Gross book vs post-entry supplied.** `allocated += amount` but adapter returns
+   less after swap/fee; loss budgets re-charge entry on exit; agent freeze.
+   *Fix:* book `supplied`; meter loss vs marked basis.
+10. **Phantom zero-return withdraw.** Effects decrement principal; external
+    withdraw returns 0 without revert; caps free while face remains. *Fix:* revert
+    or restore principal if `returned == 0`.
+11. **View/pull asymmetry.** Pricing try/catches `balanceOf`; pull loop does not →
+    one bad view bricks all redemptions needing liquidity.
+12. **Compromised agent without external send.** Agent cannot send to self but can
+    churn lossy venues / socialize via unmetered redeem if deploy budget is off
+    (`maxEpochDeploy == 0`). Bound with rate limits; fail-closed defaults.
 
 Separate **owner-by-design centralization** (trust-risk, lower) from a
 **permissionless exploit** (the real Critical). Never claim the former as the latter.
@@ -288,24 +560,41 @@ contract PoC is Test {
     }
 }
 ```
-If a full-scale fork is impractical (thousands of holders on a slow RPC): replicate
-the *exact* vulnerable logic from verified source into a self-contained test, and
-cite the live on-chain numbers for the real magnitude (the payout is the contract's
-own deterministic formula).
+
+PoC quality bar:
+- Compiles and **passes** with assertions that fail if the bug is fixed.
+- Clear attacker vs victim; quantify loss or freeze.
+- No synthetic sugar that an on-chain attacker cannot do (unless labeled owner/agent model).
+- For multi-strategy NAV bugs: prove **persistent** stuck, and separately kill
+  temporary restore sandwich if claiming Critical/High bank-run.
+- If a full-scale fork is impractical: exact-logic local unit PoC + cite live
+  on-chain magnitudes for bound.
 
 ---
 
 ## STEP 8 - Severity call (honest rubric)
 
 - **Critical** - unauthenticated theft/loss of a large share of funds, or a full
-  drain / freeze. One transaction, no special role.
-- **High** - unauthenticated, repeatable theft of user funds but **bounded**
-  (state the bound), or theft needing a common condition.
-- **Medium** - limited/conditional loss, griefing, or bounded value leak.
-- **Trust/centralization** - owner-by-design power; disclose, but not a permissionless
-  exploit. Label it as such.
+  drain / freeze. One transaction (or atomic bundle), no special role; capital
+  multiplies or unbounded protocol loss.
+- **High** - unauthenticated, repeatable theft or preferential extraction of user
+  funds but **bounded** (state the bound), or serious loss needing a common
+  condition (e.g. multi-venue + stuck strategy). Soft-lock of all exits under
+  realistic venue failure can be High.
+- **Medium** - limited/conditional loss, griefing, ops freezes (agent cannot
+  retreat), bounded value leak, asymmetric views.
+- **Trust/centralization** - owner-by-design power; disclose, but not a
+  permissionless exploit. Label it as such.
 
 Write the number you can defend, with the bound stated. Do not round up.
+
+**Second-opinion gate (before disclosure):**
+1. Gas-feasible?
+2. Access control actually blocks it?
+3. State reachable in production config?
+4. Mitigating code path elsewhere?
+5. Temporary condition killed?
+Verdict: CONFIRMED / FALSE POSITIVE / NEEDS MORE WORK.
 
 ---
 
@@ -315,6 +604,15 @@ Always use researcher name **deviykee** (never dukedotsol or other handles).
 Open every report with a plain-language "What this means" section so a non-technical
 reader understands the danger before any code. Do not use em dashes (the long dash
 character); use commas, periods, or a normal hyphen instead.
+
+Keep a **master findings table** for the hunt (ID, severity, status, component)
+and update it when findings are killed or reclassified. Single-issue disclosure
+files still use the template below.
+
+**Coverage honesty in the report:** cite `coverage.md` summary (`Coverage: X/Y
+(Z%)`). If Z is low or core modules were only partially traced, state that the
+review is path-scoped, not a full audit. Attach or link `coverage.md` in private
+multi-finding packs.
 
 Scaffold the file from INTAKE + your Step 8 call (judgment fields you still fill by hand):
 ```bash
@@ -374,6 +672,12 @@ Good-faith private disclosure. I'd appreciate a bounty commensurate with a
 Happy to walk the team through it and review the fix.
 deviykee
 ```
+
+For multi-finding private packs, also ship:
+- hunt notes (INTAKE, killed paths, PoC commands)
+- structured checklist PASS/FAIL
+- adversarial angle scoreboard (path attempted → result)
+- **coverage.md** (files opened, paths traced, %, exclusions)
 
 ---
 
@@ -444,7 +748,7 @@ report + PoC repo. Still no public post until patched.
 
 ---
 
-## Appendix - cheat-sheet
+## Appendix A - cheat-sheet
 
 - `cast chain-id | block-number | code | balance | call | storage | 4byte | disassemble | tx`
 - `forge test --fork-url $RPC --fork-block-number <BLK> -vv` - the PoC engine
@@ -453,9 +757,38 @@ report + PoC repo. Still no public post until patched.
 - New chains use **Blockscout**, not Etherscan. `to`-addresses in the app's `eth_call`s = the contracts.
 - Vanity CA suffix (e.g. tokens ending in a fixed 2 bytes) = a launchpad fingerprint.
 - Playbook tools: see **Tools** table above and `tools/README.md`.
+- Optional: `slither . --filter-paths 'lib|test|script' --json slither-report.json`
+
+## Appendix B - adversarial prompt pack (copy into subagent or self)
+
+Use after Step 5 foundation map. One chunk + one angle per invocation.
+
+1. Act as a malicious actor trying to drain funds. Three exploit paths on deposit/withdraw.
+2. How would you permanently lock user funds or freeze exits (DoS)?
+3. Assume Admin/Owner is compromised. Max damage? What safeguards remain?
+4. Analyze share math, fees, rewards. Rounding or free mint?
+5. Flash loan temporarily inflates a balance or price. How does the contract react?
+6. Can internal accounting desync from actual token balances?
+7. Every state-writing function: missing access control?
+8. Reentrancy: external calls and whether state updates are before or after.
+9. Re-init or proxy hijack possible?
+10. Unbounded loops / gas grief?
+11. Timestamp manipulation advantage?
+12. External protocol pause/fail/unexpected data?
+13. Weird ERC20 (FoT, rebase, no bool return)?
+
+## Appendix C - hunt session hygiene
+
+- Keep private: INTAKE fills, addresses, draft reports/DMs, live PoCs until patched.
+- Master findings table stays updated when severity changes.
+- Killed Critical candidates listed in hunt notes (prevents re-opening bad claims).
+- Prefer local exact-logic unit tests for accounting bugs; use fork for live magnitude.
+- **coverage.md** updated incrementally; low Z% stated openly; exclusions listed with reasons.
 
 **Reminder:** fork only, honest severity, ask don't threaten, kill your own bad
 findings, private until patched, stay token-conservative and route mechanical
-work to smaller models. That discipline is the job.
+work to smaller models. Map first, multi-angle second, dual-ledger on vaults,
+PoC before Critical, **track coverage so thoroughness is real**. That discipline
+is the job.
 
 deviykee

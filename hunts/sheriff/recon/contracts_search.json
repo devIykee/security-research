@@ -1,0 +1,261 @@
+[
+  {
+    "q": "SheriffRouter",
+    "address_hash": "0x41763C437Fc935a0d77289e9421A88a467CEBF34",
+    "name": "SheriffRouter",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "SheriffToken",
+    "address_hash": "0x1cE34C7AA0B2D265D81c308a83A8e80869b7EFc0",
+    "name": "SheriffToken",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraEternalFarming",
+    "address_hash": "0x3ECf287990A2365d48C6681620393aC1cdF3D268",
+    "name": "AlgebraEternalFarming",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraCustomPoolEntryPoint",
+    "address_hash": "0x28385C2cB2c83c05c88ED9C5aa0b4216AEeF6d7b",
+    "name": "AlgebraCustomPoolEntryPoint",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraCustomPoolEntryPoint",
+    "address_hash": "0x4ed39E9DDCFa278D4De0e5156609200242Ced263",
+    "name": "AlgebraCustomPoolEntryPoint",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraCustomPoolEntryPoint",
+    "address_hash": "0x40E2c7f4048b49F4dcaaCd6e9bC61E917FE21F50",
+    "name": "AlgebraCustomPoolEntryPoint",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraCustomPoolEntryPoint",
+    "address_hash": "0xed290AcFA3C0edc5a0a232EF876dc81F1a609d36",
+    "name": "AlgebraCustomPoolEntryPoint",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraFactoryUpgradeable",
+    "address_hash": "0x8C3bbDABF7b610d54097420E485A5E0e7bD68684",
+    "name": "AlgebraFactoryUpgradeable",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraFactoryUpgradeable",
+    "address_hash": "0x14247fb1f1156062433E15b822A2105f361a024B",
+    "name": "AlgebraFactoryUpgradeable",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraCommunityVault",
+    "address_hash": "0x11541e510cb7e3a40fF5362b0785A8E402bfC1f0",
+    "name": "AlgebraCommunityVault",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraCommunityVault",
+    "address_hash": "0x370F18e7dFC392ce52ba58d78b450f36590283fB",
+    "name": "AlgebraCommunityVault",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraCommunityVault",
+    "address_hash": "0xD9E8CDc25e06A351b3aCEF963d27795df20FE58b",
+    "name": "AlgebraCommunityVault",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraBasePluginV1",
+    "address_hash": "0xFe1c62442Fc9f694b88094bF38fD5ce3cE056161",
+    "name": "AlgebraBasePluginV1",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraAdapter",
+    "address_hash": "0x63bd5402aCC3129c9b38c7d52f327b82f24B497D",
+    "name": "AlgebraAdapter",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraAdapter",
+    "address_hash": "0xeFE1affb0e2Bb8A9F7d9D30751bAF679996ADA26",
+    "name": "AlgebraAdapter",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "FarmingCenter",
+    "address_hash": "0x0E9a405b2eE31aaC8E6Db1f3778e1F09B973F058",
+    "name": "FarmingCenter",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "LimitOrderManager",
+    "address_hash": "0xFA5062a51A30d29AAb423123E9449e95bc8dB3a1",
+    "name": "LimitOrderManager",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraVaultFactoryStub",
+    "address_hash": "0x43E329eF6a50c47a99C9Ab155ED64E1C0B63bDF0",
+    "name": "AlgebraVaultFactoryStub",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraVaultFactoryStub",
+    "address_hash": "0x8dAD9d90A2F6eEF191D3FE57479424d797E393E2",
+    "name": "AlgebraVaultFactoryStub",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraVaultFactoryStub",
+    "address_hash": "0xD9907870A5c147CF449822b1e6c883D258438dce",
+    "name": "AlgebraVaultFactoryStub",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraIntegralQuoterV2Adapter",
+    "address_hash": "0x20615954FB87360139e7DdDB519359498EbD1904",
+    "name": "AlgebraIntegralQuoterV2Adapter",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "BasePluginV1Factory",
+    "address_hash": "0x030Cb027E1B399949ae95c6b2aD57B4dDb0A28D1",
+    "name": "BasePluginV1Factory",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraPoolDeployer",
+    "address_hash": "0x2FAdF533d9A098310007978730554F842547FC5F",
+    "name": "AlgebraPoolDeployer",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraPoolDeployer",
+    "address_hash": "0x9ac30D72168a4498aE5C80226F4d3C86278e8f80",
+    "name": "AlgebraPoolDeployer",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "AlgebraPoolDeployer",
+    "address_hash": "0x7B041a9133bce876434908b1438F2F1f187c215b",
+    "name": "AlgebraPoolDeployer",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0x9068365D3FCa226d93a4bf620376c62D80f0c48c",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0xa7441795Bd9c1798243fa2F865337D85D7f7711d",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0x7Afd17FBEdC889b7C265630566346831e46e396F",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0x3398C2153d74b77334E0a0F3e72F9e79cca6944C",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0xAC4e0F473515f385DB0DC0b701C2D67262a56bEF",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0x486EC4dda7fEB9871eEF0d6ccc0D79dD3f7af7a4",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0x07EC40276CF436a846aFc18C8f40B7dDf3a4f6ef",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0xACc4AeA778152d9AE9045ACc2D446A5F8068c349",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0xc44D9eDdCAb4FA6d99e7dB11D7b53Ee1090a7e28",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0xb9df9AfbCF909a16218285889912820c3F2C6313",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0x6dDBA7C7382CA4aba0Df2068af512A466583006e",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  },
+  {
+    "q": "NonfungibleTokenPositionDescriptor",
+    "address_hash": "0xEE9F0dBb0b91358a967442CfD2c6202232C3c1Eb",
+    "name": "NonfungibleTokenPositionDescriptor",
+    "is_smart_contract_verified": true,
+    "type": "contract"
+  }
+]

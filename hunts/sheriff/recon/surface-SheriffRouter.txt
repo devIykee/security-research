@@ -1,0 +1,8 @@
+== STEP 3: verification gate + surface map ==
+contract: 0x41763C437Fc935a0d77289e9421A88a467CEBF34  chainId: 4663
+balance (wei): 0   # funds at risk. ~0 and no downstream value => weak target
+code size (chars of hex dump): 44160   # size => complexity
+wrote code.hex
+Sourcify: https://sourcify.dev/server/v2/contract/4663/0x41763C437Fc935a0d77289e9421A88a467CEBF34?fields=sources,compilation
+sourcify match: exact_match  compilation.name: SheriffRouter
+GATE: Verified — pull source files from src.json and read them (30-min path).

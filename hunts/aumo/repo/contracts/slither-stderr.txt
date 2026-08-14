@@ -1,0 +1,132 @@
+
+Detector: reentrancy-balance
+Reentrancy in AumoPool._doDeallocate(address,uint256,bool) (src/AumoPool.sol#401-430):
+	External call allowing reentrancy:
+	- IVenueAdapter(venue).withdraw(amount) (src/AumoPool.sol#413)
+	Balance read before the call:
+	- balBefore = IERC20(asset()).balanceOf(address(this)) (src/AumoPool.sol#412)
+	Possible stale balance used after the call in a condition:
+	- epochLoss > maxEpochLoss (src/AumoPool.sol#426)
+		- stale variable `epochLoss`
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities
+
+Detector: incorrect-equality
+AumoPool._ensureIdle(uint256) (src/AumoPool.sol#202-233) uses a dangerous strict equality:
+	- live == 0 (src/AumoPool.sol#218)
+AumoPool._ensureIdle(uint256) (src/AumoPool.sol#202-233) uses a dangerous strict equality:
+	- idle == startIdle (src/AumoPool.sol#231)
+RwaUsdgAdapter.emergencyWithdraw(uint256) (src/adapters/RwaUsdgAdapter.sol#168-175) uses a dangerous strict equality:
+	- pooled == 0 (src/adapters/RwaUsdgAdapter.sol#170)
+RwaUsdgAdapter.withdraw(uint256) (src/adapters/RwaUsdgAdapter.sol#151-162) uses a dangerous strict equality:
+	- pull == 0 (src/adapters/RwaUsdgAdapter.sol#156)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+
+Detector: reentrancy-no-eth
+Reentrancy in AumoVault.deallocate(address,uint256) (src/AumoVault.sol#154-171):
+	External calls:
+	- IVenueAdapter(venue).withdraw(amount) (src/AumoVault.sol#164)
+	State variables written after the call(s):
+	- allocated[venue] = principal - pulledPrincipal (src/AumoVault.sol#167)
+	AumoVault.allocated (src/AumoVault.sol#37) can be used in cross function reentrancies:
+	- AumoVault.allocated (src/AumoVault.sol#37)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+
+Detector: unused-return
+AumoPool._doDeallocate(address,uint256,bool) (src/AumoPool.sol#401-430) ignores return value by IVenueAdapter(venue).withdraw(amount) (src/AumoPool.sol#413)
+AumoVault.deallocate(address,uint256) (src/AumoVault.sol#154-171) ignores return value by IVenueAdapter(venue).withdraw(amount) (src/AumoVault.sol#164)
+RwaUsdgAdapter.withdraw(uint256) (src/adapters/RwaUsdgAdapter.sol#151-162) ignores return value by pool.withdraw(address(usdg),pull,address(this)) (src/adapters/RwaUsdgAdapter.sol#157)
+RwaUsdgAdapter.emergencyWithdraw(uint256) (src/adapters/RwaUsdgAdapter.sol#168-175) ignores return value by pool.withdraw(address(usdg),pooled,address(this)) (src/adapters/RwaUsdgAdapter.sol#171)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+
+Detector: events-maths
+RwaUsdgAdapter.setMaxSlippageBps(uint256) (src/adapters/RwaUsdgAdapter.sol#98-101) should emit an event for: 
+	- maxSlippageBps = bps (src/adapters/RwaUsdgAdapter.sol#100) 
+RwaUsdgAdapter.setValuationDiscountBps(uint256) (src/adapters/RwaUsdgAdapter.sol#105-108) should emit an event for: 
+	- valuationDiscountBps = bps (src/adapters/RwaUsdgAdapter.sol#107) 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-arithmetic
+
+Detector: missing-zero-check
+AumoPool.constructor(IERC20,address).owner_ (src/AumoPool.sol#95) lacks a zero-check on :
+		- agent = owner_ (src/AumoPool.sol#100)
+AumoPool.setAgent(address).agent_ (src/AumoPool.sol#245) lacks a zero-check on :
+		- agent = agent_ (src/AumoPool.sol#246)
+AumoVault.constructor(address,address).owner_ (src/AumoVault.sol#64) lacks a zero-check on :
+		- agent = owner_ (src/AumoVault.sol#66)
+AumoVault.setAgent(address).agent_ (src/AumoVault.sol#88) lacks a zero-check on :
+		- agent = agent_ (src/AumoVault.sol#89)
+AaveV3Adapter.constructor(address,address,address,address).vault_ (src/adapters/AaveV3Adapter.sol#34) lacks a zero-check on :
+		- vault = vault_ (src/adapters/AaveV3Adapter.sol#38)
+RwaUsdgAdapter.constructor(address,address,address,address,address,address,address,uint24,uint256,uint256).vault_ (src/adapters/RwaUsdgAdapter.sol#75) lacks a zero-check on :
+		- vault = vault_ (src/adapters/RwaUsdgAdapter.sol#90)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-zero-address-validation
+
+Detector: calls-loop
+AumoPool.totalAssets() (src/AumoPool.sol#114-128) has external calls inside a loop: b = IVenueAdapter(_venues[i]).balanceOf(address(this)) (src/AumoPool.sol#123-125)
+	Calls stack containing the loop:
+		ERC4626.convertToShares(uint256)
+		ERC4626._convertToShares(uint256,Math.Rounding)
+AumoPool.totalAssets() (src/AumoPool.sol#114-128) has external calls inside a loop: b = IVenueAdapter(_venues[i]).balanceOf(address(this)) (src/AumoPool.sol#123-125)
+	Calls stack containing the loop:
+		ERC4626.convertToAssets(uint256)
+		ERC4626._convertToAssets(uint256,Math.Rounding)
+AumoPool.totalAssets() (src/AumoPool.sol#114-128) has external calls inside a loop: b = IVenueAdapter(_venues[i]).balanceOf(address(this)) (src/AumoPool.sol#123-125)
+	Calls stack containing the loop:
+		ERC4626.maxWithdraw(address)
+		ERC4626.previewRedeem(uint256)
+		ERC4626._convertToAssets(uint256,Math.Rounding)
+AumoPool.totalAssets() (src/AumoPool.sol#114-128) has external calls inside a loop: b = IVenueAdapter(_venues[i]).balanceOf(address(this)) (src/AumoPool.sol#123-125)
+	Calls stack containing the loop:
+		ERC4626.previewDeposit(uint256)
+		ERC4626._convertToShares(uint256,Math.Rounding)
+AumoPool.totalAssets() (src/AumoPool.sol#114-128) has external calls inside a loop: b = IVenueAdapter(_venues[i]).balanceOf(address(this)) (src/AumoPool.sol#123-125)
+	Calls stack containing the loop:
+		ERC4626.previewMint(uint256)
+		ERC4626._convertToAssets(uint256,Math.Rounding)
+AumoPool.totalAssets() (src/AumoPool.sol#114-128) has external calls inside a loop: b = IVenueAdapter(_venues[i]).balanceOf(address(this)) (src/AumoPool.sol#123-125)
+	Calls stack containing the loop:
+		ERC4626.previewWithdraw(uint256)
+		ERC4626._convertToShares(uint256,Math.Rounding)
+AumoPool.totalAssets() (src/AumoPool.sol#114-128) has external calls inside a loop: b = IVenueAdapter(_venues[i]).balanceOf(address(this)) (src/AumoPool.sol#123-125)
+	Calls stack containing the loop:
+		ERC4626.previewRedeem(uint256)
+		ERC4626._convertToAssets(uint256,Math.Rounding)
+AumoPool.totalAssets() (src/AumoPool.sol#114-128) has external calls inside a loop: b = IVenueAdapter(_venues[i]).balanceOf(address(this)) (src/AumoPool.sol#123-125)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+
+Detector: reentrancy-benign
+Reentrancy in AumoPool._doDeallocate(address,uint256,bool) (src/AumoPool.sol#401-430):
+	External calls:
+	- IVenueAdapter(venue).withdraw(amount) (src/AumoPool.sol#413)
+	State variables written after the call(s):
+	- epochLoss = 0 (src/AumoPool.sol#423)
+	- epochLoss += loss (src/AumoPool.sol#425)
+	- epochLossStart = block.timestamp (src/AumoPool.sol#422)
+Reentrancy in AumoVault.deallocate(address,uint256) (src/AumoVault.sol#154-171):
+	External calls:
+	- IVenueAdapter(venue).withdraw(amount) (src/AumoVault.sol#164)
+	State variables written after the call(s):
+	- totalDeployed -= pulledPrincipal (src/AumoVault.sol#168)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+
+Detector: reentrancy-events
+Reentrancy in AumoPool._doDeallocate(address,uint256,bool) (src/AumoPool.sol#401-430):
+	External calls:
+	- IVenueAdapter(venue).withdraw(amount) (src/AumoPool.sol#413)
+	Event emitted after the call(s):
+	- Deallocated(venue,pulledPrincipal,returned,block.timestamp) (src/AumoPool.sol#429)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+
+Detector: timestamp
+AumoPool.allocate(address,uint256,bytes32) (src/AumoPool.sol#355-387) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= epochDeployStart + lossEpochLength (src/AumoPool.sol#371)
+AumoPool._doDeallocate(address,uint256,bool) (src/AumoPool.sol#401-430) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= epochLossStart + lossEpochLength (src/AumoPool.sol#421)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: dead-code
+AumoPool._ensureIdle(uint256) (src/AumoPool.sol#202-233) is never used and should be removed
+AumoPool._withdraw(address,address,address,uint256,uint256) (src/AumoPool.sol#191-200) is never used and should be removed
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dead-code
+. analyzed (28 contracts with 102 detectors), 33 result(s) found

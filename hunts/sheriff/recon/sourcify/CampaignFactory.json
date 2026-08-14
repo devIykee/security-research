@@ -1,0 +1,15 @@
+{
+  "match": "exact_match",
+  "name": "CampaignFactory",
+  "files": [
+    "@openzeppelin/access/Ownable.sol",
+    "@openzeppelin/proxy/utils/Initializable.sol",
+    "@openzeppelin/token/ERC20/IERC20.sol",
+    "@openzeppelin/token/ERC20/extensions/IERC20Permit.sol",
+    "@openzeppelin/token/ERC20/utils/SafeERC20.sol",
+    "@openzeppelin/utils/Address.sol",
+    "@openzeppelin/utils/Context.sol",
+    "contracts/CampaignFactory.sol",
+    "contracts/ICampaignFactory.sol"
+  ]
+}
