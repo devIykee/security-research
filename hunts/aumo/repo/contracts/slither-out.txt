@@ -1,3 +1,0 @@
-'forge clean' running (wd: /home/iyke/coding/security-research/hunts/aumo/repo/contracts)
-'forge config --json' running
-'forge build --build-info --deny never --skip ./test/** ./script/** --force' running (wd: /home/iyke/coding/security-research/hunts/aumo/repo/contracts)

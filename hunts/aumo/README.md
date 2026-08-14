@@ -34,21 +34,25 @@ hunts/aumo/
 │       ├── slither-out.txt
 │       ├── slither-report.json
 │       └── slither-stderr.txt
-├── poc/                      ← Foundry PoC test suites & run guide
+├── poc/                      ← self-contained Foundry PoC test environment
 │   ├── README.md
-│   ├── AumoPool_Residual.t.sol
-│   ├── AumoPool_LogicBugs.t.sol
-│   ├── AumoPool_RedeemSandwich.t.sol
-│   ├── AumoPool_CriticalHunt.t.sol
-│   ├── AumoPool_CriticalPush.t.sol
-│   ├── AumoPool_DustLastPass.t.sol
-│   └── AumoPool_AdversarialAngles.t.sol
-├── recon/                    ← site/bundle scrapes & extracts
-│   ├── addrs.txt
-│   ├── chunks.txt
-│   ├── site.html
-│   └── bundles/
-└── repo/                     ← upstream workspace (contracts, agent, web, docs)
+│   ├── foundry.toml
+│   ├── remappings.txt
+│   ├── lib/
+│   └── test/
+│       ├── mocks/
+│       ├── AumoPool_Residual.t.sol
+│       ├── AumoPool_LogicBugs.t.sol
+│       ├── AumoPool_RedeemSandwich.t.sol
+│       ├── AumoPool_CriticalHunt.t.sol
+│       ├── AumoPool_CriticalPush.t.sol
+│       ├── AumoPool_DustLastPass.t.sol
+│       └── AumoPool_AdversarialAngles.t.sol
+└── recon/                    ← site/bundle scrapes & extracts
+    ├── addrs.txt
+    ├── chunks.txt
+    ├── site.html
+    └── bundles/
 ```
 
 ## What to send the team
@@ -56,14 +60,14 @@ hunts/aumo/
 Not this whole tree. Prefer:
 
 1. `reports/dm-first-contact.md` first  
-2. Then a small zip of: `reports/FINDINGS-MASTER.md`, `audit/audit-report.md`, `reports/H1-…`, `reports/logic-bugs.md`, and `poc/*.sol` + run commands  
+2. Then a small zip of: `reports/FINDINGS-MASTER.md`, `audit/audit-report.md`, `reports/H1-…`, `reports/logic-bugs.md`, and `poc/test/*.sol` + run commands  
 
 Do not send `recon/` or unrelated workspace folders.
 
 ## Run PoCs
 
 ```bash
-cd hunts/aumo/repo/contracts
+cd hunts/aumo/poc
 forge test
 ```
 

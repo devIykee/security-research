@@ -81,3 +81,8 @@ temp/
 # --- Local tool state ---
 .grok/
 TODO.md
+
+# --- Upstream project clones (keep only hunt files in repo) ---
+**/repo/
+repo/
+

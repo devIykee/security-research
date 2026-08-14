@@ -1,0 +1,14 @@
+[profile.default]
+src = "../src"
+test = "test"
+out = "out"
+libs = ["lib", "../src"]
+solc = "0.8.24"
+fs_permissions = [{ access = "read-write", path = ".." }]
+
+# Remappings
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/",
+    "../src/=/home/iyke/coding/security-research/hunts/aumo/src/",
+]

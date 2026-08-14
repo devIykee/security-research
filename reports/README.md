@@ -36,6 +36,8 @@ Rules: fork / eth_call / local Foundry only. No mainnet exploits.
 | 28 | **Flap** | Bonding pad; Portal ~60 ETH; migrator unverified | Notes | [Flap-hunt-notes.md](./Flap-hunt-notes.md) | — |
 | 30 | **Bankr** | Agent/terminal; launches via Clanker/Doppler | Notes | [Bankr-hunt-notes.md](./Bankr-hunt-notes.md) | — |
 | 31 | **Noxa** | Factory disabled; sites degraded / Rain.fun rebrand | Notes | [Noxa-hunt-notes.md](./Noxa-hunt-notes.md) | — |
+| 37 | **Sheriff.money** | `_checkStatusOnBurn` reverts when `securityRegistry == 0` (exit freeze) | **Medium** | [sheriff-medium-burn-registry-zero.md](../hunts/sheriff/reports/sheriff-medium-burn-registry-zero.md) | [dm-first-contact.md](../hunts/sheriff/reports/dm-first-contact.md) |
+| 38 | **Aumo (X Layer)** | Multi-strategy NAV stuck venue drain + dust full liquidation + USDG retreat sandwich | **High** | [FINDINGS-MASTER.md](../hunts/aumo/reports/FINDINGS-MASTER.md) | [dm-first-contact.md](../hunts/aumo/reports/dm-first-contact.md) |
 
 **Skipped #1 (hood.fun)** for our session (you already messaged).
 
