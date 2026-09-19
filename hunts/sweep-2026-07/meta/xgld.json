@@ -1,0 +1,154 @@
+{
+ "slug": "xgld",
+ "name": "XGLD",
+ "url": "https://evm.unitas.so/xgld",
+ "twitter": "UnitasLabs",
+ "github": null,
+ "chains": "Binance",
+ "tvl": [
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 7831944
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 12376275
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 12732566
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 13226232
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 14140312
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 14565602
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 15162876
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 15172629
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 15004450
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 15399009
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 15525154
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 15383557
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 14603804
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 15705131
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 15536302
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 14885295
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 14944369
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 15006588
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 14647674
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 14703105
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 13917455
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 12156179
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 8431875
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 8510806
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 8955255
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 9820599
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 10267719
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 11353598
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 11740920
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 11993342
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 11290140
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 11032005
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 11246639
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 11209031
+  },
+  {
+   "date": 1787732807,
+   "totalLiquidityUSD": 10981958
+  }
+ ],
+ "address": {
+  "_": "solana:7Zhxshgt7Ft6pHFYMrHE1epWdWre7sJ1Af1GhEUnitas"
+ },
+ "methodology": null
+}

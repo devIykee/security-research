@@ -1,0 +1,208 @@
+{
+ "slug": "vault-street-primeusd",
+ "name": "Vault Street primeUSD",
+ "url": "https://www.vaultstreet.com/",
+ "twitter": "ResolvLabs",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1783641600,
+   "totalLiquidityUSD": 5246170
+  },
+  {
+   "date": 1783728000,
+   "totalLiquidityUSD": 5246568
+  },
+  {
+   "date": 1783814400,
+   "totalLiquidityUSD": 5246834
+  },
+  {
+   "date": 1783900800,
+   "totalLiquidityUSD": 5247281
+  },
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 5248328
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 5249021
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 5249550
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 5252252
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 5253199
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 5253667
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 5254312
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 5254470
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 5255307
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 5256426
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 5756426
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 5758116
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 5758511
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 5759999
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 5760025
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 5760647
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 5760876
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 5761096
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 5763540
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 5764378
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 5764827
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 5765978
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 5767414
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 5766940
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 5768464
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 5852017
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 5852552
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 5854073
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 6354781
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 6356164
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 6356934
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 6361631
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 6363206
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 6364344
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 6364899
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 6366754
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 6368755
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 6369225
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 6371098
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 6373070
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 6374322
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 6375481
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 6376889
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 6377780
+  },
+  {
+   "date": 1787730095,
+   "totalLiquidityUSD": 6377862
+  }
+ ],
+ "address": {},
+ "methodology": "TVL is the total supply of primeUSD valued in USDC using the on-chain lastPrice oracle."
+}

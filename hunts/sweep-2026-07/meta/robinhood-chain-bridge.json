@@ -1,0 +1,224 @@
+{
+ "slug": "robinhood-chain-bridge",
+ "name": "Robinhood Chain Bridge",
+ "url": "https://robinhood.com/us/en/chain/",
+ "twitter": "RobinhoodCrypto",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1783296000,
+   "totalLiquidityUSD": 10349429
+  },
+  {
+   "date": 1783382400,
+   "totalLiquidityUSD": 10672974
+  },
+  {
+   "date": 1783468800,
+   "totalLiquidityUSD": 14429227
+  },
+  {
+   "date": 1783555200,
+   "totalLiquidityUSD": 69936812
+  },
+  {
+   "date": 1783641600,
+   "totalLiquidityUSD": 82205678
+  },
+  {
+   "date": 1783728000,
+   "totalLiquidityUSD": 110037714
+  },
+  {
+   "date": 1783814400,
+   "totalLiquidityUSD": 134149671
+  },
+  {
+   "date": 1783900800,
+   "totalLiquidityUSD": 144513694
+  },
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 148685304
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 164809763
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 174910343
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 176348879
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 181363233
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 186683919
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 192239616
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 199282291
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 208601349
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 211499871
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 209518559
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 209665160
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 213697390
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 225800078
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 219285428
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 228238163
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 231314921
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 237974978
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 234014122
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 233365639
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 239295657
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 234891100
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 239351493
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 254806182
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 268141206
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 275328032
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 282094155
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 286416107
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 285181965
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 292309924
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 297995566
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 302338158
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 308673641
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 310550975
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 310508293
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 317300914
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 313799956
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 372100608
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 385940177
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 430493465
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 419556675
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 428012854
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 436226898
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 430833226
+  },
+  {
+   "date": 1787730155,
+   "totalLiquidityUSD": 437071490
+  }
+ ],
+ "address": {},
+ "methodology": null
+}

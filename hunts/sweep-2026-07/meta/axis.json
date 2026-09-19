@@ -1,0 +1,44 @@
+{
+ "slug": "axis",
+ "name": "Axis",
+ "url": "https://axis.to",
+ "twitter": "AxisFDN",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 67551547
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 67548967
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 67557755
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 67555738
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 67612394
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 67612869
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 67611817
+  },
+  {
+   "date": 1787731427,
+   "totalLiquidityUSD": 67612798
+  }
+ ],
+ "address": {},
+ "methodology": "Supply of USDx on Ethereum. sUSDx is an ERC-4626 vault of USDx and is excluded to avoid double counting. The Upshift Origin Vault is excluded because it is already counted under Upshift."
+}

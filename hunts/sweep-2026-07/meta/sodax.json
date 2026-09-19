@@ -1,0 +1,78 @@
+{
+ "slug": "sodax",
+ "name": "SODAX",
+ "url": "https://www.sodax.com/",
+ "twitter": "gosodax",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 1858334
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 1864715
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 1867548
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 1847523
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 1845768
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 1840401
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 1861824
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 1867524
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 1997118
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 2061845
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 2181514
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 2155451
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 2175068
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 2210935
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 2080636
+  },
+  {
+   "date": 1787731127,
+   "totalLiquidityUSD": 2075863
+  }
+ ],
+ "address": {
+  "_": "sonic:0x7c7d53eecda37a87ce0d5bf8e0b24512a48dc963"
+ },
+ "methodology": "TVL sums assets custodied by the SODAX AssetManager on each supported blockchain network plus the Sonic-native assets held in the hub-side sodaVariants (sodaUSDC, sodaUSDT, sodaETH, sodaS). Per-network AssetManager addresses and supported-token sets are pulled live from the SODAX spoke config API. Money-market supplied collateral is not counted separately because it is the same wrapped representation of assets already locked on the AssetManagers. Independent solver inventory is external and excluded. Staked SODA is reported under staking as the xSODA vault totalAssets (the SDK-canonical \"totalStaked\" figure). SODAX is live on 21 blockchain networks total; this adapter currently covers the 12 EVM networks. Non-EVM networks (Solana, Bitcoin, Stellar, Sui, ICON, NEAR, Stacks, Injective) and Redbelly will be added in follow-up PRs."
+}

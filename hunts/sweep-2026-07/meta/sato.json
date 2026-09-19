@@ -1,0 +1,192 @@
+{
+ "slug": "sato",
+ "name": "SATO",
+ "url": "",
+ "twitter": "sat0_community",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 2183355
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 2198236
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 2216517
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 2142038
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 2100694
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 2117043
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 2136498
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 2168666
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 2196905
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 2199531
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 2130607
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 2111090
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 2123573
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 2207972
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 2135488
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 2171320
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 2149454
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 2169561
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 2112159
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 2090833
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 2132024
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 2104981
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 2117209
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 2162208
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 2154323
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 2168020
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 2173979
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 2164499
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 2122049
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 2129504
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 2126686
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 2135983
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 2131127
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 2132283
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 2122160
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 2159790
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 2166475
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 2544301
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 2626432
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 2819460
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 2717624
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 2750639
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 2776433
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 2736875
+  },
+  {
+   "date": 1787731487,
+   "totalLiquidityUSD": 2759278
+  }
+ ],
+ "address": {},
+ "methodology": "Counts the ETH reserve returned by curveReserveEth() on the verified SatoHook contract. This excludes feesAccrued and does not include secondary-market liquidity."
+}

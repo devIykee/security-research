@@ -1,0 +1,152 @@
+{
+ "slug": "valos",
+ "name": "Valos",
+ "url": "",
+ "twitter": "Valos_io",
+ "github": null,
+ "chains": "Monad",
+ "tvl": [
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 111427556
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 111428533
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 111460391
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 111462392
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 111518902
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 111510679
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 111533628
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 111550186
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 109887405
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 109898571
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 109908844
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 109933091
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 109952716
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 109913716
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 109934813
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 109977062
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 109983104
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 110020966
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 110016706
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 110018304
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 110031538
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 110067445
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 110090459
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 110095044
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 110114308
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 110161671
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 110185893
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 110216487
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 110266037
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 110300674
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 110313873
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 106920604
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 106921549
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 106937227
+  },
+  {
+   "date": 1787731307,
+   "totalLiquidityUSD": 106944137
+  }
+ ],
+ "address": {},
+ "methodology": "Counts the AUSD managed by the Valos institutional private credit vault using convertToAssets(totalSupply())."
+}

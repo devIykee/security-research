@@ -1,0 +1,152 @@
+{
+ "slug": "afx-lp",
+ "name": "AFX LP",
+ "url": "https://app.afx.xyz/trade",
+ "twitter": "AFX_XYZ",
+ "github": null,
+ "chains": "AFX L1",
+ "tvl": [
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 22853299
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 22863056
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 22806724
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 22687602
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 22674595
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 22559237
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 19833983
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 15945910
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 15570815
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 14718894
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 13951746
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 13867876
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 13377750
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 13248269
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 13213979
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 13171138
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 13159727
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 13095739
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 13046815
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 12266863
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 12252670
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 12256635
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 12244525
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 12249533
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 12227555
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 12225917
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 12225917
+  }
+ ],
+ "address": {},
+ "methodology": "TVL is the current USD value locked in the AFX LP Vault, as reported by AFX's public DefiLlama integration API."
+}

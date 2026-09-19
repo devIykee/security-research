@@ -1,0 +1,210 @@
+{
+ "slug": "adi-bridge",
+ "name": "ADI Bridge",
+ "url": "https://bridge.adifoundation.ai/",
+ "twitter": "ADIChain_",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1783641600,
+   "totalLiquidityUSD": 4133731
+  },
+  {
+   "date": 1783728000,
+   "totalLiquidityUSD": 4151668
+  },
+  {
+   "date": 1783814400,
+   "totalLiquidityUSD": 4288807
+  },
+  {
+   "date": 1783900800,
+   "totalLiquidityUSD": 4639417
+  },
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 4572183
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 4612410
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 4592039
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 4617624
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 4319614
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 4232166
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 4737795
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 4431365
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 4463580
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 4570928
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 4724814
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 4866045
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 4805618
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 4707274
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 4633732
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 4561873
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 4555972
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 4657599
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 4625960
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 4619860
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 4564606
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 4538977
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 4540940
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 4542021
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 4536415
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 4535612
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 4535266
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 4534569
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 4514159
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 4533713
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 4515554
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 4524149
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 4518323
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 4522006
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 4530897
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 4537775
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 4525425
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 4522114
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 4543385
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 4517504
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 4504700
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 4511103
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 4510939
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 4490479
+  },
+  {
+   "date": 1787730215,
+   "totalLiquidityUSD": 4478652
+  }
+ ],
+ "address": {
+  "_": "0x8b1484d57abbe239bb280661377363b03c89caea"
+ },
+ "methodology": null
+}

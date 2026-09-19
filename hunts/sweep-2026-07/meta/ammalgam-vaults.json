@@ -1,0 +1,156 @@
+{
+ "slug": "ammalgam-vaults",
+ "name": "Ammalgam Vaults",
+ "url": "https://app.ammalgam.xyz/vaults",
+ "twitter": "ammalgam",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 1349980
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 1344063
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 1338833
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 1345963
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 1394244
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 1353417
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 1373870
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 1361347
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 1374637
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 1339552
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 1329648
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 1345118
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 1335436
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 1342877
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 1368584
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 1364616
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 1372444
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 1375838
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 1369064
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 1327918
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 1278151
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 1277436
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 1279684
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 1277743
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 1278364
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 1274090
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 1295771
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 1299391
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 1504527
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 1551519
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 1671751
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 1616158
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 1632987
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 1649175
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 1627565
+  },
+  {
+   "date": 1787731727,
+   "totalLiquidityUSD": 1639802
+  }
+ ],
+ "address": {},
+ "methodology": "Counts the reported total assets of the Ammalgam USDC and WETH ERC-4626 vaults."
+}

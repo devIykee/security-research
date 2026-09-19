@@ -1,0 +1,136 @@
+{
+ "slug": "katana-perps",
+ "name": "Katana Perps",
+ "url": "https://perps.katana.network/",
+ "twitter": "katanaperps",
+ "github": null,
+ "chains": "Katana",
+ "tvl": [
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 3004967
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 3000549
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 2999624
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 2993031
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 2980996
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 2996223
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 2997226
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 3018960
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 3022573
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 2978210
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 3000731
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 2997246
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 3013101
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 3016469
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 3016475
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 2998180
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 3018595
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 3033803
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 3032374
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 3039285
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 3039729
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 3042651
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 3042167
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 3031666
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 3098312
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 2133353
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 2166830
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 2172998
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 2181919
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 2190651
+  },
+  {
+   "date": 1787731787,
+   "totalLiquidityUSD": 2190670
+  }
+ ],
+ "address": {},
+ "methodology": "TVL counts the USDC (Vault Bridge USDC) held in the Katana Perps contract on the Katana chain."
+}

@@ -1,0 +1,124 @@
+{
+ "slug": "azverse-perps",
+ "name": "AZverse Perps",
+ "url": "https://www.azverse.xyz",
+ "twitter": "AZverse_Global",
+ "github": null,
+ "chains": "Arbitrum",
+ "tvl": [
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 51203866
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 51188885
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 51187605
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 51217016
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 51208312
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 51313661
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 51314199
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 51338704
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 51349374
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 51368488
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 51370758
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 51384723
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 51487098
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 51512341
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 51647275
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 51649055
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 51637565
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 51637480
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 51642161
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 51659007
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 51664826
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 51684358
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 51660231
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 51686363
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 51705765
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 51859729
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 51857787
+  },
+  {
+   "date": 1787730887,
+   "totalLiquidityUSD": 51841287
+  }
+ ],
+ "address": {},
+ "methodology": "Counts supported assets in AZVerse\u2019s Arbitrum Asset Vault and third-party qualified-custodian wallets, plus BTC in the designated Bitcoin hot wallet."
+}

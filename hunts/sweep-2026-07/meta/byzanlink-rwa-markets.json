@@ -1,0 +1,216 @@
+{
+ "slug": "byzanlink-rwa-markets",
+ "name": "Byzanlink RWA Markets",
+ "url": "https://markets.byzanlink.com",
+ "twitter": "byzanlink",
+ "github": null,
+ "chains": "Hedera",
+ "tvl": [
+  {
+   "date": 1783468800,
+   "totalLiquidityUSD": 1154620
+  },
+  {
+   "date": 1783555200,
+   "totalLiquidityUSD": 1154725
+  },
+  {
+   "date": 1783641600,
+   "totalLiquidityUSD": 1156734
+  },
+  {
+   "date": 1783728000,
+   "totalLiquidityUSD": 1156008
+  },
+  {
+   "date": 1783814400,
+   "totalLiquidityUSD": 1156581
+  },
+  {
+   "date": 1783900800,
+   "totalLiquidityUSD": 1157189
+  },
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 1157897
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 1158489
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 1158495
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 1159832
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 1159992
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 1159983
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 1159930
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 1161806
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 1161855
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 1161917
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 1162761
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 1162902
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 1162807
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 1162922
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 1164270
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 1164223
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 2014735
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 1164731
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 1165662
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 1165609
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 1165545
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 1166652
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 1166728
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 1167148
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 1257181
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 1258079
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 1321619
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 1385423
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 1386554
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 1386524
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 1387283
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 1473234
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 1474183
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 1474132
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 1474016
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 1475598
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 1475737
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 1476525
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 1476686
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 1477824
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 1477766
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 1477757
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 1479196
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 1479108
+  },
+  {
+   "date": 1787731487,
+   "totalLiquidityUSD": 1480073
+  }
+ ],
+ "address": {},
+ "methodology": "Total value of assets deposited in the Byzanlink vaults, read on-chain and valued in USD."
+}

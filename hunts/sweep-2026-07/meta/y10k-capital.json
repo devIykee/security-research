@@ -1,0 +1,188 @@
+{
+ "slug": "y10k-capital",
+ "name": "Y10K Capital",
+ "url": "https://www.y10k.capital/",
+ "twitter": "y10kcapital",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 30947206
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 30946750
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 30948901
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 30958675
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 30959839
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 30958788
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 30961959
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 30978169
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 30983313
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 30982904
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 30993014
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 30990180
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 30997121
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 30996808
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 31012455
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 31010841
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 31011523
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 31021770
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 31122894
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 31123571
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 31126206
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 31146872
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 31140774
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 31143874
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 31458361
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 31456972
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 31460392
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 30855868
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 30879282
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 30879889
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 30883216
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 32394400
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 32394973
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 32397838
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 32401441
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 32433225
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 32432444
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 31579998
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 32619141
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 32654178
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 32655572
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 31407346
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 31423302
+  },
+  {
+   "date": 1787731487,
+   "totalLiquidityUSD": 31424620
+  }
+ ],
+ "address": {},
+ "methodology": "Sum of assets deposited in Y10k Capital vaults. Marked as double counted: risk operations on these vaults are run by RockawayX, and both vaults are already counted under projects/rockawayx (ethereum eY10K, sei PYUSD0)."
+}

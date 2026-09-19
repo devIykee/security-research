@@ -1,0 +1,48 @@
+{
+ "slug": "syntetika",
+ "name": "Syntetika",
+ "url": "https://syntetika.io/",
+ "twitter": "Syntetika",
+ "github": null,
+ "chains": "Base",
+ "tvl": [
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 10179510
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 10174329
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 10802849
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 11408940
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 11266775
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 11354504
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 11547304
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 11500316
+  },
+  {
+   "date": 1787731127,
+   "totalLiquidityUSD": 11563012
+  }
+ ],
+ "address": {},
+ "methodology": "TVL is the net asset value of the Syntetika strategy vaults, read on-chain as totalAssets() - the outstanding supply of vault share tokens valued at the independently attested NAV per share - and denominated in the vault deposit asset (cbBTC)."
+}

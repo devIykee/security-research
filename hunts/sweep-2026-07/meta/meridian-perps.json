@@ -1,0 +1,104 @@
+{
+ "slug": "meridian-perps",
+ "name": "Meridian Perps",
+ "url": "https://app.meridian.xyz/",
+ "twitter": "meridiandotxyz",
+ "github": null,
+ "chains": "Robinhood Chain",
+ "tvl": [
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 999820
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 999732
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 999469
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 950397
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 1002005
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 1002049
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 1001897
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 1002897
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 1002763
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 1007853
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 1238131
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 1368027
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 1382987
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 1435114
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 1474765
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 1653500
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 1694364
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 1855755
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 1867117
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 1877818
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 1893314
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 1867138
+  },
+  {
+   "date": 1787731187,
+   "totalLiquidityUSD": 1890973
+  }
+ ],
+ "address": {},
+ "methodology": "Count all assets deposited in the Meridian perps LP vault."
+}

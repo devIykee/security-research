@@ -1,0 +1,28 @@
+{
+ "slug": "fermiswap",
+ "name": "FermiSwap",
+ "url": " ",
+ "twitter": null,
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 6226736
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 6237667
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 6204988
+  },
+  {
+   "date": 1787730947,
+   "totalLiquidityUSD": 6229439
+  }
+ ],
+ "address": {},
+ "methodology": "TVL is the value of WETH, USDT, USDC, cbBTC, and WBTC held in FermiSwap's inventory vault."
+}

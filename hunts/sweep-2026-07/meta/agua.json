@@ -1,0 +1,112 @@
+{
+ "slug": "agua",
+ "name": "Agua",
+ "url": "",
+ "twitter": "aguavaults",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 5534481
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 5534684
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 5786460
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 5617649
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 5619404
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 7165251
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 7816138
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 7838459
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 7850206
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 7852289
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 12851572
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 14807994
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 14812755
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 14816530
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 14818918
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 14824395
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 10830931
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 10832493
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 10836600
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 8840870
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 8843108
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 8815254
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 8500840
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 8752726
+  },
+  {
+   "date": 1787730095,
+   "totalLiquidityUSD": 8753537
+  }
+ ],
+ "address": {},
+ "methodology": "TVL is the sum of assets deposited into Agua's ERC-4626 vault(s), read via totalAssets() (net asset value) and denominated in the underlying asset (USDC). Deposits are allocated into external lending markets (Aave, Morpho, Euler, ...) already tracked by DefiLlama, so this TVL is double-counted."
+}

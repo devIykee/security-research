@@ -1,0 +1,56 @@
+{
+ "slug": "wise-token",
+ "name": "Wise Token",
+ "url": "https://app.wisetoken.com/",
+ "twitter": "WISE_Token",
+ "github": [
+  "wise-foundation"
+ ],
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 54447877
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 54530304
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 64533762
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 66251387
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 71872463
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 68828331
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 69948529
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 70597962
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 69591700
+  },
+  {
+   "date": 1787730635,
+   "totalLiquidityUSD": 70161346
+  }
+ ],
+ "address": {
+  "_": "0x66a0f676479cee1d7373f3dc2e2952778bff5bd6"
+ },
+ "methodology": "TVL = ownerless (LP tokens burned) share of ETH in the WISE/ETH Uniswap LP"
+}

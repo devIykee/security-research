@@ -1,0 +1,238 @@
+{
+ "slug": "uncx-network-v4",
+ "name": "UNCX Network V4",
+ "url": "https://uncx.network/",
+ "twitter": "UNCX_token",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1783036800,
+   "totalLiquidityUSD": 2459431
+  },
+  {
+   "date": 1783123200,
+   "totalLiquidityUSD": 2622150
+  },
+  {
+   "date": 1783209600,
+   "totalLiquidityUSD": 2627573
+  },
+  {
+   "date": 1783296000,
+   "totalLiquidityUSD": 2636250
+  },
+  {
+   "date": 1783382400,
+   "totalLiquidityUSD": 2564178
+  },
+  {
+   "date": 1783468800,
+   "totalLiquidityUSD": 2488329
+  },
+  {
+   "date": 1783555200,
+   "totalLiquidityUSD": 2349714
+  },
+  {
+   "date": 1783641600,
+   "totalLiquidityUSD": 2362669
+  },
+  {
+   "date": 1783728000,
+   "totalLiquidityUSD": 2347478
+  },
+  {
+   "date": 1783814400,
+   "totalLiquidityUSD": 2327594
+  },
+  {
+   "date": 1783900800,
+   "totalLiquidityUSD": 2336562
+  },
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 2193251
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 2305880
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 2345236
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 2300116
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 2235207
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 2253215
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 2268770
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 2247991
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 2246924
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 2270722
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 2180153
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 2168303
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 2205696
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 2298019
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 2196880
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 2270828
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 2256938
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 2343847
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 2277302
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 2234591
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 2300810
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 2297563
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 2381433
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 2349007
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 2377698
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 2438348
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 2450912
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 2436358
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 2426799
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 2424164
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 2453955
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 2423517
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 2390193
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 2385310
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 2380706
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 2538111
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 2491444
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 2828043
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 2901589
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 3107967
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 2998160
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 3144058
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 3137763
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 3156574
+  },
+  {
+   "date": 1787731547,
+   "totalLiquidityUSD": 3184373
+  }
+ ],
+ "address": {
+  "_": "0xadb2437e6f65682b85f814fbc12fec0508a7b1d0"
+ },
+ "methodology": null
+}

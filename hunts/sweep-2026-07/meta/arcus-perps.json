@@ -1,0 +1,208 @@
+{
+ "slug": "arcus-perps",
+ "name": "Arcus Perps",
+ "url": "https://arcus.xyz/",
+ "twitter": "arcus_xyz",
+ "github": null,
+ "chains": "Robinhood Chain",
+ "tvl": [
+  {
+   "date": 1783641600,
+   "totalLiquidityUSD": 5252706
+  },
+  {
+   "date": 1783728000,
+   "totalLiquidityUSD": 5250665
+  },
+  {
+   "date": 1783814400,
+   "totalLiquidityUSD": 5460302
+  },
+  {
+   "date": 1783900800,
+   "totalLiquidityUSD": 5695811
+  },
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 6325406
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 14388586
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 14510035
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 17013489
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 17102007
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 17107391
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 17137954
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 17121680
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 17124105
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 17294087
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 17273598
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 17452073
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 17528910
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 17568379
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 17823747
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 17992081
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 18081969
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 18285448
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 18547513
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 18597478
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 18698274
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 18648779
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 18904108
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 18976287
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 19434533
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 19965667
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 20084565
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 20160764
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 20265852
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 20349039
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 20604496
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 20673866
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 20473421
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 20602263
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 20741664
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 19821345
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 20486703
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 19810810
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 19779181
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 19952110
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 19940726
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 20030616
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 20211481
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 19352205
+  },
+  {
+   "date": 1787731007,
+   "totalLiquidityUSD": 19284772
+  }
+ ],
+ "address": {},
+ "methodology": null
+}

@@ -1,0 +1,162 @@
+{
+ "slug": "morpho-midnight",
+ "name": "Morpho Midnight",
+ "url": "https://app.morpho.org",
+ "twitter": "Morpho",
+ "github": null,
+ "chains": "Base",
+ "tvl": [
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 911055
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 913961
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 913050
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 905976
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 909477
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 971158
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 976789
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 2183255
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 2323863
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 2268073
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 1874829
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 1861577
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 1882824
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 1878802
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 1891025
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 1932429
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 1972086
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 3415509
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 3442308
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 3435118
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 3366817
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 3355734
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 3356508
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 3373039
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 3357240
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 3358927
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 3346946
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 3423845
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 3448810
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 3859679
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 4073174
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 4358827
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 4294416
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 4368930
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 4423445
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 4465948
+  },
+  {
+   "date": 1787731307,
+   "totalLiquidityUSD": 4496392
+  }
+ ],
+ "address": {
+  "_": "0x58D97B57BB95320F9a05dC918Aef65434969c2B2"
+ },
+ "methodology": "Every Midnight market is enumerated on-chain from MarketCreated events. TVL is the collateral held in the Midnight contract. Borrowed is outstanding debt read per-market from totalUnits."
+}

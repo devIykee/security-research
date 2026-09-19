@@ -1,0 +1,52 @@
+{
+ "slug": "niza",
+ "name": "Niza",
+ "url": "https://niza.io/",
+ "twitter": "nizacoin",
+ "github": null,
+ "chains": "Bitcoin",
+ "tvl": [
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 61744763
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 62025350
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 64727205
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 67256486
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 69659463
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 69266250
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 69384766
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 70200458
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 69989064
+  },
+  {
+   "date": 1787731307,
+   "totalLiquidityUSD": 70285246
+  }
+ ],
+ "address": {},
+ "methodology": null
+}

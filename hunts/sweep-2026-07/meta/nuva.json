@@ -1,0 +1,220 @@
+{
+ "slug": "nuva",
+ "name": "NUVA",
+ "url": "https://nuva.finance",
+ "twitter": "nuvafinance",
+ "github": null,
+ "chains": "Ethereum",
+ "tvl": [
+  {
+   "date": 1783382400,
+   "totalLiquidityUSD": 5188152
+  },
+  {
+   "date": 1783468800,
+   "totalLiquidityUSD": 5187059
+  },
+  {
+   "date": 1783555200,
+   "totalLiquidityUSD": 5190931
+  },
+  {
+   "date": 1783641600,
+   "totalLiquidityUSD": 7688846
+  },
+  {
+   "date": 1783728000,
+   "totalLiquidityUSD": 7692709
+  },
+  {
+   "date": 1783814400,
+   "totalLiquidityUSD": 7695062
+  },
+  {
+   "date": 1783900800,
+   "totalLiquidityUSD": 7696840
+  },
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 7698314
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 7713777
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 7717030
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 7719730
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 7721664
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 7721486
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 7724167
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 7724435
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 7725209
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 7728810
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 7727858
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 7730733
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 7730826
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 7734473
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 7736308
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 7724980
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 7726483
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 7727900
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 7730245
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 7730841
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 7731088
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 7002083
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 6325093
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 5870722
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 5230562
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 5230844
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 5233127
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 5231896
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 5231145
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 5234395
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 5232489
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 5237209
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 5235114
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 5240052
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 5238660
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 5238653
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 5250488
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 5247721
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 5569122
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 5571994
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 5572760
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 5572851
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 5573509
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 6462322
+  },
+  {
+   "date": 1787731307,
+   "totalLiquidityUSD": 6462768
+  }
+ ],
+ "address": {},
+ "methodology": "NUVA TVL is the sum of (1) nvYLDS total_vault_value from the Provenance vault module (canonical vault state; Ethereum and Base bridge contracts are excluded to avoid double-counting bridged deposits) and (2) nvPRIME underlying assets held in the Ethereum Nuva vault."
+}

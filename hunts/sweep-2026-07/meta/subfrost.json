@@ -1,0 +1,132 @@
+{
+ "slug": "subfrost",
+ "name": "SUBFROST",
+ "url": "https://app.subfrost.io/",
+ "twitter": "subfrost_news",
+ "github": null,
+ "chains": "Bitcoin",
+ "tvl": [
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 6874015
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 6870949
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 7056122
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 6808940
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 6802750
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 6849080
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 6939547
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 7029367
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 7050609
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 7096042
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 7292709
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 7333116
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 7298837
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 7220417
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 7213157
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 7211037
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 7263676
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 7179115
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 7228636
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 7178501
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 7363434
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 7391652
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 8024663
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 8486341
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 8777207
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 8631381
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 8586111
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 8583527
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 8446836
+  },
+  {
+   "date": 1787730395,
+   "totalLiquidityUSD": 8478927
+  }
+ ],
+ "address": {},
+ "methodology": "Total value of the collateral held by the transparent and verifiable SUBFROST signing group. On bitcoin, all BTC backing frBTC across both deployments, Alkanes and BRC2.0. On ethereum, the collateral backing frUSD: the USDC and USDT held in the frUSD vault, plus the Curve 3pool position the vault deploys its stablecoins into. The frBTC and frUSD minted against these deposits are not counted separately. Note that the 3CRV portion is also part of Curve's own TVL."
+}

@@ -1,0 +1,5 @@
+== STEP 2B: bundle grep ==
+WEBSITE: https://syntetika.io
+Found 1 JS path(s); grepping for named addresses...
+No role-labeled 0x addresses in scanned bundles.
+GATE: empty grep — try Step 2C (browser eth_call) or 2D (explorer).

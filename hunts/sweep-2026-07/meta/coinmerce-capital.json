@@ -1,0 +1,168 @@
+{
+ "slug": "coinmerce-capital",
+ "name": "Coinmerce Capital",
+ "url": "https://coinmerce.capital/en/home",
+ "twitter": "coinmerce",
+ "github": null,
+ "chains": "Hyperliquid L1",
+ "tvl": [
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 2017274
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 2017303
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 2022049
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 2022184
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 2021923
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 2022117
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 2021879
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 2022056
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 2021666
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 2021538
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 2021350
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 2026679
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 2026974
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 2026844
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 2026524
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 2026560
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 2026639
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 2026051
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 2029250
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 2029433
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 2029127
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 2029163
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 2028998
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 2028929
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 2028771
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 2028762
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 2028833
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 2028713
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 2028467
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 2028683
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 2031951
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 2031759
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 2031932
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 2032141
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 2032017
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 1727055
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 1727085
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 1726960
+  },
+  {
+   "date": 1787731187,
+   "totalLiquidityUSD": 1726983
+  }
+ ],
+ "address": {},
+ "methodology": "Count all assets are deposited in all vaults curated by Coinmerce Capital."
+}

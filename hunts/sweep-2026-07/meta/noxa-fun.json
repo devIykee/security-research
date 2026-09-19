@@ -1,0 +1,212 @@
+{
+ "slug": "noxa-fun",
+ "name": "NOXA Fun",
+ "url": "https://fun.noxa.eth.limo/",
+ "twitter": "Noxa_Fi",
+ "github": null,
+ "chains": "Robinhood Chain",
+ "tvl": [
+  {
+   "date": 1783555200,
+   "totalLiquidityUSD": 4883294
+  },
+  {
+   "date": 1783641600,
+   "totalLiquidityUSD": 5229905
+  },
+  {
+   "date": 1783728000,
+   "totalLiquidityUSD": 7581249
+  },
+  {
+   "date": 1783814400,
+   "totalLiquidityUSD": 10532927
+  },
+  {
+   "date": 1783900800,
+   "totalLiquidityUSD": 10910272
+  },
+  {
+   "date": 1783987200,
+   "totalLiquidityUSD": 9575786
+  },
+  {
+   "date": 1784073600,
+   "totalLiquidityUSD": 6876502
+  },
+  {
+   "date": 1784160000,
+   "totalLiquidityUSD": 5743906
+  },
+  {
+   "date": 1784246400,
+   "totalLiquidityUSD": 5945417
+  },
+  {
+   "date": 1784332800,
+   "totalLiquidityUSD": 6010168
+  },
+  {
+   "date": 1784419200,
+   "totalLiquidityUSD": 6081251
+  },
+  {
+   "date": 1784505600,
+   "totalLiquidityUSD": 6176229
+  },
+  {
+   "date": 1784592000,
+   "totalLiquidityUSD": 5667327
+  },
+  {
+   "date": 1784678400,
+   "totalLiquidityUSD": 5213322
+  },
+  {
+   "date": 1784764800,
+   "totalLiquidityUSD": 4943331
+  },
+  {
+   "date": 1784851200,
+   "totalLiquidityUSD": 4537681
+  },
+  {
+   "date": 1784937600,
+   "totalLiquidityUSD": 4456157
+  },
+  {
+   "date": 1785024000,
+   "totalLiquidityUSD": 4356233
+  },
+  {
+   "date": 1785110400,
+   "totalLiquidityUSD": 4434450
+  },
+  {
+   "date": 1785196800,
+   "totalLiquidityUSD": 4079146
+  },
+  {
+   "date": 1785283200,
+   "totalLiquidityUSD": 4046194
+  },
+  {
+   "date": 1785369600,
+   "totalLiquidityUSD": 3981964
+  },
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 4193733
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 4005406
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 3961289
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 4022458
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 4170250
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 4308547
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 4426602
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 4488389
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 4252522
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 4379467
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 4384495
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 4323351
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 4382841
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 4491697
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 4414798
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 4355607
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 4288989
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 4129095
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 4100427
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 4028687
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 4676582
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 4952957
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 5322554
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 4964682
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 5136120
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 5734488
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 5552783
+  },
+  {
+   "date": 1787731787,
+   "totalLiquidityUSD": 5771914
+  }
+ ],
+ "address": {},
+ "methodology": "TVL is the value of the base tokens(wrapped native / stable) in the locked LPs"
+}

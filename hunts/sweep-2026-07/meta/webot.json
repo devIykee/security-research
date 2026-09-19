@@ -1,0 +1,124 @@
+{
+ "slug": "webot",
+ "name": "Webot",
+ "url": "https://www.webot.com",
+ "twitter": "joinwebot",
+ "github": null,
+ "chains": "Bitcoin",
+ "tvl": [
+  {
+   "date": 1785456000,
+   "totalLiquidityUSD": 2498804
+  },
+  {
+   "date": 1785542400,
+   "totalLiquidityUSD": 2443866
+  },
+  {
+   "date": 1785628800,
+   "totalLiquidityUSD": 2423515
+  },
+  {
+   "date": 1785715200,
+   "totalLiquidityUSD": 2408187
+  },
+  {
+   "date": 1785801600,
+   "totalLiquidityUSD": 2396719
+  },
+  {
+   "date": 1785888000,
+   "totalLiquidityUSD": 2392775
+  },
+  {
+   "date": 1785974400,
+   "totalLiquidityUSD": 2384963
+  },
+  {
+   "date": 1786060800,
+   "totalLiquidityUSD": 2298297
+  },
+  {
+   "date": 1786147200,
+   "totalLiquidityUSD": 2401389
+  },
+  {
+   "date": 1786233600,
+   "totalLiquidityUSD": 2417677
+  },
+  {
+   "date": 1786320000,
+   "totalLiquidityUSD": 2406451
+  },
+  {
+   "date": 1786406400,
+   "totalLiquidityUSD": 2385868
+  },
+  {
+   "date": 1786492800,
+   "totalLiquidityUSD": 2455454
+  },
+  {
+   "date": 1786579200,
+   "totalLiquidityUSD": 2437011
+  },
+  {
+   "date": 1786665600,
+   "totalLiquidityUSD": 2437827
+  },
+  {
+   "date": 1786752000,
+   "totalLiquidityUSD": 2414425
+  },
+  {
+   "date": 1786838400,
+   "totalLiquidityUSD": 2408242
+  },
+  {
+   "date": 1786924800,
+   "totalLiquidityUSD": 2375943
+  },
+  {
+   "date": 1787011200,
+   "totalLiquidityUSD": 2374724
+  },
+  {
+   "date": 1787097600,
+   "totalLiquidityUSD": 2490238
+  },
+  {
+   "date": 1787184000,
+   "totalLiquidityUSD": 2666729
+  },
+  {
+   "date": 1787270400,
+   "totalLiquidityUSD": 2760966
+  },
+  {
+   "date": 1787356800,
+   "totalLiquidityUSD": 3002392
+  },
+  {
+   "date": 1787443200,
+   "totalLiquidityUSD": 3114974
+  },
+  {
+   "date": 1787529600,
+   "totalLiquidityUSD": 3173515
+  },
+  {
+   "date": 1787616000,
+   "totalLiquidityUSD": 3096706
+  },
+  {
+   "date": 1787702400,
+   "totalLiquidityUSD": 3245941
+  },
+  {
+   "date": 1787730827,
+   "totalLiquidityUSD": 3289795
+  }
+ ],
+ "address": {},
+ "methodology": null
+}
