@@ -1,0 +1,850 @@
+{
+ "plasma": {
+  "eth": {
+   "conf": 15,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "sonic": {
+  "eth": {
+   "conf": 15,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "berachain": {
+  "eth": {
+   "conf": 15,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "hyperevm": {
+  "eth": {
+   "conf": 15,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": null,
+  "pol": null,
+  "arb": null,
+  "op": null,
+  "base": null
+ },
+ "abstract": {
+  "eth": {
+   "conf": 15,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "lisk": {
+  "eth": {
+   "conf": 15,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "monad": {
+  "eth": {
+   "conf": 15,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "unichain": {
+  "eth": {
+   "conf": 15,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "hemi": {
+  "eth": {
+   "conf": 15,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "story": {
+  "eth": {
+   "conf": 15,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "katana": {
+  "eth": {
+   "conf": 15,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 512,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "sei": {
+  "eth": {
+   "conf": 15,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": null,
+  "pol": {
+   "conf": 120,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 1,
+   "rq": [
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ },
+ "ethereum": {
+  "eth": {
+   "conf": 15,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "bsc": {
+   "conf": 20,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "avax": {
+   "conf": 12,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "pol": {
+   "conf": 120,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "arb": {
+   "conf": 20,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "op": {
+   "conf": 20,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  },
+  "base": {
+   "conf": 10,
+   "req": 4,
+   "rq": [
+    "0x",
+    "0x",
+    "0x",
+    "0x"
+   ],
+   "opt": 0,
+   "thr": 0
+  }
+ }
+}

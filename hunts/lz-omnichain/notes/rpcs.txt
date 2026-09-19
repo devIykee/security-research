@@ -1,0 +1,12 @@
+$ name=sonic cid=0x92 endpoint_code_bytes=39 url=https://rpc.soniclabs.com
+$ name=berachain cid=0x138de endpoint_code_bytes=38 url=https://rpc.berachain.com
+corn DEAD
+peaq DEAD
+hemi DEAD
+swellchain DEAD
+$ name=hyperevm cid=0x3e7 endpoint_code_bytes=38 url=https://rpc.hyperliquid.xyz/evm
+unichain DEAD
+ink DEAD
+$ name=abstract cid=0xab5","id endpoint_code_bytes=39 url=https://api.mainnet.abs.xyz
+$ name=plasma cid=0x2611 endpoint_code_bytes=38 url=https://rpc.plasma.to
+$ name=lisk cid=0x46f","id endpoint_code_bytes=39 url=https://rpc.api.lisk.com
