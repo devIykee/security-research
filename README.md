@@ -12,9 +12,12 @@ blockchain security researcher, solana and evm
 
 ### 44+ Audits Complete
 
-```
-🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩
-```
+<div style="overflow-x: hidden;">
+
+🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩  
+🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩
+
+</div>
 
 ![Audits](https://img.shields.io/badge/Audits-44+-success?style=flat-square)
 ![Vulnerabilities](https://img.shields.io/badge/Vulnerabilities-50+-critical?style=flat-square&logo=target)
