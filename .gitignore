@@ -86,3 +86,32 @@ TODO.md
 **/repo/
 repo/
 
+
+# Upstream project repositories (cloned for analysis)
+**/repo/
+**/source/
+**/*-contracts/
+**/*-abi/
+**/bitvm2-*/
+**/mobile-wallet-adapter/
+**/seed-vault-sdk/
+**/solana-mobile-skills/
+**/target/
+hunts/_verified-contracts/**/
+
+# Embedded git repositories
+**/.git/
+
+# Python virtual environments
+**/.venv/
+**/venv/
+
+# Build artifacts
+**/node_modules/
+**/out/
+**/cache/
+**/artifacts/
+
+# IDE
+.vscode/
+.idea/
