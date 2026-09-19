@@ -1,0 +1,7 @@
+{
+  "git": {
+    "sha1": "375f687b2249465f455f37810f314d4c950d4536",
+    "dirty": true
+  },
+  "path_in_vcs": "sdk/rust/client"
+}
