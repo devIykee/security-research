@@ -25,23 +25,58 @@ jobs:
           # Count complete hunts (have FINAL or COMPLETE reports)
           COMPLETE=$(find hunts/*/  -maxdepth 1 \( -name "*FINAL*REPORT*.md" -o -name "*COMPLETE*.md" -o -name "FINDINGS-MASTER.md" \) 2>/dev/null | wc -l)
 
-          # Generate progress bar with emojis (one green box per completed audit)
-          PROGRESS_BAR=$(printf '🟩%.0s' $(seq 1 $COMPLETE))
+          # Generate progress bar with emojis (split into lines of 50)
+          # This prevents horizontal scrolling
+          BOXES_PER_LINE=50
+          TOTAL_LINES=$(( (COMPLETE + BOXES_PER_LINE - 1) / BOXES_PER_LINE ))
 
-          # Update the audit progress section in README
-          # Find the line with "### X+ Audits Complete" and replace it
-          sed -i "s/### [0-9]\++* Audits Complete/### ${COMPLETE}+ Audits Complete/" README.md
+          PROGRESS_BAR=""
+          for (( line=0; line<TOTAL_LINES; line++ )); do
+            remaining=$((COMPLETE - line * BOXES_PER_LINE))
+            if [ $remaining -gt $BOXES_PER_LINE ]; then
+              count=$BOXES_PER_LINE
+            else
+              count=$remaining
+            fi
+            PROGRESS_BAR="${PROGRESS_BAR}$(printf '🟩%.0s' $(seq 1 $count))"
+            if [ $line -lt $((TOTAL_LINES - 1)) ]; then
+              PROGRESS_BAR="${PROGRESS_BAR}  "  # Two spaces for line break
+            fi
+          done
 
-          # Update the progress bar
-          sed -i "/^🟩🟩/c\\${PROGRESS_BAR}" README.md
-
-          # Update the badge count
-          sed -i "s/Audits-[0-9]\++-/Audits-${COMPLETE}+-/" README.md
+          # Update README.md - find and replace the progress section
+          # Use a more robust sed approach
+          awk -v complete="$COMPLETE" -v progress="$PROGRESS_BAR" '
+          /^### [0-9]+\+ Audits Complete/ {
+            print "### " complete "+ Audits Complete"
+            next
+          }
+          /^<div style="overflow-x: hidden;">/ {
+            print $0
+            getline  # skip next line (old progress bar)
+            print ""
+            print progress
+            print ""
+            next
+          }
+          /^🟩/ && !printed {
+            # Skip old progress lines until we hit the closing div
+            while (getline && !/^<\/div>/) continue
+            print "</div>"
+            printed=1
+            next
+          }
+          /Audits-[0-9]+\+-/ {
+            gsub(/Audits-[0-9]+\+-/, "Audits-" complete "+-")
+          }
+          { print }
+          ' README.md > README.md.tmp && mv README.md.tmp README.md
 
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
+          COMPLETE=$(find hunts/*/  -maxdepth 1 \( -name "*FINAL*REPORT*.md" -o -name "*COMPLETE*.md" -o -name "FINDINGS-MASTER.md" \) 2>/dev/null | wc -l)
           git diff --staged --quiet || git commit -m "chore: auto-update audit progress to ${COMPLETE}+ audits [skip ci]"
           git push
