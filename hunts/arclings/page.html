@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arclings | Official On-Chain Identity Collectibles</title>
+    <meta name="description" content="Arclings is the official project building fully on-chain 1-bit identity collectibles on Arc. 6,283 pixel avatars. Official X: @ArclingsNFT. Contact: contact@arclings.art">
+    <link rel="canonical" href="https://arclings.art/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Arclings">
+    <meta property="og:title" content="Arclings | Official On-Chain Identity Collectibles">
+    <meta property="og:description" content="Official Arclings website. We build fully on-chain 1-bit identity collectibles on Arc. Official X: @ArclingsNFT">
+    <meta property="og:image" content="https://arclings.art/logo.jpg">
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@ArclingsNFT">
+    <meta name="twitter:creator" content="@ArclingsNFT">
+    <meta name="twitter:title" content="Arclings | Official On-Chain Identity Collectibles">
+    <meta name="twitter:description" content="Official Arclings website. Fully on-chain 1-bit identity collectibles on Arc. Official X: @ArclingsNFT">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Arclings",
+        "url": "https://arclings.art",
+        "email": "contact@arclings.art",
+        "logo": "https://arclings.art/logo.jpg",
+        "description": "Arclings builds fully on-chain 1-bit identity collectibles on Arc. The official collection is 6,283 pixel art avatars stored in smart contracts.",
+        "sameAs": [
+            "https://x.com/ArclingsNFT",
+            "https://discord.gg/w7QCGz6jge"
+        ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Press+Start+2P&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=18">
+    <script>
+        window.__turnstileReadyQueue = window.__turnstileReadyQueue || [];
+        window.onloadTurnstileCallback = function () {
+            window.__turnstileLoaded = true;
+            (window.__turnstileReadyQueue || []).forEach(function (fn) {
+                try { fn(); } catch (err) { console.warn(err); }
+            });
+            window.__turnstileReadyQueue = [];
+        };
+    </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit" async defer></script>
+</head>
+
+<body class="crt-glow">
+    <div class="scanlines"></div>
+    <div class="ambient-glow"></div>
+
+    <div id="page-loader" class="page-loader" style="display: none;">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div class="loader-terminal-text">LOADING TERMINAL DATA...</div>
+        </div>
+    </div>
+
+    <header class="app-header">
+        <a class="logo-container route-link" href="/">
+            <img class="logo-pixel logo-avatar" src="data:image/jpeg;base64,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" alt="Arclings" width="40" height="40">
+            <div class="logo-text">
+                <h1>ARCLINGS</h1>
+                <p>Official On-Chain Identity</p>
+            </div>
+        </a>
+        <nav class="nav-links">
+            <a href="/story" class="route-link">Story</a>
+            <a href="/customizer" class="route-link">Customizer</a>
+            <a href="/roadmap" class="route-link">Roadmap</a>
+            <a href="/status" class="route-link">Status</a>
+            <a href="/apply" class="route-link">Apply</a>
+            <a href="/api" class="route-link">API</a>
+            <a href="/about" class="route-link">About</a>
+        </nav>
+        <div class="header-right" style="display: flex; align-items: center; gap: 14px;">
+            <a href="https://x.com/ArclingsNFT" target="_blank" rel="me noopener noreferrer" class="nav-social-icon nav-x-link"
+                aria-label="Official Arclings X account @ArclingsNFT"
+                style="color: var(--text-secondary); transition: color 0.2s ease; display: flex; align-items: center;">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+            </a>
+            <a href="https://discord.gg/w7QCGz6jge" target="_blank" rel="noopener noreferrer" class="nav-social-icon"
+                style="color: var(--text-secondary); transition: color 0.2s ease; display: flex; align-items: center;">
+                <svg viewBox="0 0 127.14 96.36" fill="currentColor" width="18" height="18">
+                    <path d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53.05s5-12.68 11.45-12.68S54 46.07 53.89 53.05 48.84 65.69 42.45 65.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53.05s5-12.68 11.44-12.68S96.23 46.07 96.12 53.05 91.08 65.69 84.69 65.69Z" />
+                </svg>
+            </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle Menu">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                    <rect x="2" y="3" width="12" height="2" />
+                    <rect x="2" y="7" width="12" height="2" />
+                    <rect x="2" y="11" width="12" height="2" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-nav">
+        <a href="/story" class="route-link">Story</a>
+        <a href="/customizer" class="route-link">Customizer</a>
+        <a href="/roadmap" class="route-link">Roadmap</a>
+        <a href="/status" class="route-link">Status</a>
+        <a href="/apply" class="route-link">Apply</a>
+        <a href="/api" class="route-link">API</a>
+        <a href="/about" class="route-link">About</a>
+    </div>
+
+    <main id="main-content" style="margin-top: 80px;">
+
+        <div class="page-view" id="view-home">
+            
+            <section class="hero-section">
+                <div class="hero-inner">
+                    <div class="hero-content">
+                        <h1>ARCLINGS</h1>
+                        <p class="hero-copy">Arclings is the official project building fully on-chain 1-bit identity
+                            collectibles on Arc. We design, generate, and publish 6,283 pixel art avatars stored
+                            entirely in smart contracts. When the last one mints, the circle closes.</p>
+                        <div class="hero-actions" style="margin-top: 12px; margin-bottom: 12px;">
+                            <a class="btn btn-primary btn-glow route-link" href="/apply">
+                                <span class="btn-text">APPLY FOR WHITELIST</span>
+                                <span class="btn-icon">→</span>
+                            </a>
+                            <a class="btn btn-secondary route-link" href="/status">CHECK MY STATUS</a>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual" style="margin-bottom: 24px;">
+                        
+                        <div class="showcase-card" id="heroShowcaseCard">
+                            <div class="showcase-screen">
+                                <canvas id="heroAvatarCanvas"
+                                    style="width: 100%; height: 100%; image-rendering: pixelated; border: 4px solid var(--text-primary); transition: border-color 0.3s ease;"></canvas>
+                            </div>
+                            <div class="showcase-status" style="justify-content: center;">
+                                <span class="status-dot pulsing"></span>
+                                <span class="showcase-label" id="heroShowcaseTokenId">GENERATING SIGNAL...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="stat-box">
+                            <strong class="stat-num">6,283</strong>
+                            <span class="stat-lbl">UNIQUE PIECES</span>
+                        </div>
+                        <div class="stat-box">
+                            <strong class="stat-num">100%</strong>
+                            <span class="stat-lbl">ON-CHAIN</span>
+                        </div>
+                        <div class="stat-box">
+                            <strong class="stat-num">ARC</strong>
+                            <span class="stat-lbl">NETWORK</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-story" style="display: none;">
+            <section class="story-section" id="story">
+                <div class="section-inner">
+                    
+                    <div class="section-heading text-center" style="margin-bottom: 60px;">
+                        <h2>A little arc that came to life.</h2>
+                        <p class="subtitle"
+                            style="font-family: 'Share Tech Mono', monospace; font-size: 14px; letter-spacing: 2px; color: var(--text-secondary); margin-top: 8px;">
+                            ABOUT THE COLLECTION</p>
+                    </div>                     
+                    <div class="story-grid">
+                        
+                        <div class="story-about-text" style="display: flex; flex-direction: column; gap: 20px;">
+                            <h3
+                                style="font-family: 'Press Start 2P', monospace; font-size: 20px; line-height: 1.4; color: var(--text-primary); text-transform: uppercase;">
+                                What are Arclings?</h3>
+                            <p
+                                style="font-size: 15px; line-height: 1.7; color: var(--text-secondary); font-family: 'Inter', sans-serif;">
+                                Each Arcling is a 40×40 monochrome bitmap — 1,600 pixels that form a unique, living arc
+                                character. Every Arcling is mathematically generated on-chain.
+                            </p>
+                            <p
+                                style="font-size: 15px; line-height: 1.7; color: var(--text-secondary); font-family: 'Inter', sans-serif;">
+                                The artwork isn't hosted on servers or IPFS. It lives entirely inside Arc smart
+                                contracts, rendered as clean SVG vectors on demand.
+                            </p>
+                            <p
+                                style="font-size: 15px; line-height: 1.7; color: var(--text-secondary); font-family: 'Inter', sans-serif;">
+                                Arclings exist in standard "Ink on Paper" and rare "Inverted" styles, carrying
+                                combinations of unique traits like antennas, haloes, pebbles, and different body fill
+                                patterns.
+                            </p>
+                        </div>
+
+                        <div class="story-showcase-grid"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="story-canvas-wrapper" style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 6px;">
+                                <canvas id="storyCanvas-0" style="width: 100%; height: 100%; image-rendering: pixelated;"></canvas>
+                            </div>
+                            <div class="story-canvas-wrapper" style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 6px;">
+                                <canvas id="storyCanvas-1" style="width: 100%; height: 100%; image-rendering: pixelated;"></canvas>
+                            </div>
+                            <div class="story-canvas-wrapper" style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 6px;">
+                                <canvas id="storyCanvas-2" style="width: 100%; height: 100%; image-rendering: pixelated;"></canvas>
+                            </div>
+                            <div class="story-canvas-wrapper" style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 6px;">
+                                <canvas id="storyCanvas-3" style="width: 100%; height: 100%; image-rendering: pixelated;"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="architecture-section" style="margin-bottom: 100px;">
+                        <h3
+                            style="font-family: 'Press Start 2P', monospace; font-size: 18px; text-align: center; margin-bottom: 48px; color: var(--text-primary);">
+                            On-Chain Architecture</h3>
+
+                        <div class="stats-grid"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                            <div class="split-item"
+                                style="padding: 32px; gap: 16px; border: 1px solid var(--border-color); background: var(--bg-panel-solid); border-radius: 6px; box-shadow: none;">
+                                <div
+                                    style="font-family: 'Press Start 2P', monospace; font-size: 28px; color: var(--text-primary);">
+                                    1,600</div>
+                                <strong
+                                    style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-primary); font-family: 'Share Tech Mono', monospace;">Bits
+                                    per Face</strong>
+                                <p
+                                    style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); font-family: 'Inter', sans-serif;">
+                                    A 40×40 monochrome grid where each bit represents a pixel. MSB-first binary encoding
+                                    packs the visual asset extremely tightly.</p>
+                            </div>
+                            <div class="split-item"
+                                style="padding: 32px; gap: 16px; border: 1px solid var(--border-color); background: var(--bg-panel-solid); border-radius: 6px; box-shadow: none;">
+                                <div
+                                    style="font-family: 'Press Start 2P', monospace; font-size: 28px; color: var(--text-primary);">
+                                    100%</div>
+                                <strong
+                                    style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-primary); font-family: 'Share Tech Mono', monospace;">On-Chain
+                                    SVGs</strong>
+                                <p
+                                    style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); font-family: 'Inter', sans-serif;">
+                                    SVGs are generated dynamically on-chain using row-scan RLE compression. The code,
+                                    traits, and metadata are permanent.</p>
+                            </div>
+                            <div class="split-item"
+                                style="padding: 32px; gap: 16px; border: 1px solid var(--border-color); background: var(--bg-panel-solid); border-radius: 6px; box-shadow: none;">
+                                <div
+                                    style="font-family: 'Press Start 2P', monospace; font-size: 28px; color: var(--text-primary);">
+                                    6,283</div>
+                                <strong
+                                    style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-primary); font-family: 'Share Tech Mono', monospace;">Limit
+                                    Supply</strong>
+                                <p
+                                    style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); font-family: 'Inter', sans-serif;">
+                                    The total supply matches the mathematical constant Tau (2π ≈ 6.283), marking the
+                                    complete rotation of the circle.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="built-together-section" style="margin-top: 100px; border-top: 1px solid var(--border-color); padding-top: 80px;">
+                        <h3 style="font-family: 'Press Start 2P', monospace; font-size: 20px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 24px; text-align: center; line-height: 1.4;">
+                            Built To Be Used
+                        </h3>
+                        <p style="font-size: 15px; line-height: 1.8; color: var(--text-secondary); font-family: 'Inter', sans-serif; text-align: center; max-width: 800px; margin: 0 auto 48px auto;">
+                            Arclings operates the official collection, website, and mint. The artwork is released under CC0 so builders can remix, print, or integrate the pixel data. The monochrome 1-bit aesthetic is a design constraint: simple, lightweight, and composable across clients.
+                        </p>
+                        
+                        <div class="values-horizontal-grid">
+                            <div class="value-card">
+                                <h3>CC0 License</h3>
+                                <p>No rights reserved. Modify, remix, print, or build commercial tools on top of Arclings.</p>
+                            </div>
+                            <div class="value-card">
+                                <h3>Composable</h3>
+                                <p>Programmatic pixel data that anyone can read directly from the blockchain to build games or products.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <blockquote class="pull-quote" style="margin-top: 100px; margin-bottom: 100px;">
+                        <p>ink on paper</p>
+                        <p>paper on ink</p>
+                        <p>open circle</p>
+                        <p class="pull-quote-punchline">When the last one mints, the circle closes.</p>
+                    </blockquote>
+
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-customizer" style="display: none;">
+            <section class="customizer-section" id="customizer">
+                <div class="section-inner">
+                    <div class="section-heading text-center">
+                        <h2>Interactive Customizer</h2>
+                        <p>Customize and preview any combination of traits. Review live rarity metrics, or simulate
+                            randomized mint distributions.</p>
+                    </div>
+
+                    <div class="customizer-grid">
+                        <div class="preview-panel">
+                            <div class="card-container-wrapper">
+                                <div class="pixel-card" id="pixelCard">
+                                    <div class="card-inner">
+                                        <canvas id="avatarCanvas" width="40" height="40"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stats-panel">
+                                <div class="stat-row">
+                                    <span class="stat-label">TOKEN ID REFERENCE</span>
+                                    <span class="stat-value" id="tokenIdText">#6283</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">RARITY TIER</span>
+                                    <span class="stat-value rarity-badge" id="rarityTier">COMMON</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">RARITY SCORE</span>
+                                    <span class="stat-value" id="rarityScore">1.00%</span>
+                                </div>
+                            </div>
+                            <div class="actions-panel">
+                                <button class="btn btn-primary btn-glow" id="randomizeBtn">
+                                    <span class="btn-text">MINT RANDOM</span>
+                                    <span class="btn-icon">⚡</span>
+                                </button>
+                                <div class="export-buttons">
+                                    <button class="btn btn-secondary" id="downloadPngBtn">PNG (1200px)</button>
+                                    <button class="btn btn-secondary" id="downloadSvgBtn">SVG Vector</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="controls-panel">
+                            <div class="tabs-header">
+                                <button class="tab-btn active" data-tab="customizer">TRAIT EDITORS</button>
+                                <button class="tab-btn" data-tab="simulator" id="simulator">SIMULATION STATS</button>
+                            </div>
+                            <div class="tab-content active" id="customizer-tab">
+                                <div class="trait-group-grid">
+                                    <div class="control-card">
+                                        <h3>FORM <span class="rarity-info">(Arc 99.9% / Closed 0.1%)</span></h3>
+                                        <div class="button-selector" id="form-selector"></div>
+                                    </div>
+                                    <div class="control-card">
+                                        <h3>PAPER & STYLE <span class="rarity-info">(Ink / Inverted)</span></h3>
+                                        <div class="button-selector" id="paper-selector"></div>
+                                    </div>
+                                    <div class="control-card">
+                                        <h3>BODY FILL STYLE</h3>
+                                        <div class="button-selector" id="bodyFill-selector"></div>
+                                    </div>
+                                    <div class="control-card">
+                                        <h3>EYES</h3>
+                                        <div class="button-selector" id="eyes-selector"></div>
+                                    </div>
+                                    <div class="control-card">
+                                        <h3>MOUTH</h3>
+                                        <div class="button-selector" id="mouth-selector"></div>
+                                    </div>
+                                    <div class="control-card">
+                                        <h3>TOP (HEADWEAR)</h3>
+                                        <div class="button-selector" id="top-selector"></div>
+                                    </div>
+                                    <div class="control-card">
+                                        <h3>LEGS</h3>
+                                        <div class="button-selector" id="legs-selector"></div>
+                                    </div>
+                                    <div class="control-card">
+                                        <h3>HELD ITEM</h3>
+                                        <div class="button-selector" id="held-selector"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-content" id="simulator-tab">
+                                <div class="simulator-panel">
+                                    <div class="sim-header">
+                                        <h2>Trait Distribution Simulator</h2>
+                                        <p>Simulate the generation of 5,000 unique avatars based on original trait
+                                            weights to view distribution percentages.</p>
+                                    </div>
+                                    <div class="sim-actions">
+                                        <button class="btn btn-primary" id="runSimulationBtn">RUN SIMULATION</button>
+                                    </div>
+                                    <div class="simulation-results-container" id="simResults" style="display: none;">
+                                        <div class="sim-stats-summary">
+                                            <div class="summary-box">
+                                                <span class="summary-num" id="totalSimulated">0</span>
+                                                <span class="summary-label">AVATARS GENERATED</span>
+                                            </div>
+                                            <div class="summary-box">
+                                                <span class="summary-num" id="grailsFound">0</span>
+                                                <span class="summary-label">CLOSED CIRCLE GRAILS (0.1%)</span>
+                                            </div>
+                                        </div>
+                                        <div class="table-wrapper">
+                                            <table class="sim-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Trait Type</th>
+                                                        <th>Trait Value</th>
+                                                        <th>Count</th>
+                                                        <th>Percentage</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="simTableBody"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-status" style="display: none;">
+            <section id="wl-status" class="wl-section" style="border-top: none; padding-top: 20px;">
+                <div class="section-inner">
+                    <div class="wl-card">
+                        <div class="wl-tag">
+                            <span class="wl-tag-line"></span>
+                            <span class="wl-tag-text">WL / HOLDER STATUS</span>
+                        </div>
+                        <h2 class="wl-title">Check your status.</h2>
+                        <p class="wl-subtitle">Enter your EVM wallet address to check your final Whitelist status.
+                            Only verified early supporters and community members will show as eligible.</p>
+                        <form id="wl-form" class="wl-form">
+                            <div class="field">
+                                <label for="wl-input">EVM Wallet Address</label>
+                                <input type="text" id="wl-input" placeholder="0x..." autocomplete="off"
+                                    spellcheck="false" maxlength="42">
+                            </div>
+                            <button type="submit" id="wl-submit-btn" class="btn-wl-submit">CHECK STATUS</button>
+                        </form>
+                        <div id="wl-result" class="wl-result-container" style="display: none;"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-apply" style="display: none;">
+            <section id="checkpoint" class="cp-section" style="border-top: none; padding-top: 20px;">
+                <div class="section-inner">
+                    <div class="cp-card">
+                        <div class="cp-head">
+                            <h2 class="cp-title">Early Supporter Checkpoint</h2>
+                            <p class="cp-subtitle">Connect your X and drop your Ethereum wallet to confirm your checkpoint.</p>
+                        </div>
+                        <form id="cp-form" class="cp-form" action="javascript:void(0);">
+                            <div class="cp-step">
+                                <div class="step-no">1</div>
+                                <div class="step-body">
+                                    <p class="step-title">Connect X &amp; Provide Wallet</p>
+                                    <p class="step-sub">Authorize your X handle to start your checkpoint verification.
+                                    </p>
+                                    <div class="x-connect-container">
+                                        <button type="button" id="x-login-btn" class="btn btn-x">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"
+                                                fill="currentColor">
+                                                <path
+                                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                            </svg>
+                                            Log in with X
+                                        </button>
+                                        <div id="x-connected" class="x-connected" style="display: none;">
+                                            <span class="x-check">✓</span> Connected as <b
+                                                id="x-handle-label">@handle</b>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="x_handle" id="x_handle_input" value="">
+                                    <input type="hidden" name="x_id" id="x_id_input" value="">
+                                    <input type="hidden" name="session_token" id="session_token_input" value="">
+                                    <div class="field">
+                                        <label for="cp-wallet">EVM Wallet Address</label>
+                                        <input type="text" id="cp-wallet" name="wallet" class="wallet-input"
+                                            placeholder="0x..." autocomplete="off" spellcheck="false" maxlength="42">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cp-step">
+                                <div class="step-no">2</div>
+                                <div class="step-body">
+                                    <p class="step-title">Like, Repost &amp; Tag 3 Friends</p>
+                                    <p class="step-sub">Join the Arclings community by showing support on X and tagging 3 friends.</p>
+                                    <label class="task-checkbox-label">
+                                        <input type="checkbox" name="liked_reposted" id="liked-reposted-cb">
+                                        <span class="custom-checkbox"></span>
+                                        <span class="task-text">Liked, Reposted &amp; Tagged 3 Friends on <a
+                                                href="https://x.com/ArclingsNFT/status/2078139173354066280"
+                                                target="_blank" rel="noopener" id="like-repost-link">our pinned post</a>
+                                            <span id="like-repost-status"
+                                                style="margin-left: 8px; font-size: 12px; opacity: 0.8;"></span></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="cp-step">
+                                <div class="step-no">3</div>
+                                <div class="step-body">
+                                    <p class="step-title">Join Discord</p>
+                                    <p class="step-sub">Join the official Arclings Discord server to connect with early supporters.
+                                    </p>
+                                    <label class="task-checkbox-label">
+                                        <input type="checkbox" name="joined_discord" id="joined-discord-cb">
+                                        <span class="custom-checkbox"></span>
+                                        <span class="task-text">Joined our <a
+                                                href="https://discord.gg/w7QCGz6jge"
+                                                target="_blank" rel="noopener" id="join-discord-link">Discord Server</a> <span
+                                                id="join-discord-status"
+                                                style="margin-left: 8px; font-size: 12px; opacity: 0.8;"></span></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="display: none !important;">
+                                <label for="cp-middle-name">Middle Name</label>
+                                <input type="text" id="cp-middle-name" name="middle_name" tabindex="-1" autocomplete="off">
+                            </div>
+                            <div id="turnstile-container" style="margin-top: 16px; display: flex; justify-content: center; min-height: 65px;"></div>
+                            <button type="submit" class="btn btn-primary btn-glow btn-submit"
+                                style="width: 100%; margin-top: 16px;">
+                                <span class="btn-submit-label">CONFIRM MY CHECKPOINT</span>
+                            </button>
+                            <p id="form-msg" class="form-msg" role="status" aria-live="polite"></p>
+                        </form>
+                        <div id="cp-success" class="cp-success" style="display: none;">
+                            <h3>You're on the list! 🎉</h3>
+                            <p>Your supporter checkpoint is recorded. Share this news on X to spread the word about
+                                Arclings!</p>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 12px;">
+                                <a id="share-x" class="btn btn-primary btn-glow btn-share" href="#" target="_blank"
+                                    rel="noopener">SHARE ON X</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-roadmap" style="display: none;">
+            <section id="roadmap" class="roadmap-section" style="border-top: none; padding-top: 20px;">
+                <div class="section-inner">
+                    <div class="section-heading text-center">
+                        <h2>Roadmap</h2>
+                        <p>6,283 little arcs that came to life. 1-bit. Fully on-chain. Born on Arc. When the last one
+                            mints, the circle closes.</p>
+                    </div>
+                    <div class="roadmap-intro">
+                        <p>Arclings is the first fully on-chain identity collection on Arc — Circle's Layer-1. Each
+                            Arcling is a tiny living arc drawn in strict 1-bit (two colors, ink on paper), generated
+                            from its token ID and stored <strong>entirely inside the smart contract</strong>. No IPFS,
+                            no servers, no hosted images. As long as Arc exists, every Arcling exists.</p>
+                        <p>The supply is not a marketing number. A full circle is <strong>6.283 radians</strong>, and
+                            Arc is built by Circle — so there are exactly <strong>6,283</strong> Arclings. Most are open
+                            arcs; a rare few close into a full circle. The final mint, <strong>#6283</strong>, is the
+                            one that completes it.</p>
+                    </div>
+                    <div class="roadmap-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <div class="marker-dot completed"></div>
+                                <div class="marker-line"></div>
+                            </div>
+                            <div class="timeline-card">
+                                <div class="phase-header">
+                                    <span class="phase-label">PHASE 0</span>
+                                    <span class="phase-status status-active">IN PROGRESS</span>
+                                </div>
+                                <h3>Foundations & Build</h3>
+                                <p class="phase-subtitle">Concept formulation, 1-bit art generation, and contract deployment.</p>
+                                <ul class="phase-checklist">
+                                    <li class="done">Concept locked: 1-bit living-arc creatures and closed-circle rarity design.</li>
+                                    <li class="done">Full art system: 8 trait layers, 6,283 pieces generated and verified unique.</li>
+                                    <li class="done">ERC-721 smart contract: on-chain SVG renderer & math-constant grail logic.</li>
+                                    <li class="done">Testnet validator: deployed and verified on Arc L1 testnet.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <div class="marker-dot"></div>
+                                <div class="marker-line"></div>
+                            </div>
+                            <div class="timeline-card">
+                                <div class="phase-header">
+                                    <span class="phase-label">PHASE 1</span>
+                                    <span class="phase-status status-launch">LAUNCH</span>
+                                </div>
+                                <h3>Mint & Launch</h3>
+                                <p class="phase-subtitle">Community build-up, contract mainnet deploy, and the mint phase.</p>
+                                <ul class="phase-checklist">
+                                    <li>Warm up X account: release mathematical circle-closing teasers.</li>
+                                    <li>Deploy tested contract to Arc mainnet at launch.</li>
+                                    <li>Mint portal: connect wallet, live mint counter tracking progress.</li>
+                                    <li>Grail claims & closing: #6283 closes the circle. PFP verification live.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <div class="marker-dot"></div>
+                                <div class="marker-line"></div>
+                            </div>
+                            <div class="timeline-card">
+                                <div class="phase-header">
+                                    <span class="phase-label">PHASE 2</span>
+                                    <span class="phase-status status-future">AFTER MINT</span>
+                                </div>
+                                <h3>Decentralized Growth</h3>
+                                <p class="phase-subtitle">Expand the Arclings ecosystem and builder tools.</p>
+                                <ul class="phase-checklist">
+                                    <li>Contract-to-API Spec: documentation to query Arclings data directly on-chain.</li>
+                                    <li>Open-source tools: publish the web-customizer rendering engine code.</li>
+                                    <li>Developer integration: support independent games and custom visualizers.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <div class="marker-dot"></div>
+                            </div>
+                            <div class="timeline-card">
+                                <div class="phase-header">
+                                    <span class="phase-label">PHASE 3</span>
+                                    <span class="phase-status status-future">AFTER MINT</span>
+                                </div>
+                                <h3>On-Chain Synthesis</h3>
+                                <p class="phase-subtitle">The final mathematical evolution: Combining the Arcs.</p>
+                                <ul class="phase-checklist">
+                                    <li><strong>Radian Union Engine</strong>: An innovative on-chain mechanism allowing holders to merge two open Arclings.</li>
+                                    <li><strong>Merge & Close</strong>: Combine radians to synthesize a new Closed-Circle Grail when sum >= 6.283.</li>
+                                    <li><strong>Hybrid Visual Traits</strong>: Blended patterns and dither schemes from both parent tokens.</li>
+                                    <li><strong>Deflationary Mechanics</strong>: Permanent burning reduces total supply while increasing rarity.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="roadmap-principles">
+                        <h3 class="principles-title">Ecosystem Principles</h3>
+                        <div class="principles-grid">
+                            <div class="principle-card">
+                                <span class="principle-num">01</span>
+                                <strong>Fully on-chain, always.</strong>
+                                <p>If it can't live in the contract, it isn't shipped as "on-chain."</p>
+                            </div>
+                            <div class="principle-card">
+                                <span class="principle-num">02</span>
+                                <strong>The math is the brand.</strong>
+                                <p>6,283, the closing circle, the constant-ID grails — the story is structural, not
+                                    bolted on.</p>
+                            </div>
+                            <div class="principle-card">
+                                <span class="principle-num">03</span>
+                                <strong>Community over hype.</strong>
+                                <p>Build the audience honestly before asking anyone to mint.</p>
+                            </div>
+                            <div class="principle-card">
+                                <span class="principle-num">04</span>
+                                <strong>No promises we don't control.</strong>
+                                <p>Dates, chain timelines, and rewards are stated as intentions until they're real.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-api" style="display: none;">
+            <section class="api-section">
+                <div class="section-inner">
+                    <div class="section-heading text-center" style="margin-bottom: 48px;">
+                        <span class="eyebrow" style="letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-secondary); font-size: 11px;">Developer Hub</span>
+                        <h2 style="margin-top: 12px; margin-bottom: 16px;">Developer API</h2>
+                        <div style="text-align: center;">
+                            <div class="status-badge" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-primary); text-transform: uppercase;">
+                                <span class="status-dot pulsing" style="background: #e6a23c; box-shadow: 0 0 8px #e6a23c; width: 6px; height: 6px; border-radius: 50%; display: inline-block;"></span>
+                                Coming Soon
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="api-intro" style="max-width: 800px; margin: 0 auto 64px auto; text-align: center; font-size: 15px; line-height: 1.8; color: var(--text-secondary); font-family: 'Inter', sans-serif;">
+                        <p>We are building an open, ultra-fast developer API to support the Arclings interactive evolution. As a 100% on-chain collection, the smart contract dynamically calculates each Arcling's arc growth based on wallet hold duration. The API acts as a real-time gateway, caching states, providing dynamic SVGs, and powering event webhooks for community integrations.</p>
+                    </div>
+
+                    <div class="api-features-grid">
+                        <div class="api-feature-card">
+                            <h3>01 / Real-Time SVGs</h3>
+                            <strong>Dynamic Vectors</strong>
+                            <p>Query raw SVG strings directly. The API returns the exact current state of the Arcling's arc, dynamically computed on-chain based on the exact block-duration since acquisition.</p>
+                        </div>
+                        <div class="api-feature-card">
+                            <h3>02 / Growth & Rarity</h3>
+                            <strong>ERC-721 JSON+</strong>
+                            <p>Standardized metadata JSON augmented with real-time math stats, including Current Arc Angle, Circle Completion Percentage, and Wallet Hold Duration metrics.</p>
+                        </div>
+                        <div class="api-feature-card">
+                            <h3>03 / Event Webhooks</h3>
+                            <strong>Circle Completion</strong>
+                            <p>Listen for on-chain events. Get instantly notified when a holder's Arcling completes its circle (reaches 360° / 6.283 rad) to trigger Discord roles, special perks, or game evolutions.</p>
+                        </div>
+                    </div>
+
+                    <div class="api-flow-container">
+                        
+                        <div class="flow-node text-center">
+                            <div style="width: 60px; height: 60px; border: 2px solid var(--text-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; background: var(--bg-panel-solid);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28" style="color: var(--text-primary);">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                                    <path d="M7 7h10M7 12h10M7 17h6" />
+                                </svg>
+                            </div>
+                            <strong style="font-family: 'Share Tech Mono', monospace; font-size: 13px; text-transform: uppercase; color: var(--text-primary);">On-Chain Contract</strong>
+                            <span style="font-size: 11px; color: var(--text-secondary); text-align: center; line-height: 1.4;">Raw 1-bit pixel bits stored permanently in Solidity.</span>
+                        </div>
+
+                        <div class="flow-arrow">
+                            <div class="flow-line">
+                                <div class="flow-dot"></div>
+                            </div>
+                        </div>
+
+                        <div class="flow-node text-center">
+                            <div style="width: 60px; height: 60px; border: 2px solid var(--text-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; background: var(--bg-panel-solid);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28" style="color: var(--text-primary);">
+                                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                    <path d="M3 5v6c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                                    <path d="M3 11v6c0 1.66 4 3 9 3s9-1.34 9-3v-6"/>
+                                </svg>
+                            </div>
+                            <strong style="font-family: 'Share Tech Mono', monospace; font-size: 13px; text-transform: uppercase; color: var(--text-primary);">API Gateway</strong>
+                            <span style="font-size: 11px; color: var(--text-secondary); text-align: center; line-height: 1.4;">Translates and caches traits & SVGs globally.</span>
+                        </div>
+
+                        <div class="flow-arrow">
+                            <div class="flow-line">
+                                <div class="flow-dot" style="animation-delay: 1s;"></div>
+                            </div>
+                        </div>
+
+                        <div class="flow-node text-center">
+                            <div style="width: 60px; height: 60px; border: 2px solid var(--text-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; background: var(--bg-panel-solid); overflow: hidden;">
+                                <canvas id="apiPreviewCanvas" style="width: 44px; height: 44px; image-rendering: pixelated;"></canvas>
+                            </div>
+                            <strong style="font-family: 'Share Tech Mono', monospace; font-size: 13px; text-transform: uppercase; color: var(--text-primary);">Community Apps</strong>
+                            <span style="font-size: 11px; color: var(--text-secondary); text-align: center; line-height: 1.4;">Discord bots, custom visualizers, and games.</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-discord" style="display: none;">
+            <section class="discord-section" style="padding: 100px 24px; min-height: 70vh; display: flex; align-items: center; justify-content: center;">
+                <div class="section-inner text-center" style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 32px;">
+                    <div style="width: 80px; height: 80px; border: 2px dashed var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.02);">
+                        <svg viewBox="0 0 127.14 96.36" fill="var(--text-secondary)" width="40" height="40">
+                            <path d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53.05s5-12.68 11.45-12.68S54 46.07 53.89 53.05 48.84 65.69 42.45 65.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53.05s5-12.68 11.44-12.68S96.23 46.07 96.12 53.05 91.08 65.69 84.69 65.69Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 style="font-family: 'Press Start 2P', monospace; font-size: 20px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 16px;">Discord Server</h2>
+                        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-primary); text-transform: uppercase; margin-bottom: 24px;">
+                            <span class="status-dot pulsing" style="background: #e6a23c; box-shadow: 0 0 8px #e6a23c; width: 6px; height: 6px; border-radius: 50%; display: inline-block;"></span>
+                            Coming Soon
+                        </div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.8; color: var(--text-secondary); max-width: 500px; margin: 0 auto;">
+                            The official Arclings Discord community hub is currently being prepared. Join us soon to chat, share customizers, and follow the project's evolution.
+                        </p>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <a href="/" class="btn btn-primary route-link">Return Home</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-privacy" style="display: none;">
+            <section class="legal-section" id="privacy">
+                <div class="section-inner legal-page">
+                    <header class="legal-intro">
+                        <p class="legal-kicker">Legal</p>
+                        <h2>Privacy Policy</h2>
+                        <p>This policy explains how Arclings collects and uses information on arclings.art.</p>
+                    </header>
+
+                    <div class="legal-block">
+                        <h3>Who is responsible</h3>
+                        <p>Arclings operates this website. Contact: <a href="/cdn-cgi/l/email-protection#0c6f6362786d6f784c6d7e6f6065626b7f226d7e78"><span class="__cf_email__" data-cfemail="9cfff3f2e8fdffe8dcfdeefff0f5f2fbefb2fdeee8">[email&#160;protected]</span></a>. Official X: <a href="https://x.com/ArclingsNFT" target="_blank" rel="me noopener noreferrer">@ArclingsNFT</a>.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Information we collect</h3>
+                        <p>If you apply for the whitelist or check status, we may collect:</p>
+                        <ul>
+                            <li>Your X handle and X user ID, when you connect X</li>
+                            <li>Your EVM wallet address</li>
+                            <li>Whether you completed public campaign actions you report (like, repost, tags, Discord)</li>
+                            <li>Browser user agent, timestamp, and IP address used for rate limiting and abuse prevention</li>
+                        </ul>
+                        <p>We use Cloudflare Turnstile to reduce automated abuse. Cloudflare may process a technical token and related security signals as described in Cloudflare’s own privacy documentation.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>How we use it</h3>
+                        <p>We use this information to run the official Arclings whitelist, verify early supporters, prevent duplicate or automated submissions, and operate the collection. We do not sell personal information.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Retention</h3>
+                        <p>Application records are kept for as long as needed to administer the mint and related support. You may email <a href="/cdn-cgi/l/email-protection#24474b4a5045475064455647484d4a43570a455650"><span class="__cf_email__" data-cfemail="cfaca0a1bbaeacbb8faebdaca3a6a1a8bce1aebdbb">[email&#160;protected]</span></a> to ask what we hold about a handle or wallet you control.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Third parties</h3>
+                        <p>X, Discord, Cloudflare, and our form/backend providers process data as independent services when you use their features. Blockchain activity you later take on Arc is public by design.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-terms" style="display: none;">
+            <section class="legal-section" id="terms">
+                <div class="section-inner legal-page">
+                    <header class="legal-intro">
+                        <p class="legal-kicker">Legal</p>
+                        <h2>Terms of Use</h2>
+                        <p>These terms govern use of arclings.art and participation in official Arclings programs.</p>
+                    </header>
+
+                    <div class="legal-block">
+                        <h3>The project</h3>
+                        <p>Arclings is the official operator of this website and the Arclings collection of on-chain identity collectibles on Arc. Official X: <a href="https://x.com/ArclingsNFT" target="_blank" rel="me noopener noreferrer">@ArclingsNFT</a>. Contact: <a href="/cdn-cgi/l/email-protection#c2a1adacb6a3a1b682a3b0a1aeabaca5b1eca3b0b6"><span class="__cf_email__" data-cfemail="7d1e1213091c1e093d1c0f1e1114131a0e531c0f09">[email&#160;protected]</span></a>.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>The website</h3>
+                        <p>This site is provided to describe the collection, preview artwork, and run official applications such as the whitelist. We may update pages, timelines, and tools as the project develops. Roadmap items are intentions until they are live on-chain.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Whitelist and mint</h3>
+                        <p>Submitting a checkpoint or whitelist application does not guarantee a mint allocation, a specific token, or any financial return. Eligibility is determined by Arclings. Digital collectibles can lose value. Nothing on this site is investment, legal, or tax advice.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Artwork and site content</h3>
+                        <p>Arclings artwork is released under CC0. The Arclings name, this website’s layout and copy, and official branding remain operated by Arclings unless we say otherwise in writing.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Acceptable use</h3>
+                        <p>Do not abuse the application forms, impersonate Arclings, or use this site to phish wallets. We may ignore or remove submissions that look automated, duplicative, or fraudulent.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Contact</h3>
+                        <p>Questions about these terms: <a href="/cdn-cgi/l/email-protection#4c2f2322382d2f380c2d3e2f2025222b3f622d3e38"><span class="__cf_email__" data-cfemail="1f7c70716b7e7c6b5f7e6d7c737671786c317e6d6b">[email&#160;protected]</span></a>.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="page-view" id="view-about" style="display: none;">
+            <section class="legal-section" id="about">
+                <div class="section-inner legal-page">
+                    <header class="legal-intro">
+                        <p class="legal-kicker">Official</p>
+                        <h2>About Arclings</h2>
+                        <p>Arclings is the official project behind the Arclings collection on Arc. We build fully on-chain 1-bit identity collectibles and operate this website, the mint, and the public developer tools around them.</p>
+                    </header>
+
+                    <div class="legal-block">
+                        <h3>Who we are</h3>
+                        <p>Arclings designs, generates, and publishes a limited collection of 6,283 pixel avatars. Each piece is a 40×40 monochrome bitmap stored in smart contracts on Arc, Circle’s Layer-1. This site, <a href="https://arclings.art">arclings.art</a>, is the official home of the project.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Mission</h3>
+                        <p>We make on-chain identity that can last as long as the chain does: no hosted image servers, no IPFS dependency, and artwork simple enough to compose into other products. The supply is structural, not marketing — 6,283 matches a full circle in radians (2π).</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>What we offer</h3>
+                        <ul>
+                            <li>The official Arclings NFT collection (6,283 fully on-chain 1-bit avatars)</li>
+                            <li>This website, including whitelist applications and holder status checks</li>
+                            <li>A public customizer and, over time, developer APIs for builders</li>
+                        </ul>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Official channels</h3>
+                        <p>The only official X account for Arclings is <a href="https://x.com/ArclingsNFT" target="_blank" rel="me noopener noreferrer">@ArclingsNFT</a>. This website links to that account, and that account links back here.</p>
+                        <p>Official Discord: <a href="https://discord.gg/w7QCGz6jge" target="_blank" rel="noopener noreferrer">discord.gg/w7QCGz6jge</a></p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Contact</h3>
+                        <p>Public contact for the project: <a href="/cdn-cgi/l/email-protection#f4979b9a80959780b4958697989d9a9387da958680"><span class="__cf_email__" data-cfemail="3e5d51504a5f5d4a7e5f4c5d525750594d105f4c4a">[email&#160;protected]</span></a></p>
+                        <p>Use this address for press, partnership, and verification questions. Do not send seed phrases, private keys, or wallet recovery information.</p>
+                    </div>
+
+                    <div class="legal-block">
+                        <h3>Artwork license</h3>
+                        <p>Arclings artwork is released under CC0. Anyone may remix, print, or build on the pixel data. Arclings remains the official operator of the collection, this website, and the mint.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <p class="footer-legal-name">Arclings</p>
+                <p>Official on-chain identity collectibles on Arc.</p>
+                <p>&copy; 2026 Arclings. All site content except CC0 artwork.</p>
+            </div>
+            <div class="footer-col">
+                <p class="footer-col-title">Official</p>
+                <a href="https://x.com/ArclingsNFT" target="_blank" rel="me noopener noreferrer">X: @ArclingsNFT</a>
+                <a href="/cdn-cgi/l/email-protection#84e7ebeaf0e5e7f0c4e5f6e7e8edeae3f7aae5f6f0"><span class="__cf_email__" data-cfemail="84e7ebeaf0e5e7f0c4e5f6e7e8edeae3f7aae5f6f0">[email&#160;protected]</span></a>
+                <a href="https://discord.gg/w7QCGz6jge" target="_blank" rel="noopener noreferrer">Discord</a>
+            </div>
+            <div class="footer-col">
+                <p class="footer-col-title">Project</p>
+                <a href="/privacy" class="route-link">Privacy Policy</a>
+                <a href="/terms" class="route-link">Terms of Use</a>
+                <a href="/about" class="route-link">About</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="x-login-modal" class="modal-overlay-custom" style="display: none;">
+        <div class="modal-box-custom">
+            <div class="modal-header-custom">
+                <h3>X SECURITY CHECKPOINT</h3>
+                <button type="button" id="close-x-modal" class="btn-close-modal">×</button>
+            </div>
+            <div class="modal-body-custom">
+                <p class="modal-desc-custom">Authorize your checkpoint profile by entering your X (Twitter) username.
+                </p>
+                <div class="field">
+                    <label for="x-username-input">X Username (without @)</label>
+                    <input type="text" id="x-username-input" placeholder="e.g. envysol" autocomplete="off"
+                        spellcheck="false">
+                </div>
+                <p id="x-modal-error" class="x-modal-error" style="display: none;"></p>
+            </div>
+            <div class="modal-footer-custom">
+                <button type="button" id="cancel-x-modal" class="btn btn-secondary">CANCEL</button>
+                <button type="button" id="confirm-x-modal" class="btn btn-primary btn-glow">CONNECT</button>
+            </div>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="config.js?v=5"></script>
+    <script data-cfasync="false" src="app.js?v=33"></script>
+</body>
+
+</html>
