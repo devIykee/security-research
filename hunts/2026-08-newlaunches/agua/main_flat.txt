@@ -1,0 +1,769 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {OFT} from "lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/contracts/oft/OFT.sol";
+import {Origin} from "lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/contracts/oapp/OApp.sol";
+import {MessagingFee} from "lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/contracts/oft/OFTCore.sol";
+import {OptionsBuilder} from "lib/LayerZero-v2/packages/layerzero-v2/evm/oapp/contracts/oapp/libs/OptionsBuilder.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+
+/// @title OpportunityOVault - ERC4626 vault with LayerZero bridging and cross-chain state sync
+contract OpportunityOVault is OFT, IERC4626, AccessControl, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+    using OptionsBuilder for bytes;
+
+    // Message type constant for state sync (internal use only)
+    uint16 private constant MSG_TYPE_STATE_SYNC = 2;
+    
+    // State update operations
+    enum StateUpdateType {
+        UPDATE_RATE,
+        UPDATE_LOCKUP_PERIOD,
+        UPDATE_EARLY_FEE,
+        UPDATE_CAP
+    }
+
+    // Custom errors
+    error InvalidAsset();
+    error InvalidEndpoint();
+    error ZeroAmount();
+    error ZeroShares();
+    error ZeroReceiver();
+    error InsufficientBalance();
+    error RateExceedsMax();
+    error InvalidPeriod();
+    error FeeTooHigh();
+    error InvalidReceiver();
+    error NoActiveRequest();
+    error TimeDeltaTooLarge();
+    error OnlySourceChain();
+    error OnlyDestinationChain();
+    error AlreadyConfigured();
+    error NotConfigured();
+    error NoPeersConfigured();
+    error DepositExceedsCap();
+    error ReplayDetected();
+    error InsufficientBroadcastFee();
+    error RedeemSlippageExceeded();
+    error LockupNotFinished();
+
+    // Constants
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    uint256 public constant RAY = 1e27;
+    uint256 public constant DEFAULT_INSTANT_FEE = 500; // 5%
+    // Maximum per-second rate in RAY units (~3150% APY; matches RollingBond.MAX_RATE)
+    uint256 public constant MAX_RATE = 1_000_000_000_000_000_000_000; // 1e21
+    uint256 public constant MAX_LOCKUP_PERIOD = 365 days;
+
+    address public immutable ASSET;
+    uint8 private immutable _assetDecimals;
+    uint256 private immutable _decimalOffset;
+    
+    // Chain role configuration
+    bool public immutable IS_SOURCE_CHAIN;
+    
+    struct RedemptionRequest {
+        uint256 shares;
+        uint256 requestTime;
+        uint256 unlockTime;
+        uint256 yieldFactorAtRequest;
+    }
+    mapping(address => RedemptionRequest) public redemptionRequests;
+    
+    uint256 public cap;
+    uint256 public lockupPeriod;
+    uint256 public earlyRedemptionFee;
+    uint256 public currentRate;
+    
+    uint256 public lastUpdateTimestamp;
+    uint256 public cumulativeRateFactor;
+
+    // Cross-chain state sync tracking
+    mapping(uint32 => bool) public configuredPeers;
+    uint32[] public peerEndpoints;
+    mapping(uint32 => uint256) public lastSyncTimestamp;
+    // HAL-06 FIX: Per-parameter nonces to handle out-of-order message delivery
+    // Each parameter type has independent nonce sequence
+    mapping(StateUpdateType => uint256) public lastBroadcastNonce;
+    // Replay protection: last accepted nonce per source chain per parameter type
+    mapping(uint32 => mapping(StateUpdateType => uint256)) public lastSyncNonce;
+    
+    // Flag to track internal broadcast operations (for _payNative validation bypass)
+    bool private _internalBroadcast;
+    
+    
+    event RateUpdated(uint256 oldRate, uint256 newRate, uint256 timestamp);
+    event RedemptionPeriodUpdated(uint256 oldPeriod, uint256 newPeriod);
+    event InstantFeeUpdated(uint256 oldFee, uint256 newFee);
+    event CapUpdated(uint256 oldCap, uint256 newCap);
+    event RedemptionRequested(address indexed user, uint256 shares, uint256 unlockTime);
+    event RedemptionCancelled(address indexed user, uint256 shares);
+    event RedemptionCompleted(address indexed user, address indexed receiver, uint256 shares, uint256 assets);
+    event EarlyRedemption(address indexed user, address indexed receiver, uint256 shares, uint256 assets, uint256 fee);
+    event AdminWithdraw(address indexed token, uint256 amount, address indexed receiver);
+    event StateBroadcast(uint256 indexed nonce, StateUpdateType updateType, bytes data, uint32[] destinations);
+    event StateReceived(uint32 indexed sourceEid, StateUpdateType updateType, bytes data);
+    event StateSyncFailed(uint32 indexed dstEid, uint256 nonce, bytes reason);
+    
+    /// @notice Receive function to accept ETH for LayerZero fees
+    receive() external payable {}
+    
+    /// @notice Constructor
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        address _lzEndpoint,
+        address _delegate,
+        address _admin,
+        address _asset,
+        uint256 _initialRate,
+        bool _isSourceChain
+    ) 
+        OFT(_name, _symbol, _lzEndpoint, _delegate)
+    {
+        if (_asset == address(0)) revert InvalidAsset();
+        if (_lzEndpoint == address(0)) revert InvalidEndpoint();
+        if (_initialRate > MAX_RATE) revert RateExceedsMax();
+        
+        // Grant DEFAULT_ADMIN_ROLE to deployer (_delegate)
+        // Grant ADMIN_ROLE to specified admin address
+        _grantRole(DEFAULT_ADMIN_ROLE, _delegate);
+        if (_admin != address(0)) {
+            _grantRole(ADMIN_ROLE, _admin);
+        }
+        
+        ASSET = _asset;
+        IS_SOURCE_CHAIN = _isSourceChain;
+        
+        // Get asset decimals and calculate offset for share decimal normalization
+        _assetDecimals = IERC20Metadata(_asset).decimals();
+        // Shares always have 18 decimals (from OFT/ERC20)
+        // Offset converts asset amounts to 18-decimal shares
+        _decimalOffset = 10 ** (18 - _assetDecimals);
+        
+        lockupPeriod = 5 minutes; // Default to 5 minutes
+        earlyRedemptionFee = DEFAULT_INSTANT_FEE;
+        currentRate = _initialRate;
+        
+        lastUpdateTimestamp = block.timestamp;
+        cumulativeRateFactor = RAY;
+    }
+    
+    /// @notice Set annual yield rate.
+    /// @dev Any admin on any chain can call this to update local state.
+    ///      If called on the source chain and peers are configured, the new
+    ///      value is automatically broadcast to all destination chains via
+    ///      LayerZero.  Calling directly on a destination chain applies a
+    ///      local-only override without broadcasting (HAL-03 fix).
+    function setRate(uint256 newRate) external payable onlyRole(ADMIN_ROLE) {
+        if (newRate > MAX_RATE) revert RateExceedsMax();
+        _updateRateFactor();
+        uint256 oldRate = currentRate;
+        currentRate = newRate;
+        emit RateUpdated(oldRate, newRate, block.timestamp);
+        
+        // Broadcast only from the source chain when peers are configured
+        if (IS_SOURCE_CHAIN && peerEndpoints.length > 0) {
+            _broadcastStateUpdate(
+                StateUpdateType.UPDATE_RATE,
+                abi.encode(newRate)
+            );
+        }
+    }
+    
+    /// @notice Set lockup period.
+    /// @dev See setRate() for broadcast behaviour (HAL-03 fix).
+    function setLockupPeriod(uint256 newPeriod) external payable onlyRole(ADMIN_ROLE) {
+        if (newPeriod > MAX_LOCKUP_PERIOD) revert InvalidPeriod();
+        uint256 oldPeriod = lockupPeriod;
+        lockupPeriod = newPeriod;
+        emit RedemptionPeriodUpdated(oldPeriod, newPeriod);
+        
+        // Broadcast only from the source chain when peers are configured
+        if (IS_SOURCE_CHAIN && peerEndpoints.length > 0) {
+            _broadcastStateUpdate(
+                StateUpdateType.UPDATE_LOCKUP_PERIOD,
+                abi.encode(newPeriod)
+            );
+        }
+    }
+    
+    /// @notice Set early redemption fee.
+    /// @dev See setRate() for broadcast behaviour (HAL-03 fix).
+    function setEarlyRedemptionFee(uint256 newFeeBps) external payable onlyRole(ADMIN_ROLE) {
+        if (newFeeBps > 10000) revert FeeTooHigh();
+        emit InstantFeeUpdated(earlyRedemptionFee, newFeeBps);
+        earlyRedemptionFee = newFeeBps;
+        
+        // Broadcast only from the source chain when peers are configured
+        if (IS_SOURCE_CHAIN && peerEndpoints.length > 0) {
+            _broadcastStateUpdate(
+                StateUpdateType.UPDATE_EARLY_FEE,
+                abi.encode(newFeeBps)
+            );
+        }
+    }
+    
+    /// @notice Set deposit cap (0 = unlimited).
+    /// @dev See setRate() for broadcast behaviour (HAL-03 fix).
+    function setCap(uint256 newCap) external payable onlyRole(ADMIN_ROLE) {
+        emit CapUpdated(cap, newCap);
+        cap = newCap;
+        
+        // Broadcast only from the source chain when peers are configured
+        if (IS_SOURCE_CHAIN && peerEndpoints.length > 0) {
+            _broadcastStateUpdate(
+                StateUpdateType.UPDATE_CAP,
+                abi.encode(newCap)
+            );
+        }
+    }
+    
+    /// @notice Returns the address of the underlying asset
+    function asset() public view virtual override returns (address) {
+        return ASSET;
+    }
+    
+    /// @notice Maximum deposit amount
+    /// @dev Respects cap if set (cap = 0 means unlimited)
+    function maxDeposit(address receiver) public view virtual override returns (uint256) {
+        receiver;
+        if (cap == 0) {
+            return type(uint256).max;
+        }
+        uint256 currentAssets = totalAssets();
+        if (currentAssets >= cap) {
+            return 0;
+        }
+        return cap - currentAssets;
+    }
+    
+    /// @notice Preview shares received for depositing assets
+    /// @dev Rate-based accounting: share price is determined solely by the cumulative rate factor,
+    ///      not by the vault's actual token balance. Direct asset donations to the vault do NOT
+    ///      affect share pricing, making the classic ERC-4626 inflation attack inapplicable here.
+    function previewDeposit(uint256 assets) public view virtual override returns (uint256 shares) {
+        uint256 currentFactor = _getCurrentRateFactor();
+        uint256 assetsIn18Decimals = assets * _decimalOffset;
+        return (assetsIn18Decimals * RAY) / currentFactor;
+    }
+    
+    /// @notice Deposit assets and receive vault shares
+    function deposit(uint256 assets, address receiver) 
+        public 
+        virtual 
+        override 
+        nonReentrant 
+        returns (uint256 shares) 
+    {
+        if (assets == 0) revert ZeroAmount();
+        if (receiver == address(0)) revert ZeroReceiver();
+        
+        _updateRateFactor();
+        
+        // Check cap
+        if (cap != 0) {
+            uint256 currentAssets = totalAssets();
+            if (currentAssets + assets > cap) revert DepositExceedsCap();
+        }
+        
+        shares = previewDeposit(assets);
+        IERC20(ASSET).safeTransferFrom(msg.sender, address(this), assets);
+        _mint(receiver, shares);
+
+        emit Deposit(msg.sender, receiver, assets, shares);
+    }
+    
+    /// @notice Maximum shares that can be minted
+    /// @dev Respects cap if set (cap = 0 means unlimited)
+    function maxMint(address receiver) public view virtual override returns (uint256) {
+        uint256 maxAssets = maxDeposit(receiver);
+        if (maxAssets == type(uint256).max) {
+            return type(uint256).max;
+        }
+        return convertToShares(maxAssets);
+    }
+    
+    /// @notice Preview assets required to mint exact shares
+    /// @dev Converts 18-decimal shares to asset decimals, accounting for accrued yield
+    function previewMint(uint256 shares) public view virtual override returns (uint256 assets) {
+        return (shares * _getCurrentRateFactor()) / RAY / _decimalOffset;
+    }
+    
+    /// @notice Mint exact amount of shares by depositing assets
+    function mint(uint256, address) public pure override returns (uint256) {
+        revert("Use deposit function");
+    }
+    
+    /// @notice Maximum assets that can be withdrawn by owner
+    function maxWithdraw(address) public pure override returns (uint256) {
+        return 0;
+    }
+    
+    /// @notice Preview shares required to withdraw exact assets
+    function previewWithdraw(uint256) public pure override returns (uint256) {
+        revert("Use redemption request system");
+    }
+    
+    /// @notice Withdraw exact amount of assets by burning shares
+    function withdraw(uint256, address, address) public pure override returns (uint256) {
+        revert("Use redemption request system");
+    }
+    
+    /// @notice Maximum shares that can be redeemed by owner
+    function maxRedeem(address) public pure override returns (uint256) {
+        return 0;
+    }
+    
+    /// @notice Preview assets received for redeeming shares via redemption request flow
+    /// @dev Returns amount user would receive if they request redemption now and complete after lockup
+    /// @param shares The amount of shares to redeem
+    /// @return assets The amount of assets (value frozen at current time, no yield during lockup)
+    function previewRedeem(uint256 shares) public view override returns (uint256) {
+        // Calculate assets user would receive if they request redemption now
+        // Value is frozen at current factor (no yield during lockup)
+        uint256 assetsIn18Decimals = (shares * _getCurrentRateFactor()) / RAY;
+        return assetsIn18Decimals / _decimalOffset;
+    }
+    
+    /// @notice Redeem shares for assets
+    function redeem(uint256, address, address) public pure override returns (uint256) {
+        revert("Use redemption request system");
+    }
+    
+    /// @notice Request redemption for shares (fee-free after waiting period)
+    /// @dev Yield is FROZEN at the time this function is called. No additional yield accrues
+    ///      during the lockup period. Shares are transferred to the vault and locked until
+    ///      completeRedemption() or cancelRedemption() is called. A pending request must be
+    ///      cancelled before a new one can be submitted.
+    function requestRedemption(uint256 shares) external nonReentrant {
+        if (shares == 0) revert ZeroShares();
+        if (redemptionRequests[msg.sender].shares != 0) revert("Cancel existing request first");
+        if (balanceOf(msg.sender) < shares) revert InsufficientBalance();
+
+        _updateRateFactor();
+
+        uint256 unlockTime = block.timestamp + lockupPeriod;
+
+        // Lock shares in the vault for the duration of the lockup period
+        _transfer(msg.sender, address(this), shares);
+
+        redemptionRequests[msg.sender] = RedemptionRequest({
+            shares: shares,
+            requestTime: block.timestamp,
+            unlockTime: unlockTime,
+            yieldFactorAtRequest: cumulativeRateFactor
+        });
+
+        emit RedemptionRequested(msg.sender, shares, unlockTime);
+    }
+    
+    /// @notice Cancel redemption request and return locked shares to sender
+    function cancelRedemption() external nonReentrant {
+        RedemptionRequest memory request = redemptionRequests[msg.sender];
+        if (request.shares == 0) revert NoActiveRequest();
+
+        delete redemptionRequests[msg.sender];
+
+        // Return the locked shares to the user
+        _transfer(address(this), msg.sender, request.shares);
+
+        emit RedemptionCancelled(msg.sender, request.shares);
+    }
+    
+    /// @notice Complete a redemption after lock-up period
+    /// @param receiver The address to receive the assets
+    /// @return assets The amount of assets received
+    function completeRedemption(address receiver) external nonReentrant returns (uint256 assets) {
+        if (receiver == address(0)) revert ZeroReceiver();
+
+        RedemptionRequest memory request = redemptionRequests[msg.sender];
+        if (request.shares == 0) revert NoActiveRequest();
+
+        // Use the unlock time stored at request time — not affected by subsequent lockupPeriod changes
+        if (block.timestamp < request.unlockTime) revert LockupNotFinished();
+
+        _updateRateFactor();
+
+        // Yield is frozen at request time — no yield accrues during the lockup period
+        assets = _calculateRedemptionAssets(request);
+
+        delete redemptionRequests[msg.sender];
+
+        // Shares were locked in the vault at requestRedemption time; burn them from here
+        _burn(address(this), request.shares);
+        IERC20(ASSET).safeTransfer(receiver, assets);
+
+        emit RedemptionCompleted(msg.sender, receiver, request.shares, assets);
+    }
+    
+    /// @notice Redeem immediately by paying early redemption fee
+    /// @param shares The amount of shares to redeem
+    /// @param receiver The address to receive the assets
+    /// @param minAssetsOut Minimum assets to receive — reverts if slippage exceeds this (use 0 to disable)
+    /// @return assets The amount of assets received (after fee)
+    function redeemEarly(uint256 shares, address receiver, uint256 minAssetsOut) external nonReentrant returns (uint256 assets) {
+        if (shares == 0) revert ZeroShares();
+        if (receiver == address(0)) revert ZeroReceiver();
+        if (balanceOf(msg.sender) < shares) revert InsufficientBalance();
+
+        _updateRateFactor();
+
+        // Calculate assets based on current value
+        uint256 assetsIn18Decimals = (shares * _getCurrentRateFactor()) / RAY;
+        uint256 assetsBeforeFee = assetsIn18Decimals / _decimalOffset;
+        uint256 feeAmount = (assetsBeforeFee * earlyRedemptionFee) / 10000;
+        assets = assetsBeforeFee - feeAmount;
+
+        if (assets < minAssetsOut) revert RedeemSlippageExceeded();
+
+        _burn(msg.sender, shares);
+        IERC20(ASSET).safeTransfer(receiver, assets);
+
+        emit EarlyRedemption(msg.sender, receiver, shares, assets, feeAmount);
+    }
+    
+    /// @notice Preview assets that would be received from completing a redemption
+    /// @param user The user address
+    /// @return assets The amount of assets that would be received (0 if no active request)
+    function previewCompleteRedemption(address user) external view returns (uint256 assets) {
+        RedemptionRequest memory request = redemptionRequests[user];
+        if (request.shares == 0) return 0; // Return 0 instead of reverting
+        
+        return _calculateRedemptionAssets(request);
+    }
+    
+    /// @notice Preview assets for early redemption (after fee)
+    /// @param shares The amount of shares to redeem
+    /// @return assets The amount of assets after fee
+    /// @return fee The fee amount
+    function previewRedeemEarly(uint256 shares) external view returns (uint256 assets, uint256 fee) {
+        uint256 assetsIn18Decimals = (shares * _getCurrentRateFactor()) / RAY;
+        uint256 assetsBeforeFee = assetsIn18Decimals / _decimalOffset;
+        fee = (assetsBeforeFee * earlyRedemptionFee) / 10000;
+        assets = assetsBeforeFee - fee;
+    }
+    
+    /// @notice Get detailed redemption request information for a user
+    /// @param user The user address
+    /// @return shares The shares requested for redemption
+    /// @return requestTime When the request was made
+    /// @return unlockTime When the lockup period ends
+    /// @return isUnlocked Whether the request can be redeemed without fee
+    function getRedemptionRequest(address user) external view returns (
+        uint256 shares,
+        uint256 requestTime,
+        uint256 unlockTime,
+        bool isUnlocked
+    ) {
+        RedemptionRequest memory request = redemptionRequests[user];
+        shares = request.shares;
+        requestTime = request.requestTime;
+        // Use the unlock time stored at request time — not recalculated from current lockupPeriod
+        unlockTime = request.unlockTime;
+        isUnlocked = request.shares > 0 && block.timestamp >= unlockTime;
+    }
+    
+    /// @notice Admin emergency withdraw function for ERC20 tokens and native ETH
+    /// @dev WARNING: This function grants the admin unrestricted access to ALL tokens and ETH held by this
+    ///      contract, including user deposits (ASSET). Callers of this vault must fully trust the
+    ///      ADMIN_ROLE key holder. There is no timelock or withdrawal cap.
+    /// @param token The token address to withdraw (use address(0) for native ETH)
+    /// @param amount The amount to withdraw
+    /// @param receiver The address to receive the withdrawn funds
+    function adminWithdraw(
+        address token,
+        uint256 amount,
+        address receiver
+    ) external onlyRole(ADMIN_ROLE) {
+        if (receiver == address(0)) revert InvalidReceiver();
+        if (amount == 0) revert ZeroAmount();
+        
+        if (token == address(0)) {
+            // Withdraw native ETH
+            (bool success,) = receiver.call{value: amount}("");
+            if (!success) revert InvalidReceiver();
+        } else {
+            // Withdraw ERC20 token
+            IERC20(token).safeTransfer(receiver, amount);
+        }
+        
+        emit AdminWithdraw(token, amount, receiver);
+    }
+    
+    /// @notice Get total assets in vault
+    /// @dev Converts total supply (18 decimals) to asset decimals with yield
+    function totalAssets() public view override returns (uint256) {
+        // Total supply is in 18 decimals, apply yield factor
+        uint256 assetsIn18Decimals = (totalSupply() * _getCurrentRateFactor()) / RAY;
+        // Convert to asset decimals
+        return assetsIn18Decimals / _decimalOffset;
+    }
+    
+    /// @notice Convert shares to assets (with yield)
+    /// @dev Applies rate factor then converts from 18-decimal shares to asset decimals
+    function convertToAssets(uint256 shares) public view override returns (uint256) {
+        // Apply yield factor to shares (in 18 decimals)
+        uint256 assetsIn18Decimals = (shares * _getCurrentRateFactor()) / RAY;
+        // Convert to asset decimals
+        return assetsIn18Decimals / _decimalOffset;
+    }
+    
+    /// @notice Convert assets to shares accounting for accrued yield
+    /// @dev Rate-based: share price is determined purely by the cumulative rate factor.
+    function convertToShares(uint256 assets) public view override returns (uint256) {
+        uint256 currentFactor = _getCurrentRateFactor();
+        uint256 assetsIn18Decimals = assets * _decimalOffset;
+        return (assetsIn18Decimals * RAY) / currentFactor;
+    }
+    
+    /// @notice Get current APY
+    function apy() external view returns (uint256) {
+        return _compoundFactor(currentRate, 365 days);
+    }
+    
+    function _updateRateFactor() internal {
+        if (block.timestamp == lastUpdateTimestamp) return;
+        
+        uint256 timeElapsed = block.timestamp - lastUpdateTimestamp;
+        uint256 growthFactor = _compoundFactor(currentRate, timeElapsed);
+        
+        cumulativeRateFactor = (cumulativeRateFactor * growthFactor) / RAY;
+        lastUpdateTimestamp = block.timestamp;
+    }
+    
+    function _getCurrentRateFactor() internal view returns (uint256) {
+        if (block.timestamp == lastUpdateTimestamp) {
+            return cumulativeRateFactor;
+        }
+        
+        uint256 timeElapsed = block.timestamp - lastUpdateTimestamp;
+        uint256 growthFactor = _compoundFactor(currentRate, timeElapsed);
+        
+        return (cumulativeRateFactor * growthFactor) / RAY;
+    }
+    
+    /// @notice Calculate compound interest factor using Taylor series
+    function _compoundFactor(uint256 rate, uint256 timeDelta)
+        internal
+        pure
+        returns (uint256)
+    {
+        // Taylor expansion of e^(rt/RAY) truncated to 4 terms (3rd-order accurate).
+        // rate is a per-second rate in RAY units (same encoding as RollingBond).
+        // Agrees with RollingBond's binomial expansion to ~6 decimal places for all
+        // practical rates (≤ MAX_RATE) and time deltas. No subtractions → no underflow.
+        if (timeDelta == 0 || rate == 0) return RAY;
+        if (timeDelta > 100 * 365 days) revert TimeDeltaTooLarge();
+        uint256 rt  = rate * timeDelta;        // first-order term (in RAY-second units)
+        uint256 rt2 = rt * rt / RAY;           // rt² / RAY  (normalise back to RAY)
+        return RAY + rt + rt2 / 2 + rt2 * rt / RAY / 6;
+    }
+    
+    /// @notice Calculate redemption assets using the yield factor frozen at request time
+    /// @dev By design, yield does NOT accrue during the lockup period. The value a user
+    ///      receives is fixed at the moment requestRedemption() was called. Users who wish
+    ///      to continue earning yield should cancel their request and use redeemEarly() instead.
+    function _calculateRedemptionAssets(RedemptionRequest memory request) internal view returns (uint256) {
+        // Use yield factor at request time only — no yield accrues during lockup
+        uint256 assetsIn18Decimals = (request.shares * request.yieldFactorAtRequest) / RAY;
+        
+        // Convert to asset decimals
+        return assetsIn18Decimals / _decimalOffset;
+    }
+    
+    // ============================================
+    // Cross-Chain State Synchronization Functions
+    // ============================================
+    
+    /// @notice Add a peer endpoint for state synchronization
+    function addPeerEndpoint(uint32 eid) external onlyRole(ADMIN_ROLE) {
+        if (configuredPeers[eid]) revert AlreadyConfigured();
+        configuredPeers[eid] = true;
+        peerEndpoints.push(eid);
+    }
+    
+    /// @notice Remove a peer endpoint
+    function removePeerEndpoint(uint32 eid) external onlyRole(ADMIN_ROLE) {
+        if (!configuredPeers[eid]) revert NotConfigured();
+        configuredPeers[eid] = false;
+        
+        // Remove from array
+        for (uint256 i = 0; i < peerEndpoints.length; i++) {
+            if (peerEndpoints[i] == eid) {
+                peerEndpoints[i] = peerEndpoints[peerEndpoints.length - 1];
+                peerEndpoints.pop();
+                break;
+            }
+        }
+    }
+    
+    /// @notice Get all configured peer endpoints
+    function getPeerEndpoints() external view returns (uint32[] memory) {
+        return peerEndpoints;
+    }
+    
+    /// @notice Override _lzReceive to handle both OFT transfers and state sync
+    function _lzReceive(
+        Origin calldata _origin,
+        bytes32 _guid,
+        bytes calldata _message,
+        address _executor,
+        bytes calldata _extraData
+    ) internal virtual override {
+        // OFT messages use abi.encodePacked(bytes32 to, uint64 amount) = 40 bytes
+        // State sync messages use abi.encode(...) with multiple 32-byte padded values = much longer
+        
+        // If message is short (40 bytes for OFT), it's a token transfer
+        // If message is long (>=128 bytes), it's a state sync message
+        if (_message.length <= 64) {
+            // OFT transfer message - pass to parent implementation
+            super._lzReceive(_origin, _guid, _message, _executor, _extraData);
+        } else {
+            // State sync message - handle in our custom logic
+            _handleStateSync(_origin, _message);
+        }
+    }
+    
+    /// @notice Broadcast state update to all peer chains (internal)
+    function _broadcastStateUpdate(
+        StateUpdateType updateType,
+        bytes memory data
+    ) internal {
+        if (!IS_SOURCE_CHAIN) revert OnlySourceChain();
+        if (peerEndpoints.length == 0) revert NoPeersConfigured();
+        
+        // HAL-06 FIX: Increment nonce for this specific parameter type
+        lastBroadcastNonce[updateType]++;
+        
+        // Encode message with type identifier
+        bytes memory message = abi.encode(
+            MSG_TYPE_STATE_SYNC,
+            lastBroadcastNonce[updateType],
+            updateType,
+            data
+        );
+        
+        bytes memory options = _getStateSyncOptions();
+
+        // Quote total fees upfront and revert early if insufficient — prevents partial delivery
+        uint32[] memory destinations = new uint32[](peerEndpoints.length);
+        MessagingFee[] memory fees = new MessagingFee[](peerEndpoints.length);
+        uint256 totalFee = 0;
+        for (uint256 i = 0; i < peerEndpoints.length; i++) {
+            destinations[i] = peerEndpoints[i];
+            fees[i] = _quote(peerEndpoints[i], message, options, false);
+            totalFee += fees[i].nativeFee;
+        }
+        if (address(this).balance < totalFee) revert InsufficientBroadcastFee();
+
+        // Set flag to bypass msg.value validation in _payNative for internal broadcasts
+        _internalBroadcast = true;
+
+        // Send to all peer chains
+        for (uint256 i = 0; i < peerEndpoints.length; i++) {
+            uint32 dstEid = destinations[i];
+
+            // For intermediate sends, refund to contract to preserve funds for next iteration
+            // For last send, refund excess to caller
+            address refundAddress = (i == peerEndpoints.length - 1) ? msg.sender : address(this);
+
+            _lzSend(
+                dstEid,
+                message,
+                options,
+                fees[i],
+                payable(refundAddress)
+            );
+
+            lastSyncTimestamp[dstEid] = block.timestamp;
+        }
+        
+        // Reset flag after broadcasts complete
+        _internalBroadcast = false;
+        
+        emit StateBroadcast(lastBroadcastNonce[updateType], updateType, data, destinations);
+    }
+    
+    /// @notice Handle incoming state synchronization message
+    function _handleStateSync(
+        Origin calldata _origin,
+        bytes calldata _message
+    ) internal {
+        // Only accept state updates on non-source chains
+        if (IS_SOURCE_CHAIN) revert OnlyDestinationChain();
+
+        // Validate source is a configured peer (defense-in-depth; OApp also validates sender)
+        if (!configuredPeers[_origin.srcEid]) revert NotConfigured();
+
+        // Decode message
+        (
+            , // msgType already decoded
+            uint256 nonce,
+            StateUpdateType updateType,
+            bytes memory data
+        ) = abi.decode(_message, (uint16, uint256, StateUpdateType, bytes));
+
+        // HAL-06 FIX: Replay protection per parameter type
+        // Only accept strictly increasing nonces per source chain per parameter type
+        if (nonce <= lastSyncNonce[_origin.srcEid][updateType]) revert ReplayDetected();
+        lastSyncNonce[_origin.srcEid][updateType] = nonce;
+
+        // Always update rate factor before applying any state change
+        _updateRateFactor();
+
+        // Apply state update
+        if (updateType == StateUpdateType.UPDATE_RATE) {
+            uint256 newRate = abi.decode(data, (uint256));
+            // Enforce rate bounds on incoming messages (setRate() check only exists on source chain)
+            if (newRate > MAX_RATE) revert RateExceedsMax();
+            uint256 oldRate = currentRate;
+            currentRate = newRate;
+            emit RateUpdated(oldRate, newRate, block.timestamp);
+
+        } else if (updateType == StateUpdateType.UPDATE_LOCKUP_PERIOD) {
+            uint256 newPeriod = abi.decode(data, (uint256));
+            if (newPeriod > MAX_LOCKUP_PERIOD) revert InvalidPeriod();
+            uint256 oldPeriod = lockupPeriod;
+            lockupPeriod = newPeriod;
+            emit RedemptionPeriodUpdated(oldPeriod, newPeriod);
+
+        } else if (updateType == StateUpdateType.UPDATE_EARLY_FEE) {
+            uint256 newFeeBps = abi.decode(data, (uint256));
+            emit InstantFeeUpdated(earlyRedemptionFee, newFeeBps);
+            earlyRedemptionFee = newFeeBps;
+
+        } else if (updateType == StateUpdateType.UPDATE_CAP) {
+            uint256 newCap = abi.decode(data, (uint256));
+            emit CapUpdated(cap, newCap);
+            cap = newCap;
+        }
+
+        emit StateReceived(_origin.srcEid, updateType, data);
+    }
+    
+    /// @notice Override _payNative to support multi-destination broadcasts while enforcing user payment
+    /// @dev For internal broadcasts: bypasses msg.value check (needed for multi-peer sends in single tx)
+    ///      For user sends: enforces msg.value >= fee validation to prevent fee bypass exploit
+    function _payNative(uint256 _nativeFee) internal virtual override returns (uint256 nativeFee) {
+        // Internal broadcasts: bypass check (multi-peer scenario)
+        if (_internalBroadcast) {
+            return _nativeFee;
+        }
+        // User sends: enforce minimum payment validation (overpayment allowed)
+        if (msg.value < _nativeFee) revert NotEnoughNative(msg.value);
+        return _nativeFee;
+    }
+
+    /// @notice Get default LayerZero options for state sync messages
+    function _getStateSyncOptions() internal pure returns (bytes memory) {
+        // Configure gas for destination execution (increased to 400k for reliable delivery)
+        return OptionsBuilder.newOptions().addExecutorLzReceiveOption(400000, 0);
+    }
+}
+
