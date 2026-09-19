@@ -1,212 +1,94 @@
-# Security Research Portfolio
+# Iyke
 
-<div align="center">
+blockchain security researcher, solana and evm
 
-![Security Research](https://img.shields.io/badge/Security-Research-red?style=for-the-badge&logo=security&logoColor=white)
-![Smart Contracts](https://img.shields.io/badge/Smart-Contracts-blue?style=for-the-badge&logo=ethereum&logoColor=white)
-![Blockchain](https://img.shields.io/badge/Multi-Chain-green?style=for-the-badge&logo=blockchain&logoColor=white)
-
-**Researcher:** [deviykee](https://x.com/deviykee) | Smart contract security audits and vulnerability research
-
-</div>
+[@deviykee](https://github.com/devIykee) · [@deviykee](https://x.com/deviykee) · [@deviykee](https://t.me/deviykee) · contact: [TODO: email]
 
 ---
 
-## 📊 Audit Progress
+## summary
 
-<div align="center">
-
-### 9 / 109 Audits Complete
-
-```
-████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-```
-
-![Complete](https://img.shields.io/badge/Complete-9_audits-success?style=flat-square)
-![In Progress](https://img.shields.io/badge/In_Progress-39_audits-yellow?style=flat-square)
-![Initial](https://img.shields.io/badge/Initial-61_audits-lightgrey?style=flat-square)
-
-![Progress](https://img.shields.io/badge/Progress-8%25-brightgreen?style=flat-square)
-![Vulnerabilities](https://img.shields.io/badge/Vulnerabilities-50+-critical?style=flat-square&logo=target)
-
-**Last Updated:** 2026-09-19 09:51 UTC
-
-</div>
+i find vulnerabilities in smart contracts and DeFi protocols across Solana and EVM chains. my work covers initialization races, front-running, MEV, custody bugs, and access control flaws. i have shipped open-source security tooling for address poisoning detection, trade validation, and multi-chain key management.
 
 ---
 
-## 🎯 Notable Findings
+## focus areas
 
-<table>
-<tr>
-<td width="50%">
-
-### 🔴 Critical Vulnerabilities
-- **JustLend DAO** - 6 Critical, 2 High ($100M+ MEV)
-- **SunPump** - 3 Critical, 3 High, 5 Medium
-- **TronPad** - 3 Critical, multiple High
-- **RadarDEX** - Critical pool drain
-- **Aumo** - 1 Critical-class, 5 High
-
-</td>
-<td width="50%">
-
-### 🟠 High Impact
-- **Solana Mobile** - SGT verification bypass
-- **TronBid** - 5 High/Critical findings
-- **Sheriff.money** - Burn-path DoS
-- **Ellipse** - v4 analysis (secure)
-
-</td>
-</tr>
-</table>
+- initialization and migration race conditions
+- front-running and MEV exploitation paths
+- address poisoning and signature validation
+- custody and key management
+- access control and privilege escalation
+- bonding curves and AMM design flaws
 
 ---
 
-## 📁 Repository Structure
+## selected findings
 
-```
-security-research/
-├── hunts/                      # Individual audit reports
-│   ├── ellipse/                # ✓ Uniswap v4 (no vulns)
-│   ├── aumo/                   # ✓ 1 Critical-class, 5 High
-│   ├── sunpump/                # ✓ 3 Critical, 3 High
-│   ├── justlend/               # ✓ 6 Critical, 2 High
-│   └── [109+ more...]
-├── tools/                      # Security research tools
-├── iykes-evm-bughunt-skill/    # Bug hunting methodology
-└── .github/workflows/          # Auto-update automation
-```
+| target | chain | vulnerability class | severity | status | date | report |
+|--------|-------|---------------------|----------|--------|------|--------|
+| TollyPad | Arc | pool initialization race (TOCTOU) | critical | [TODO: confirm disclosure status] | aug 2026 | [report](hunts/tollylabs/CRITICAL-FINDING-pool-init-race.md) |
+| Solana Mobile | Solana | SGT zero-balance ATA bypass | critical | bounty submitted | aug 2026 | [report](hunts/solana-mobile/REPORT.md) |
+| Aumo | EVM | dust redeem full liquidation (O(TVL) loss) | high (critical-class) | disclosed, private | aug 2026 | [report](hunts/aumo/reports/FINDINGS-MASTER.md) |
+| Aumo | EVM | unrealizable NAV allows preferential drain | high | disclosed, private | aug 2026 | [report](hunts/aumo/reports/FINDINGS-MASTER.md) |
+| SunPump | TRON | graduation migration MEV/flash arbitrage | critical | [TODO: verify status] | aug 2026 | [report](hunts/sunpump/FINDINGS.md) |
+| JustLend | TRON | multiple critical MEV paths (\$100M+ exposure) | critical | [TODO: verify status] | [TODO: date] | [report](hunts/justlend/FINDINGS.md) |
+| RadarDEX | [TODO: chain] | pool squat attack | critical | [TODO: verify status] | [TODO: date] | [report](hunts/radardex/REPORT-Critical-Pool-Squat.md) |
+| Sheriff | Robinhood Chain | burn-path DoS when registry zero | medium | disclosed, private | aug 2026 | [report](hunts/sheriff/reports/FINDINGS-MASTER.md) |
+| Ellipse | Arc | comprehensive Uniswap v4 hook analysis | none found | complete | sep 2026 | [report](hunts/ellipse/FINAL-COMPREHENSIVE-REPORT.md) |
 
----
-
-## 🔍 Coverage by Blockchain
-
-<div align="center">
-
-| Blockchain | Protocols Audited | Key Findings |
-|:----------:|:-----------------:|:------------:|
-| ![TRON](https://img.shields.io/badge/TRON-FF0013?style=flat-square&logo=tron&logoColor=white) | SunPump, JustLend, TronPad, TronBid, SunSwap | 15+ Critical/High |
-| ![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=flat-square&logo=ethereum&logoColor=white) | Aumo, Sheriff, Convex, Liquity | 10+ High |
-| ![Solana](https://img.shields.io/badge/Solana-9945FF?style=flat-square&logo=solana&logoColor=white) | Mobile Wallet Adapters | 1 Critical |
-| ![Bitcoin](https://img.shields.io/badge/Bitcoin-F7931A?style=flat-square&logo=bitcoin&logoColor=white) | GOAT Network BitVM3 | zkRollup audit |
-| ![Arc](https://img.shields.io/badge/Arc-5042-blue?style=flat-square) | Ellipse Launchpad | Secure (0 vulns) |
-| ![Multi](https://img.shields.io/badge/Multi--Chain-000000?style=flat-square&logo=chainlink&logoColor=white) | LayerZero, Synapse, Hop | Bridge security |
-
-</div>
+[TODO: verify TronPad, TronBid, and other TRON findings from commit messages. check dates and disclosure status.]
 
 ---
 
-## 🛠️ Methodology
+## security tooling
 
-<table>
-<tr>
-<td width="70%">
+**AddressGuard** [TODO: link if public]  
+address poisoning and ENS typosquat detector. scans transaction history for zero-value transfers and look-alike addresses.
 
-**Bug Hunting Framework:** [iykes-evm-bughunt-skill v0.3.0](./iykes-evm-bughunt-skill/)
+**TradeGuard** [TODO: link if public]  
+pre-flight trade validator for AI trading agents. ships as an MCP proxy and hook. validates slippage, liquidity depth, and counterparty risk before execution.
 
-#### Core Features
-- ✅ Systematic 10-step audit process
-- ✅ **Proactive problem-solving** (auto-overcomes blockers)
-- ✅ Step 3.5: Bytecode analysis for unverified contracts
-- ✅ Comprehensive fork testing (Foundry)
-- ✅ Multi-angle adversarial review
-- ✅ Honest severity assessment
-
-#### Innovation
-First bug hunting skill with **automatic blocker resolution** - finds and installs tools when encountering unverified contracts or missing dependencies.
-
-</td>
-<td width="30%">
-
-#### Tools Used
-
-![Foundry](https://img.shields.io/badge/Foundry-000000?style=flat-square&logo=ethereum)
-![Slither](https://img.shields.io/badge/Slither-8B5CF6?style=flat-square)
-![Solidity](https://img.shields.io/badge/Solidity-363636?style=flat-square&logo=solidity)
-
-**Custom:**
-- Bytecode Analyzer
-- Fork Testing Suite
-- Coverage Tracker
-
-</td>
-</tr>
-</table>
+**MCW** ([@deviykee/mcw](https://npmjs.com/package/@deviykee/mcw))  
+multi-chain CLI wallet and MCP server. manages BTC, ETH, SOL, and TRON from one BIP-39 seed with AES-256-GCM encryption. human-in-the-loop approval flow for agent transactions.
 
 ---
 
-## 📈 Statistics
+## research experience
 
-<div align="center">
-
-| Metric | Count |
-|:-------|------:|
-| **Total Audits** | 109 |
-| **Complete with Findings** | 9 (8%) |
-| **Total Vulnerabilities** | 50+ |
-| **Critical Issues** | 15+ |
-| **High Severity** | 20+ |
-| **Blockchains Covered** | 8+ |
-| **PoC Tests Written** | 100+ |
-
-</div>
+- **aug 2026:** disclosed critical pool initialization race in TollyPad on Arc. [TODO: outcome]
+- **aug 2026:** submitted Solana Mobile SGT verification bypass to official bug bounty program (up to \$75k tier). [TODO: outcome]
+- **aug 2026:** disclosed 1 critical-class and 5 high-severity findings in Aumo DeFi vault (private audit, pre-mainnet). [TODO: outcome]
+- **aug 2026:** disclosed burn-path DoS in Sheriff.money AMM on Robinhood Chain. [TODO: outcome]
+- **[TODO: add prior xStocks/CDP disclosure on Robinhood Chain if confirmed in repo]**
+- background in wallet custody and key management from the builder side.
 
 ---
 
-## 📝 Responsible Disclosure
+## skills
 
-<div align="center">
-
-![Ethical](https://img.shields.io/badge/Ethical-Hacking-success?style=flat-square&logo=hackaday)
-![Responsible](https://img.shields.io/badge/Responsible-Disclosure-blue?style=flat-square&logo=security)
-![No Exploits](https://img.shields.io/badge/No_Mainnet-Exploits-red?style=flat-square&logo=ethereum)
-
-</div>
-
-All vulnerabilities are disclosed responsibly:
-1. 🔒 Private notification to project team
-2. ⏰ 90-day fix window (standard)
-3. 🛠️ PoC and mitigation assistance provided
-4. 📢 Public disclosure only after patch deployed
-
-**Never exploit mainnet. Fork/eth_call verification only.**
+**languages:** rust, solidity, typescript, javascript  
+**chains:** solana (anchor, token-2022), ethereum, arbitrum, base, TRON, arc, robinhood chain  
+**security:** smart contract auditing, race condition analysis, MEV research, threat modeling, key management, fork testing (foundry)  
+**tools:** foundry, slither, anchor, web3.js, solana-web3.js, ethers.js
 
 ---
 
-## 📬 Contact
+## disclosure approach
 
-<div align="center">
-
-[![Twitter](https://img.shields.io/badge/Twitter-@deviykee-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://x.com/deviykee)
-[![GitHub](https://img.shields.io/badge/GitHub-devIykee-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/devIykee)
-
-**Available for private audits and security consulting**
-
-</div>
+i disclose responsibly to project teams without preconditions. i provide PoC code, reproduction steps, and mitigation guidance. i discuss compensation after the vulnerability is understood and validated. i never exploit mainnet. all verification is fork-based or read-only.
 
 ---
 
-## 📜 License
+## contact
 
-<div align="center">
-
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-
-Research methodologies and tools: MIT License  
-Individual audit reports: All rights reserved
-
-</div>
+github: [@deviykee](https://github.com/devIykee)  
+twitter: [@deviykee](https://x.com/deviykee)  
+telegram: [@deviykee](https://t.me/deviykee)  
+email: [TODO]
 
 ---
 
-<div align="center">
-
-**⚠️ Disclaimer**
-
-This repository contains security research for educational purposes.  
-All findings are disclosed responsibly. No mainnet exploits are performed.
-
-![Security](https://img.shields.io/badge/Stay-Secure-brightgreen?style=flat-square&logo=shieldsdotio)
-
-</div>
+bug hunting methodology: [iykes-evm-bughunt-skill](./iykes-evm-bughunt-skill/)  
+full findings archive: [hunts/](./hunts/)  
+previous portfolio README: [docs/README-old.md](./docs/README-old.md)
