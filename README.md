@@ -10,13 +10,13 @@ blockchain security researcher, solana and evm
 
 <div align="center">
 
-### 9 Audits Complete
+### 44+ Audits Complete
 
 ```
-🟩🟩🟩🟩🟩🟩🟩🟩🟩
+🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩
 ```
 
-![Complete](https://img.shields.io/badge/Complete-9_audits-success?style=flat-square)
+![Audits](https://img.shields.io/badge/Audits-44+-success?style=flat-square)
 ![Vulnerabilities](https://img.shields.io/badge/Vulnerabilities-50+-critical?style=flat-square&logo=target)
 
 </div>
@@ -103,5 +103,4 @@ telegram: [@deviykee](https://t.me/deviykee)
 ---
 
 bug hunting methodology: [iykes-evm-bughunt-skill](./iykes-evm-bughunt-skill/)  
-full findings archive: [hunts/](./hunts/)  
-previous portfolio README: [docs/README-old.md](./docs/README-old.md)
+full findings archive: [hunts/](./hunts/)
