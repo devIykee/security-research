@@ -115,3 +115,8 @@ hunts/_verified-contracts/**/
 # IDE
 .vscode/
 .idea/
+
+# --- Local development / Claude tooling ---
+.agents/
+.skills/
+geminiHunnts/
