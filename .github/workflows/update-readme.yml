@@ -25,50 +25,58 @@ jobs:
           # Count complete hunts (have FINAL or COMPLETE reports)
           COMPLETE=$(find hunts/*/  -maxdepth 1 \( -name "*FINAL*REPORT*.md" -o -name "*COMPLETE*.md" -o -name "FINDINGS-MASTER.md" \) 2>/dev/null | wc -l)
 
-          # Generate progress bar with emojis (split into lines of 50)
-          # This prevents horizontal scrolling
-          BOXES_PER_LINE=50
-          TOTAL_LINES=$(( (COMPLETE + BOXES_PER_LINE - 1) / BOXES_PER_LINE ))
+          # Generate progress bar in condensed grid format
+          # Always use 25 boxes per line for consistent grid
+          BOXES_PER_LINE=25
+
+          # Calculate full lines and remaining boxes
+          FULL_LINES=$((COMPLETE / BOXES_PER_LINE))
+          REMAINING=$((COMPLETE % BOXES_PER_LINE))
 
           PROGRESS_BAR=""
-          for (( line=0; line<TOTAL_LINES; line++ )); do
-            remaining=$((COMPLETE - line * BOXES_PER_LINE))
-            if [ $remaining -gt $BOXES_PER_LINE ]; then
-              count=$BOXES_PER_LINE
-            else
-              count=$remaining
-            fi
-            PROGRESS_BAR="${PROGRESS_BAR}$(printf '🟩%.0s' $(seq 1 $count))"
-            if [ $line -lt $((TOTAL_LINES - 1)) ]; then
-              PROGRESS_BAR="${PROGRESS_BAR}  "  # Two spaces for line break
-            fi
+
+          # Add full lines
+          for (( i=0; i<FULL_LINES; i++ )); do
+            PROGRESS_BAR="${PROGRESS_BAR}$(printf '🟩%.0s' $(seq 1 $BOXES_PER_LINE))"
+            PROGRESS_BAR="${PROGRESS_BAR}  "  # Line break (two spaces)
           done
 
-          # Update README.md - find and replace the progress section
-          # Use a more robust sed approach
+          # Add remaining boxes on final line
+          if [ $REMAINING -gt 0 ]; then
+            PROGRESS_BAR="${PROGRESS_BAR}$(printf '🟩%.0s' $(seq 1 $REMAINING))"
+          fi
+
+          # Update README.md
+          # Create temporary file with updated content
           awk -v complete="$COMPLETE" -v progress="$PROGRESS_BAR" '
+          BEGIN { in_progress = 0 }
+
           /^### [0-9]+\+ Audits Complete/ {
             print "### " complete "+ Audits Complete"
             next
           }
+
           /^<div style="overflow-x: hidden;">/ {
             print $0
-            getline  # skip next line (old progress bar)
             print ""
             print progress
             print ""
+            in_progress = 1
             next
           }
-          /^🟩/ && !printed {
-            # Skip old progress lines until we hit the closing div
-            while (getline && !/^<\/div>/) continue
-            print "</div>"
-            printed=1
+
+          in_progress && /^<\/div>/ {
+            print $0
+            in_progress = 0
             next
           }
+
+          in_progress { next }
+
           /Audits-[0-9]+\+-/ {
             gsub(/Audits-[0-9]+\+-/, "Audits-" complete "+-")
           }
+
           { print }
           ' README.md > README.md.tmp && mv README.md.tmp README.md
 
