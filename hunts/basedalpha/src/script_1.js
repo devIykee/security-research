@@ -1,0 +1,1637 @@
+
+var B=(location.pathname.indexOf('/')>=0?'/':'/');
+var VIEW='discover', DTAB='trending', F={}, quick={hide_rugs:0,snipers_only:0}, COINS={}, SHOW_HIDDEN=false;
+var hidden=JSON.parse(localStorage.getItem('t_hidden')||'[]');
+var hiddenDevs=JSON.parse(localStorage.getItem('t_hidden_devs')||'[]');
+var hiddenTw=JSON.parse(localStorage.getItem('t_hidden_tw')||'[]');
+function _twKey(u){if(!u)return '';u=String(u).toLowerCase();var m=u.match(/(?:x\.com|twitter\.com)\/(@?[a-z0-9_]+)/);return (m?m[1]:u).replace(/^@/,'').replace(/[\/?#].*$/,'');}
+function _coinHidden(c){if(!c)return false;if(hidden.indexOf(c.ca)>=0)return true;if(c.dev&&hiddenDevs.indexOf(c.dev)>=0)return true;var tk=_twKey(c.twitter);if(tk&&hiddenTw.indexOf(tk)>=0)return true;return false;}
+function blacklistDev(dev,ev){if(ev){ev.preventDefault();ev.stopPropagation();}if(!dev)return;var i=hiddenDevs.indexOf(dev),adding=i<0;if(adding)hiddenDevs.push(dev);else hiddenDevs.splice(i,1);localStorage.setItem('t_hidden_devs',JSON.stringify(hiddenDevs));toast(adding?'Dev blacklisted \u2014 their coins are hidden':'Dev restored',!adding);try{updateHiddenUI();loadDiscover();}catch(e){}}
+function blacklistTwitter(tw,ev){if(ev){ev.preventDefault();ev.stopPropagation();}var k=_twKey(tw);if(!k)return;var i=hiddenTw.indexOf(k),adding=i<0;if(adding)hiddenTw.push(k);else hiddenTw.splice(i,1);localStorage.setItem('t_hidden_tw',JSON.stringify(hiddenTw));toast(adding?'@'+k+' blacklisted \u2014 their coins are hidden':'@'+k+' restored',!adding);try{updateHiddenUI();loadDiscover();}catch(e){}}
+function clearBlacklist(){hiddenDevs=[];hiddenTw=[];localStorage.setItem('t_hidden_devs','[]');localStorage.setItem('t_hidden_tw','[]');toast('Blacklist cleared',1);try{updateHiddenUI();loadDiscover();}catch(e){}}
+var watch=JSON.parse(localStorage.getItem('t_watch')||'[]');
+var _jsonInFlight=new Map(),_apiFailures=0;
+function _sleep(ms){return new Promise(function(resolve){setTimeout(resolve,ms)})}
+async function _fetchJSON(u){
+  for(var i=0;i<2;i++){var c=new AbortController(),t=setTimeout(function(){c.abort()},8000);
+    try{var r=await fetch(u,{signal:c.signal,cache:"no-store",headers:{"Accept":"application/json"}});clearTimeout(t);
+      if(r.ok){_apiFailures=0;return await r.json();}
+      if(r.status!==429&&r.status<500)break;
+    }catch(e){clearTimeout(t);}
+    _apiFailures=Math.min(_apiFailures+1,6);if(i<1)await _sleep(Math.min(4000,350*Math.pow(2,_apiFailures-1))+Math.random()*250);
+  }
+  return{coins:[],rows:[],count:0,scored:0,_neterr:true};
+}
+function J(u){
+  var current=_jsonInFlight.get(u);if(current)return current;
+  var p=_fetchJSON(u).finally(function(){if(_jsonInFlight.get(u)===p)_jsonInFlight.delete(u)});
+  _jsonInFlight.set(u,p);return p;
+}
+/* SECURITY: escape ALL untrusted strings (coin name/symbol, trader name = attacker-controllable) before innerHTML */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function jsq(s){return esc(String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"))}
+function safeUrl(u){u=String(u||'');return /^https?:\/\//.test(u)?esc(u):''}
+function safeCa(ca){return /^[A-Za-z0-9]{32,50}$/.test(String(ca||''))?ca:''}
+function avaSeed(s){s=String(s||'');var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h*16777619)>>>0;}return h>>>0;}
+function avaHtml(seed,size){size=size||24;var h=avaSeed(seed);var h1=h%360,h2=(h1+60+(h>>9)%160)%360,h3=(h2+50+(h>>15)%120)%360,rot=(h>>3)%360;return '<span class=ava style="width:'+size+'px;height:'+size+'px;background:conic-gradient(from '+rot+'deg,hsl('+h1+' 70% 56%),hsl('+h2+' 72% 48%),hsl('+h3+' 68% 54%),hsl('+h1+' 70% 56%))"></span>';}
+function coinId(c){var ca=c&&c.ca;if(c&&c.chain==='kaspa')return String(ca||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,20);return safeCa(ca);}
+function fmt(n){if(n==null)return '—';n=+n;if(n>=1e6)return '$'+(n/1e6).toFixed(2)+'M';if(n>=1e3)return '$'+(n/1e3).toFixed(1)+'K';return '$'+Math.round(n)}
+function ageStr(ts){if(!ts)return '';var s=Math.floor(Date.now()/1000-ts);if(s<0)s=0;if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h';return Math.floor(h/24)+'d'}
+function liveAge(ts){if(!ts)return '\u2014';var s=Math.floor(Date.now()/1000-ts);if(s<0)s=0;if(s<3600){var m=Math.floor(s/60),ss=s%60;return m+':'+(ss<10?'0':'')+ss;}var h=Math.floor(s/3600);if(h<24)return h+'h';return Math.floor(h/24)+'d';}
+function ageTag(ts){return '<span class=agev data-ts="'+(ts||0)+'">'+liveAge(ts)+'</span>';}
+try{setInterval(function(){try{var ns=document.querySelectorAll('.agev');for(var i=0;i<ns.length;i++){var ts=+ns[i].getAttribute('data-ts');if(ts)ns[i].textContent=liveAge(ts);}}catch(e){}},1000);}catch(e){}
+function lpBadge(c){c=c||{};var lp=c.launchpad;if(!lp&&c.ca){var mm=String(c.ca).toLowerCase();lp=/pump$/.test(mm)?'pump':/bonk$/.test(mm)?'bonk':/moon$/.test(mm)?'moon':/boop$/.test(mm)?'boop':null;}var M={pump:['pump.fun','#37e39a'],bonk:['LetsBonk','#ffae42'],moon:['Moonshot','#a78bfa'],boop:['Boop','#4aa3ff'],raydium:['Raydium','#4aa3ff'],meteora:['Meteora','#f4b552'],believe:['Believe','#37e39a'],moonit:['Moonit','#a78bfa'],pumpswap:['pump.fun','#37e39a']};lp=(lp||'').toLowerCase();if(lp.indexOf('pump')>=0)lp='pump';var m2=M[lp];if(!m2&&lp){m2=[lp.charAt(0).toUpperCase()+lp.slice(1),'#7d8494'];}if(!m2)return '';return '<span class=lpb style="color:'+m2[1]+';border-color:'+m2[1]+'40;background:'+m2[1]+'14" title="Launched on '+m2[0]+'">'+esc(m2[0])+'</span>';}
+function qstr(tab){var q=new URLSearchParams({tab:tab});
+  ['min_mc','max_mc','min_liq','min_vol','min_holders','max_top10','max_insiders','min_safety'].forEach(function(k){var el=document.getElementById(k);if(el&&el.value)q.set(k,el.value)});
+  Object.keys(F).forEach(function(k){if(F[k])q.set(k,F[k])});
+  if(quick.hide_rugs)q.set('hide_rugs','1');if(quick.snipers_only)q.set('snipers_only','1');return q}
+function safdata(c){var s=c.safety;return{cls:s==null?'q':(s>=70?'g':s>=45?'y':'r'),sf:s==null?'…':s,lbl:s==null?'checking':(s>=70?'clean':s>=45?'caution':'risky'),grade:s==null?'…':(s>=85?'A':s>=70?'B':s>=55?'C':s>=40?'D':'F')}}
+function badges(c){var b='';if(c.top10!=null)b+='<span class="bdg'+(c.top10>50?' bad':'')+'">top10 '+Math.round(c.top10)+'%</span>';
+  if(c.insiders)b+='<span class="bdg bad">'+c.insiders+' insiders</span>';if(c.sniper)b+='<span class="bdg snip">'+TGT+' sniper</span>';
+  if(c.twitter||c.website)b+='<span class=bdg>'+LINKI+'</span>';return b||'<span class=bdg style=opacity:.5>—</span>'}
+/* ===== safety badges / verdict ===== */
+function safFlags(c){var rs=(c.reasons||[]).map(function(r){return (' '+(r||'')+' ').toLowerCase()});
+  function any(re){return rs.some(function(r){return re.test(r)});}
+  var f=[];
+  if(any(/lp .*(unlock|not lock|open)|unlocked liq|liquidity .*(unlock|not lock)/)) f.push(['LP UNLOCKED','crit']);
+  if(any(/honeypot|can.?t sell|cannot sell|blacklist/)) f.push(['HONEYPOT','crit']);
+  if((any(/mint.*(not renounc|active|enabled)|can mint|mintable/))&&!any(/mint.*renounc/)) f.push(['MINT ACTIVE','crit']);
+  if((any(/freeze.*(active|not revok|not renounc|enabled)/))&&!any(/freeze.*(revok|renounc)/)) f.push(['FREEZE ACTIVE','crit']);
+  if(any(/dev .*(dump|sold out|rug)/)) f.push(['DEV DUMPED','crit']);
+  if(any(/bundl/)) f.push(['BUNDLED','warn']);
+  if(any(/dev .*(sold|selling|trim)/)&&!any(/dev .*(dump|sold out)/)) f.push(['DEV SOLD','warn']);
+  return f;
+}
+function verdictOf(c){
+  var fl=safFlags(c); var crit=fl.some(function(x){return x[1]==='crit';});
+  if(c.is_scam||crit) return {k:'avoid',label:'AVOID'};
+  var s=c.safety; if(s==null) return {k:'wait',label:'\u2026'};
+  if(s<45||(c.top10!=null&&c.top10>50)) return {k:'avoid',label:'AVOID'};
+  if(s<70||(c.top10!=null&&c.top10>35)||c.insiders) return {k:'caution',label:'CAUTION'};
+  return {k:'clear',label:'CLEAR'};
+}
+function verdictChip(vd){return '<span class="vch '+vd.k+'">'+vd.label+'</span>';}
+function flagBadges(c){var b='';
+  safFlags(c).forEach(function(f){b+='<span class="bdg '+f[1]+'">'+f[0]+'</span>';});
+  if(c.top10!=null&&c.top10>35) b+='<span class="bdg '+(c.top10>50?'crit':'warn')+'">TOP10 '+Math.round(c.top10)+'%</span>';
+  if(c.insiders) b+='<span class="bdg warn">'+c.insiders+' INSIDER'+(c.insiders>1?'S':'')+'</span>';
+  if(c.sniper) b+='<span class="bdg snip">'+TGT+' SNIPER</span>';
+  if(!b) b='<span class="bdg ok">no rug traps</span>';
+  return b;
+}
+function dismissWarn(ca,ev){if(ev)ev.stopPropagation();try{localStorage.setItem('cvbx_'+ca,'1')}catch(e){}var el=document.getElementById('cvb_'+ca);if(el){el.style.transition='opacity .18s,margin .18s,max-height .22s';el.style.overflow='hidden';el.style.opacity='0';el.style.maxHeight='0';el.style.margin='0 20px';setTimeout(function(){if(el.parentNode)el.remove()},220);}try{toast('Warning acknowledged \u2014 you can still see flags in the About tab',1)}catch(e){}}
+function intelPanel(H){var v=(H&&H.verdict);if(!v)return '';
+  var col=v.score>=72?'#37e39a':(v.score>=55?'#f5b544':'#ff5c5c');
+  var pill=function(t,c){return '<span style="display:inline-block;padding:3px 8px;margin:2px 4px 2px 0;border-radius:6px;font-size:11px;font-weight:600;color:'+c+';background:'+c+'12;border:1px solid '+c+'33">'+t+'</span>';};
+  var bad=(v.flags||[]).map(function(g){return pill('\u26a0 '+esc(g),'#ff5c5c');}).join('');
+  var good=(v.good||[]).map(function(g){return pill('\u2713 '+esc(g),'#37e39a');}).join('');
+  var unknown=(v.unknown||[]).map(function(g){return pill('? '+esc(g),'#8992a3');}).join('');
+  var br=(H&&H.breadth)||null, sample='';
+  if(br){var age=br.fetched_at?Math.max(0,Math.round(Date.now()/1000-br.fetched_at)):null;sample='<div style="margin-top:8px;color:var(--mut);font:10px var(--mono)">Recent sample: '+(br.sampled_txs||0)+' txs · '+(br.sampled_buys||0)+' buy-like swaps · '+(br.observed_sol||0)+' SOL'+(age!=null?' · fetched '+age+'s ago':'')+' · '+esc(br.confidence||'low')+' confidence</div>';}
+  return '<div style="margin:12px 20px 0;padding:13px 15px;background:linear-gradient(180deg,#141922,#0f131b);border:1px solid #222834;border-radius:14px">'
+    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:'+((good||bad)?'9px':'0')+'">'
+    +'<span style="font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700">BasedAlpha Intelligence</span>'
+    +'<span style="margin-left:auto;font-family:var(--mono);font-weight:800;font-size:18px;color:'+col+'">'+v.score+'<span style="font-size:11px;color:var(--mut)">/100</span></span>'
+    +'<span style="font-family:var(--mono);font-weight:800;font-size:12px;color:'+col+';border:1px solid '+col+'55;border-radius:6px;padding:2px 8px">'+esc(v.label)+'</span></div>'
+    +(bad?'<div>'+bad+'</div>':'')+(good?'<div>'+good+'</div>':'')+(unknown?'<div>'+unknown+'</div>':'')+sample+'</div>';
+}
+function coinVerdictBanner(ca,H){var c=COINS[ca]||{};var dev=(H&&H.dev)||{};var br=(H&&H.breadth)||null;
+  /* FAKE PUMP badge restored 8-21: server now sets br.wash ONLY on sufficient sample
+     + high confidence + top-3>=50% (Codex corrected math kept). Organic pill stays
+     retired here - it renders once in Intelligence. */
+  var _bps='display:inline-block;padding:4px 9px;border:1px solid;border-radius:7px;font-size:11.5px;font-weight:700;font-family:var(--mono);margin:2px 4px 2px 0';
+  var bp='';
+  if(br&&br.wash){bp='<span class=cvb-bp style="'+_bps+';color:#ff5c5c;border-color:#ff5c5c55;background:#ff5c5c14">\u26a0 FAKE PUMP \u2014 top 3 wallets = '+Math.round(br.top3_share*100)+'% of recent volume</span>';}
+  var vd=verdictOf(c);var lpUn=(dev.lp_locked===false);
+  if(lpUn&&vd.k==='clear'){vd={k:'avoid',label:'AVOID'};}
+  if(vd.k==='clear'){return '<div class="cvb clear" style="margin:12px 20px 0"><div class=cvb-h>'+verdictChip(vd)+'<span class=cvb-t>No rug traps found. Still do your own research.</span></div>'+(bp?'<div class=cvb-b>'+bp+'</div>':'')+'</div>';}
+  if(vd.k==='wait'){return bp?'<div class="cvb" style="margin:12px 20px 0"><div class=cvb-b>'+bp+'</div></div>':'';}
+  var msg=lpUn?'Liquidity is UNLOCKED \u2014 it can be pulled at any moment. Extreme risk.':(vd.k==='avoid'?'Critical risk detected. Avoid, or size tiny.':'Risk flags present \u2014 read them before you buy.');
+  var canClose=(vd.k!=='avoid'&&!lpUn);
+  if(canClose){try{if(localStorage.getItem('cvbx_'+ca))return '';}catch(e){}}
+  var x=canClose?'<span class=cvb-x title="Acknowledge & hide" onclick="dismissWarn(\''+ca+'\',event)">\u00d7</span>':'';
+  return '<div class="cvb '+vd.k+'" id="cvb_'+ca+'" style="margin:12px 20px 0"><div class=cvb-h>'+verdictChip(vd)+'<span class=cvb-t>'+msg+'</span>'+x+'</div><div class=cvb-b>'+flagBadges(c)+bp+'</div></div>';
+}
+async function openGuardian(){
+  try{closeMoreDrawer()}catch(e){}
+  var addr=getMyAddr();
+  document.getElementById('cov').classList.add('on');
+  var el=document.getElementById('cdrawer');el.style.width='min(1080px,96vw)';
+  if(!addr){el.innerHTML='<div style="padding:26px;color:var(--mut)">Sign in to your wallet to see your bags. <a href="'+B+'wallet" style="color:var(--acc)">Open wallet →</a></div>';return;}
+  el.innerHTML='<div class=pf><div class=skel style="height:120px;border-radius:14px;margin-bottom:12px"></div><div class=skel style="height:220px;border-radius:14px"></div></div>';
+  var rr=await Promise.all([authPost('/portfolio',{}),authPost('/guardian',{}),authPost('/scorecard',{})]);
+  var P=rr[0]||{},G=rr[1]||{},SC=rr[2]||{};
+  var gmap={};(G.rows||[]).forEach(function(r){if(r.grade)gmap[r.mint]=r.grade});
+  var rows=(P.rows||[]).slice();
+  // merge grade + compute cost/pnl
+  var totVal=0,unreal=0,haveCost=false,winners=0,losers=0,best=null,worst=null,riskyN=0,cautionN=0,riskUsd=0;
+  rows.forEach(function(r){
+    r.g=gmap[r.mint]||null;var v=+r.value_usd||0;totVal+=v;
+    if(r.roi!=null){haveCost=true;var cost=v/(1+r.roi/100);unreal+=(v-cost);if(r.roi>=0)winners++;else losers++;if(!best||r.roi>best.roi)best=r;if(!worst||r.roi<worst.roi)worst=r;}
+    var vd=r.g&&r.g.verdict;if(vd==='AVOID'){riskyN++;riskUsd+=v;}else if(vd==='CAUTION'){cautionN++;riskUsd+=v;}
+  });
+  rows.sort(function(a,b){return (+b.value_usd||0)-(+a.value_usd||0)});
+  var upnlPct=(haveCost&&(totVal-unreal)>0)?(unreal/(totVal-unreal)*100):null;
+  var totStr='$'+totVal.toLocaleString(undefined,{maximumFractionDigits:2});
+  var chip=haveCost?('<span class="pf-chip '+(unreal>=0?'up':'down')+'">'+(unreal>=0?'+':'−')+'$'+Math.abs(unreal).toLocaleString(undefined,{maximumFractionDigits:2})+(upnlPct!=null?' · '+(unreal>=0?'+':'')+upnlPct.toFixed(1)+'%':'')+'</span>'):'';
+  // Balance card
+  var bal='<div class=pfc><div class=ct>Balance</div><div class=pf-big>'+totStr+chip+'</div>'
+    +'<div style="margin-top:12px"><div class=pf-sr><span class=k>Unrealized PnL</span><span class="v '+(unreal>=0?'up':'down')+'" style="color:'+(unreal>=0?'var(--grn)':'var(--red)')+'">'+(haveCost?((unreal>=0?'+$':'−$')+Math.abs(unreal).toLocaleString(undefined,{maximumFractionDigits:2})):'—')+'</span></div>'
+    +'<div class=pf-sr><span class=k>Holdings</span><span class=v>'+(P.count||rows.length||0)+'</span></div>'
+    +'<div class=pf-sr><span class=k>At risk</span><span class=v style="color:'+((riskyN+cautionN)?'var(--yel)':'var(--mut)')+'">'+((riskyN+cautionN)?('$'+Math.round(riskUsd).toLocaleString()):'none')+'</span></div></div></div>';
+  // Performance card
+  var wr=(winners+losers)?Math.round(winners/(winners+losers)*100):null;
+  var perf='<div class=pfc><div class=ct>Performance</div><div class=pf-kpis>'
+    +'<div class=pf-kpi><div class=l>Winners</div><div class="v up" style="color:var(--grn)">'+winners+'</div></div>'
+    +'<div class=pf-kpi><div class=l>Losers</div><div class="v down" style="color:var(--red)">'+losers+'</div></div>'
+    +'<div class=pf-kpi><div class=l>Win rate</div><div class=v>'+(wr!=null?wr+'%':'—')+'</div></div>'
+    +'<div class=pf-kpi><div class=l>Positions</div><div class=v>'+rows.length+'</div></div></div>'
+    +((best&&best.roi!=null)?'<div class=pf-sr style="margin-top:10px"><span class=k>Best</span><span class="v up" style="color:var(--grn)">'+esc(best.symbol||'?')+' '+(best.roi>=0?'+':'')+Math.round(best.roi)+'%</span></div>':'')
+    +((worst&&worst.roi!=null&&worst!==best)?'<div class=pf-sr><span class=k>Worst</span><span class="v down" style="color:var(--red)">'+esc(worst.symbol||'?')+' '+Math.round(worst.roi)+'%</span></div>':'')
+    +'</div>';
+  // Grade scorecard card
+  var scHtml='';var _vc={CLEAR:'#37e39a',CAUTION:'#f5b544',AVOID:'#ff5c5c'};
+  if(SC&&SC.ok&&SC.buckets&&Object.keys(SC.buckets).length){scHtml='<div class=pfc><div class=ct>Grade scorecard — does safe pay?</div>'+['CLEAR','CAUTION','AVOID'].filter(function(v){return SC.buckets[v]}).map(function(v){var b=SC.buckets[v];var pp=b.avg_pnl;return '<div class=pf-sc><span class=lbl style="color:'+_vc[v]+'">'+v+' buys <span style="color:var(--mut);font-weight:500">· '+b.n+'</span></span><span class=val style="color:'+(pp>=0?'var(--grn)':'var(--red)')+'">'+(pp>=0?'+':'')+pp+'%</span></div>';}).join('')+'<div style="font-size:10.5px;color:var(--mut);margin-top:7px;line-height:1.4">Avg return of your buys, ranked by the safety grade the coin had when you bought. Proof that grading pays.</div></div>';}
+  else{scHtml='<div class=pfc><div class=ct>Grade scorecard</div><div style="color:var(--mut);font-size:12px;padding:8px 0">Buy a few coins and this shows whether your CLEAN buys beat your RISKY ones — your personal edge, measured.</div></div>';}
+  // risk line
+  var riskLine=(riskyN+cautionN)
+    ?'<div class="pf-risk warn"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:var(--yel);flex:none"><path d="M12 2 1 21h22L12 2Zm1 15h-2v-2h2v2Zm0-4h-2V9h2v4Z"/></svg><span>'+(riskyN?'<b style="color:var(--red)">'+riskyN+' RISKY</b>':'')+(riskyN&&cautionN?' · ':'')+(cautionN?'<b style="color:var(--yel)">'+cautionN+' CAUTION</b>':'')+' in your bags</span><span class=ex>$'+Math.round(riskUsd).toLocaleString()+' exposed</span></div>'
+    :'<div class="pf-risk clean"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:var(--grn);flex:none"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Zm-1.2 13-3-3 1.4-1.4 1.6 1.6 4.2-4.2L16.4 9l-5.6 6Z"/></svg><span>All your bags are graded <b style="color:var(--grn)">clean</b></span></div>';
+  // positions table
+  var trows=rows.map(function(r){
+    var vd=r.g&&r.g.verdict;var vc=vd==='AVOID'?'#ff5c5c':(vd==='CAUTION'?'#f5b544':(vd==='CLEAR'?'#37e39a':'#5b6270'));
+    var gc=vd?'<span class=pf-gc style="color:'+vc+';border-color:'+vc+'55;background:'+vc+'14">'+vd+'</span>':'';
+    var im=safeUrl(r.image);var v=+r.value_usd||0;
+    var roi=r.roi!=null?'<span style="color:'+(r.roi>=0?'var(--grn)':'var(--red)')+';font-weight:700">'+(r.roi>=0?'+':'')+Math.round(r.roi)+'%</span>':'<span style="color:var(--mut)">—</span>';
+    return '<div class=pf-row onclick="openCoin(\''+safeCa(r.mint)+'\')"><div class=pf-tok>'+(im?'<img src="'+im+'" onerror="this.style.visibility=\'hidden\'">':'<div style="width:28px;height:28px;border-radius:50%;background:#1a1e24;flex:none"></div>')+'<div style="min-width:0"><div class=sym>'+esc(r.symbol||'?')+gc+'</div><div class=amt>'+(r.amount?Number(r.amount).toLocaleString(undefined,{maximumFractionDigits:r.amount<1?4:0}):'')+'</div></div></div><div class="tnum" style="font-weight:600">$'+v.toLocaleString(undefined,{maximumFractionDigits:2})+'</div><div class=tnum>'+roi+'</div><div><button class=cardbuy style="margin-left:auto" onclick="event.stopPropagation();qsFromPortfolio(\''+safeCa(r.mint)+'\',\''+jsq(r.symbol)+'\')" title="Sell">−</button></div></div>';
+  }).join('')||'<div style="padding:24px;color:var(--mut);text-align:center">No holdings yet — buy your first coin and it shows here instantly.</div>';
+  el.innerHTML='<div class=pf><div class=pf-h><div><div class=t>Your portfolio</div><div class=s>'+(P.count||rows.length||0)+' holdings · live value + safety</div></div><button onclick="closeCoin()" style="background:none;border:0;color:var(--mut);font-size:26px;cursor:pointer;line-height:1">×</button></div>'+((typeof Notification!=='undefined'&&Notification.permission==='granted')?'':'<div onclick="enableAlerts()" style="display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:12px;background:linear-gradient(100deg,rgba(55,227,154,.1),transparent);border:1px solid rgba(55,227,154,.28);cursor:pointer"><span style="font-size:18px">\ud83d\udee1</span><div style="flex:1;font-size:13px;color:var(--txt)"><b>Protect my bags</b> \u2014 get a push the instant a coin you hold turns risky</div><b style="color:var(--acc);white-space:nowrap">Enable \u2192</b></div>')+''
+    +'<div class=pf-top>'+bal+perf+scHtml+'</div>'+riskLine
+    +'<div class=pf-tbl><div class=h><span>Token</span><span>Value</span><span>PnL</span><span></span></div>'+trows+'</div></div>';
+}
+function qsFromPortfolio(ca,sym){window._qb={ca:ca,sym:sym};closeCoin();openCoin(ca);}
+
+function openBadgeGuide(){
+  if(document.getElementById('bgd'))return;
+  var G=[
+   ['CRITICAL','crit','Can zero your money \u2014 avoid, or size tiny',[
+     ['LP UNLOCKED','Liquidity can be pulled at any moment, sending price to zero. The scariest flag.'],
+     ['HONEYPOT','The contract can stop you selling, or the sell tax is punitive. You can buy but not exit.'],
+     ['MINT ACTIVE','The team can print unlimited new tokens and dilute you to zero.'],
+     ['FREEZE ACTIVE','The team can freeze your wallet so you can never sell.'],
+     ['DEV DUMPED','The creator is already selling out from under holders.']]],
+   ['WARNING','warn','Real risk \u2014 do your own research',[
+     ['TOP10','A few wallets hold enough to crash the price by dumping together.'],
+     ['BUNDLED','Insiders sniped the launch and can coordinate a dump.'],
+     ['DEV SOLD','The creator has started trimming their position \u2014 watch closely.']]],
+   ['SAFE','ok','A specific check passed \u2014 not a promise it moons',[
+     ['LP LOCKED','Liquidity is locked or burned \u2014 it cannot be rug-pulled right now.'],
+     ['MINT RENOUNCED','No new tokens can ever be created. Supply is fixed.'],
+     ['FREEZE REVOKED','The team cannot freeze your wallet \u2014 you can always sell.'],
+     ['SNIPER','A wallet with a track record of early buys still holds. A weak positive, not an endorsement.']]],
+   ['INFO','info','Context, not a verdict',[
+     ['NEW','Too young to judge \u2014 signals can still change fast. Come back and re-check.']]]
+  ];
+  var h='<div class=bg-h>What the badges mean</div><p class=bg-lead>Every badge is one on-chain check we actually ran. We show you the fact, not a score. Red means real money is at risk \u2014 one red flag outweighs any number of greens.</p>';
+  G.forEach(function(g){h+='<div class=bg-sec><div class=bg-sh>'+g[0]+' \u00b7 '+g[2]+'</div>';g[3].forEach(function(b){h+='<div class=bg-row><span class="bdg '+g[1]+'">'+b[0]+'</span><span class=bg-d>'+b[1]+'</span></div>';});h+='</div>';});
+  var bd=document.createElement('div');bd.className='mdrawer-bd';bd.id='bgdbd';
+  var d=document.createElement('div');d.className='mdrawer bgdrawer';d.id='bgd';d.innerHTML=h;
+  bd.onclick=function(){bd.classList.remove('on');d.classList.remove('on');setTimeout(function(){bd.remove();d.remove();},260);};
+  document.body.appendChild(bd);document.body.appendChild(d);
+  requestAnimationFrame(function(){bd.classList.add('on');d.classList.add('on');});
+}
+
+var BELL='<svg class=ico viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>';
+var VCHK='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=3 stroke-linecap=round stroke-linejoin=round><path d="M20 6 9 17l-5-5"/></svg>';
+function coinHue(s){s=String(s||'?');var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return h}
+function logoFail(el){
+  if(!el)return;var original=el.getAttribute('data-original')||el.src||'',tries=[];
+  var m=original.match(/\/ipfs\/([^?#]+)/i),cid=m&&m[1];
+  if(cid){tries=['https://cloudflare-ipfs.com/ipfs/'+cid,'https://gateway.pinata.cloud/ipfs/'+cid,'https://dweb.link/ipfs/'+cid];}
+  else if(original.indexOf('axiom-cdn.io')>=0){tries=[original+(original.indexOf('?')>=0?'&':'?')+'retry=1'];}
+  var n=+(el.getAttribute('data-retry')||0);
+  if(n<tries.length){el.setAttribute('data-retry',String(n+1));setTimeout(function(){el.src=tries[n]},120+200*n);return;}
+  el.style.display='none';
+}
+function img(c){var u=safeUrl(c.image);
+  var ring=c.change!=null?(c.change>=8?' ring-up':(c.change<=-8?' ring-dn':'')):'';
+  var sn=c.sniper?'<i class=vbadge title="a proven sniper holds this">'+VCHK+'</i>':'';
+  var mono=esc((String(c.symbol||'?').replace(/[^A-Za-z0-9]/g,'').slice(0,3)).toUpperCase()||'?');
+  var body=u?'<img loading="lazy" decoding="async" src="'+u+'" data-original="'+u+'" onerror="logoFail(this)">':'';
+  return '<span class="av'+ring+'" style="--hue:'+coinHue(c.symbol)+'" data-mono="'+mono+'">'+body+sn+'</span>'}
+function starEl(c){var ca=safeCa(c.ca);return '<span class="star '+(watch.indexOf(ca)>=0?'on':'')+'" title="Add to watchlist" onclick="toggleWatch(\''+ca+'\',event)">★</span>'}
+/* DISCOVER table row */
+function axK(n){n=+n||0;return n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?(n/1e3).toFixed(1).replace(/\.0$/,'')+'K':''+Math.round(n);}
+function logoPreview(ca,ev){if(ev){ev.preventDefault();ev.stopPropagation()}var c=COINS[ca]||{},u=safeUrl(c.image);if(!u){toast('No full-size logo available');return}var p=document.createElement('div');p.className='logopop';p.onclick=function(e){if(e.target===p)p.remove()};p.innerHTML='<div class=logopop-card><button class=logopop-x aria-label="Close">\u00d7</button><img src="'+u+'" alt="'+esc(c.symbol||'Coin')+' logo"><div class=logopop-label>'+esc(c.symbol||c.name||'Coin')+'</div></div>';p.querySelector('button').onclick=function(){p.remove()};document.body.appendChild(p)}
+function updateHiddenUI(){var n=hidden.length+hiddenDevs.length+hiddenTw.length,b=document.getElementById('hiddenbtn'),c=document.getElementById('hiddencount');if(b){b.classList.toggle('on',SHOW_HIDDEN);b.title=(SHOW_HIDDEN?'Hide':'Show')+' hidden coins'}if(c){c.textContent=n>99?'99+':n;c.style.display=n?'grid':'none'}}
+function toggleHiddenView(){SHOW_HIDDEN=!SHOW_HIDDEN;updateHiddenUI();loadDiscover()}
+function toggleCoinHidden(ca,ev){if(ev){ev.preventDefault();ev.stopPropagation()}var i=hidden.indexOf(ca),adding=i<0;if(adding)hidden.push(ca);else hidden.splice(i,1);localStorage.setItem('t_hidden',JSON.stringify(hidden));updateHiddenUI();toast(adding?'Coin hidden':'Coin restored',!adding);loadDiscover()}
+function axRow(c){
+  var sc=c.safety;
+  var vd=c.is_scam?'AVOID':(sc==null?'':(sc<45?'AVOID':(sc<70?'CAUTION':'CLEAR')));
+  var gcls=vd==='AVOID'?'g-avoid':(vd==='CAUTION'?'g-caution':'g-clear');
+  var rcls=vd==='AVOID'?'avoid':(vd==='CAUTION'?'caution':'');var _ishid=_coinHidden(c);if(_ishid&&!SHOW_HIDDEN)rcls+=' hidden';
+  var arrow=vd==='AVOID'?'\u25bc':(vd==='CAUTION'?'\u25c6':'\u25b2');
+  var dot=vd==='AVOID'?'r':(vd==='CAUTION'?'a':'g');
+  var _mono=esc((String(c.symbol||'?').replace(/[^A-Za-z0-9]/g,'').slice(0,1)||'?').toUpperCase());
+  var av='<span class=ba-avatar style="display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#e8ecf1;background:hsl('+coinHue(c.symbol)+' 40% 30%);position:relative;overflow:hidden">'+_mono+(c.image?'<img src="'+safeUrl(c.image)+'" data-original="'+safeUrl(c.image)+'" onerror="logoFail(this)" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">':'')+'</span>';
+  av='<div class=ba-logowrap onclick="logoPreview(\''+coinId(c)+'\',event)" title="Open logo">'+av+'<span class="ba-dot '+dot+'"></span><button class=ba-hidecoin title="'+(_ishid?'Restore coin':'Hide coin')+'" onclick="toggleCoinHidden(\''+coinId(c)+'\',event)">'+EYE+'</button></div>';
+  var links='<span class=ba-actions onclick="event.stopPropagation()">';
+  if(c.twitter)links+='<a class=ba-action href="'+safeUrl(c.twitter)+'" target=_blank rel=noopener title="X / Twitter">'+ICO_XLOGO+'</a>';
+  if(c.website)links+='<a class=ba-action href="'+safeUrl(c.website)+'" target=_blank rel=noopener title="Website">'+ICO_GLOBE+'</a>';
+  if(c.telegram)links+='<a class=ba-action href="'+safeUrl(c.telegram)+'" target=_blank rel=noopener title="Telegram">'+ICO_PLANE+'</a>';
+  links+='<a class=ba-action href="https://x.com/search?q='+encodeURIComponent(c.ca||c.symbol||'')+'" target=_blank rel=noopener title="Search X">'+ICO_SEARCH+'</a><a class=ba-action href="https://solscan.io/token/'+safeCa(c.ca)+'" target=_blank rel=noopener title="Solscan">'+ICO_SCAN+'</a></span>';
+  var meta='<div class=ba-meta><span title="Age since launch">'+ageTag(c.created)+'</span><span class=sep>\u00b7</span>'+links+(c.holders?'<span class=sep>\u00b7</span><span title="Holders">\ud83d\udc65 '+axK(c.holders)+'</span>':'')+'</div>';
+  function pill(l,v,cl){return '<span class="ba-pill '+cl+'">'+l+' '+v+'</span>';}
+  var _yb='';try{var _p=window._pos&&window._pos[c.ca];if(_p){var _r=_p.roi;var _pc=(_r==null?'p-n':(_r>=0?'p-g':'p-r'));_yb='<span class="ba-pill '+_pc+'" style="font-weight:700">You '+(_r!=null?(_r>=0?'+':'')+Math.round(_r)+'%':'held')+(_p.v?' · $'+(_p.v>=1000?(_p.v/1000).toFixed(1)+'k':Math.round(_p.v)):'')+'</span>';}}catch(e){}
+  var pills=(c.mayhem?'<span class="ba-pill p-r" style="font-weight:800">\u26a0 MAYHEM</span>':'')+_yb;
+  if(!c.graduated&&c.bond_pct!=null&&c.bond_pct>=2){var _bp=Math.min(100,c.bond_pct);pills+=pill('\ud83c\udf93',_bp+'%',_bp>=80?'p-g':(_bp>=45?'p-a':'p-n'));}
+  if(c.top10!=null)pills+=pill('T10',Math.round(c.top10)+'%',c.top10>30?'p-r':(c.top10>15?'p-a':'p-g'));
+  if(c.insiders!=null)pills+=pill('INS',c.insiders,c.insiders>5?'p-r':(c.insiders>=2?'p-a':'p-g'));
+  if(c.sniper)pills+=pill('SNIPE','\u2691','p-r');
+  if(c.liq!=null)pills+=pill('LP',fmt(c.liq),c.liq<3000?'p-r':(c.liq<10000?'p-a':'p-g'));
+  if(c.change_5m!=null)pills+=pill('5m',(c.change_5m>=0?'+':'')+Math.round(c.change_5m)+'%',c.change_5m<-20?'p-r':(c.change_5m<0?'p-a':'p-g'));
+  var stats='<div class=ba-stats><div class=ba-mc>MC '+fmt(c.mc)+'</div><div class=ba-v>V '+fmt(c.vol)+'</div>'+((c.buys!=null||c.sells!=null)?'<div class=ba-tx>TX '+axK((c.buys||0)+(c.sells||0))+'</div>':'')+'</div>';
+  var grade=vd?('<div class="ba-grade '+gcls+'"><div class=lbl>'+arrow+' '+vd+'</div><div class=num>'+(sc==null?'?':sc)+'/100</div></div>'):'';
+  var main='<div class=ba-main><div class=ba-id><span class=ba-sym>'+esc((c.symbol||'?').toUpperCase().slice(0,12))+'</span><span class=ba-name>'+esc((c.name||'').slice(0,22))+'</span>'+lpBadge(c)+'<span class="wstar'+(isWatched(c.ca)?' on':'')+'" data-ca="'+coinId(c)+'" title="Watchlist">★</span></div>'+meta+(pills?'<div class=ba-pills>'+pills+'</div>':'')+'</div>';
+  return '<div class="ba-row '+rcls+'" onclick="openCoin(\''+coinId(c)+'\')">'+av+main+grade+stats+'<button class=cardbuy onclick="cardBuy(\''+coinId(c)+'\',event)" title="Quick buy">'+ZAP+'</button></div>';
+}
+function rowHtml(c){var d=safdata(c);var vd=verdictOf(c);var scam=c.is_scam?'scam':'',hid=(_coinHidden(c)&&!SHOW_HIDDEN)?'hidden':'';
+  var chg=c.change,chgh=(chg!=null)?'<div class="'+(chg>=0?'up':'down')+'" style="font-size:11px;font-weight:600">'+(chg>=0?'▲ ':'▼ ')+Math.abs(+chg).toFixed(1)+'%</div>':'';
+  return '<div class="row v-'+vd.k+' '+scam+' '+hid+'" onclick="openCoin(\''+coinId(c)+'\')">'+
+    '<div class=pair>'+img(c)+'<div class=pn><div><span class=s>'+esc(c.symbol||'?')+'</span> '+starEl(c)+'<span class=n>'+esc((c.name||'').slice(0,18))+'</span></div><div class=meta>'+ageTag(c.created)+(c.graduated?' · <span class=up>grad</span>':'')+'</div></div></div>'+
+    '<div><span class="num mono">'+fmt(c.mc)+'</span>'+chgh+spark(c.ca)+'</div>'+
+    '<div class="mono subn">'+fmt(c.liq)+'</div>'+
+    '<div class="mono subn">'+fmt(c.vol)+'</div>'+
+    '<div class="mono subn">'+(c.holders||'—')+'</div>'+
+    '<div>'+verdictChip(vd)+'</div>'+
+    '<div class=badges>'+flagBadges(c)+'</div>'+
+    '<div class=acts><span class=zap title="Instant buy" onclick="cardBuy(\''+coinId(c)+'\',event)">'+ZAP+'</span><span class=eye title="hide" onclick="hide(\''+safeCa(c.ca)+'\',event)">'+EYE+'</span></div></div>'}
+/* PULSE compact card */
+function socialLinks(c){
+  function a(u,t,svg){var x=safeUrl(u);return x?'<a href="'+x+'" target="_blank" rel="noopener" title="'+t+'" onclick="event.stopPropagation()" class=slink>'+svg+'</a>':'';}
+  var TW='<svg viewBox="0 0 24 24" fill=currentColor><path d="M18.24 2H21l-6.56 7.5L22 22h-6.16l-4.28-5.6L6.66 22H3.9l7-8L2 2h6.32l3.87 5.12L18.24 2Zm-1.08 18h1.5L7.02 3.9H5.4l11.76 16.1Z"/></svg>';
+  var TG='<svg viewBox="0 0 24 24" fill=currentColor><path d="M21.9 4.3 18.6 20c-.24 1.05-.87 1.3-1.76.81l-4.9-3.6-2.36 2.27c-.26.26-.48.48-.98.48l.35-4.98 9.06-8.18c.4-.35-.09-.55-.62-.2L4.66 13.2l-4.8-1.5C-.15 11.4-.17 10.7 1 10.24L20.5 2.9c.9-.33 1.68.2 1.4 1.4Z"/></svg>';
+  var WEB='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2><circle cx=12 cy=12 r=9/><path d="M3 12h18M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18" stroke-linecap=round/></svg>';
+  var SOL='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><path d="M4 7l8-4 8 4v10l-8 4-8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>';
+  var ca=safeCa(c.ca),h=a(c.twitter,'X / Twitter',TW)+a(c.telegram,'Telegram',TG)+a(c.website,'Website',WEB);
+  h+=a('https://x.com/search?q='+encodeURIComponent(c.ca||c.symbol||''),'Search X',ICO_SEARCH);
+  h+=a('https://dexscreener.com/solana/'+ca,'Chart on Dexscreener',ICO_CHART);
+  h+=a('https://solscan.io/token/'+ca,'Solscan',SOL);
+  h+='<button class="slink btnlink" title="Copy contract" onclick="copyCA(\''+ca+'\',event)" data-tip="Copy contract">'+ICO_COPY+'</button>';
+  return h?'<div class=csoc onclick="event.stopPropagation()">'+h+'</div>':'';
+}
+function _whyLine(c,tone){var t10=c.top10_pct!=null?c.top10_pct:c.top10;var p=[];if(tone==='risk'||tone==='caution'){if(t10!=null&&t10>35)p.push('top-10 hold '+Math.round(t10)+'%');if(c.insiders)p.push(c.insiders+' insider'+(c.insiders>1?'s':''));if(c.dev_pct!=null&&c.dev_pct>5)p.push('dev holds '+Math.round(c.dev_pct)+'%');if((c.liq||0)<3000&&!c.graduated)p.push('no real liquidity yet');if(!p.length)p.push('unproven \u2014 size small');}else if(tone==='safe'){if(t10!=null)p.push('top-10 '+Math.round(t10)+'% \u2014 well spread');if(c.holders!=null)p.push(c.holders+' holders');if(!p.length)p.push('no rug traps found');}else{p.push('pulling holders, liquidity & dev history\u2026');}return esc(p.slice(0,2).join(' \u00b7 '));}
+function _safetyRead(c,vd){var tone=vd.k==='clear'?'safe':vd.k==='caution'?'caution':vd.k==='avoid'?'risk':'scan';var label={safe:'Safe to trade',caution:'Trade with caution',risk:'High rug risk',scan:'Scanning\u2026'}[tone];var s=c.safety;var sc=(s==null||tone==='scan')?'model running':'model '+Math.round(s)+'/100';return {tone:tone,label:label,sc:sc,why:_whyLine(c,tone),icon:tone==='risk'?ICO_ALERT:ICO_SHIELD};}
+function _safetyBanner(sf){return '<div class="safety '+sf.tone+'"><div class=shield>'+sf.icon+'</div><div class=sfmeta><div class=sfhead><span class=sfverdict>'+sf.label+'</span><span class=sfscore>'+sf.sc+'</span></div><div class=sfwhy>'+sf.why+'</div></div></div>';}
+function cardHtml(c){var d=safdata(c);var vd=verdictOf(c);var scam=c.is_scam?'scam':'',hid=(_coinHidden(c)&&!SHOW_HIDDEN)?'hidden':'';var sf=_safetyRead(c,vd);
+  var chg=c.change,chg5=c.change_5m!=null?c.change_5m:chg;
+  var tx=(+c.buys||0)+(+c.sells||0),t10=c.top10_pct!=null?c.top10_pct:c.top10;
+  function risk(k,v,cl,tip){return '<span class="mp '+(cl||'')+'" title="'+tip+'">'+k+' '+v+'</span>';}
+  var pills='';
+  pills+=risk('T10',t10!=null?Math.round(t10)+'%':'—',t10==null?'':(t10>30?'r':t10<=15?'g':''),'Top ten holder concentration');
+  pills+=risk('INS',c.insiders!=null?c.insiders:'—',c.insiders>5?'r':(c.insiders===0?'g':''),'Detected insider wallets');
+  pills+=risk('SNIPER',c.sniper_holding!=null?Math.round(c.sniper_holding)+'%':(c.sniper?'YES':'0%'),c.sniper?'r':'g','Launch sniper holdings');
+  if(c.dev_pct!=null)pills+=risk('DEV',Math.round(c.dev_pct)+'%',c.dev_pct>5?'r':'g','Developer holdings');
+  if(c.bundled_pct!=null)pills+=risk('BUNDLE',Math.round(c.bundled_pct)+'%',c.bundled_pct>10?'r':'','Bundled supply');
+  var buys=+c.buys||0,sells=+c.sells||0,totalFlow=buys+sells,buyPct=totalFlow?Math.round(100*buys/totalFlow):50;
+  var logo='<div class=card-logo-wrap onclick="logoPreview(\''+coinId(c)+'\',event)" title="Open full-size logo">'+img(c)+'<button class=card-logo-hide title="Hide coin" onclick="toggleCoinHidden(\''+coinId(c)+'\',event)">'+EYE+'</button></div>';
+  var border=chg!=null?(chg>=0?'border-left:3px solid rgba(55,227,154,.5)':'border-left:3px solid rgba(255,92,106,.45)'):'';
+  return '<div class="card axcard sf-'+sf.tone+' '+scam+' '+hid+'" style="'+border+'" onclick="openCoin(\''+coinId(c)+'\')">'+logo+
+    '<div class=cbody><div class=crow1><span class=cs>'+esc(c.symbol||'?')+'</span> '+starEl(c)+'<span class=cn>'+esc((c.name||'').slice(0,22))+'</span></div>'+socialLinks(c)+'</div>'+
+    '<div class=axprimary><b>MC '+fmt(c.mc)+'</b><span>V '+fmt(c.vol)+'</span></div>'+_safetyBanner(sf)+
+    '<div class=axmeta><span class=cage>'+ageTag(c.created)+'</span><span>H <b>'+(c.holders!=null?axK(c.holders):'—')+'</b></span><span>TX <b>'+(tx?axK(tx):'—')+'</b></span><span class="'+(chg5!=null&&chg5>=0?'pos':'neg')+'">5m <b>'+(chg5!=null?(chg5>=0?'+':'')+Math.round(chg5)+'%':'—')+'</b></span><span>LP <b>'+fmt(c.liq)+'</b></span></div>'+
+    '<div class=axflow><span class=buy>B '+(buys?axK(buys):'—')+'</span><span class=axflowbar><i style="width:'+buyPct+'%"></i></span><span class=sell>S '+(sells?axK(sells):'—')+'</span></div>'+
+    '<div class=axsignals>'+pills+
+      '<button class=axbuy onclick="cardBuy(\''+coinId(c)+'\',event)">'+ZAP+' Quick buy</button></div></div>'}
+/* loaders */
+var SORT='vol';
+function sortCoins(a){var k=SORT;return a.slice().sort(function(x,y){
+  if(k=='vol')return (y.vol||0)-(x.vol||0);
+  if(k=='mc')return (y.mc||0)-(x.mc||0);
+  if(k=='liq')return (y.liq||0)-(x.liq||0);
+  if(k=='holders')return (y.holders||0)-(x.holders||0);
+  if(k=='safety')return (y.safety||0)-(x.safety||0);
+  return 0;});}
+function setSort(k){SORT=k;document.querySelectorAll('.head .sh').forEach(function(s){s.classList.toggle('act',s.dataset.k===k)});loadDiscover();}
+function skelRows(n){var r='';for(var i=0;i<(n||8);i++)r+='<div class=skrow><div class="skel sk-av"></div><div style="flex:1"><div class="skel sk-l" style="width:38%;margin-bottom:7px"></div><div class="skel sk-l" style="width:22%"></div></div><div class="skel sk-r"></div></div>';return r}
+function emptyState(icon,title,sub){return '<div class=empty>'+icon+'<b>'+title+'</b><span>'+sub+'</span></div>'}
+function errCard(fn){return '<div class=empty><svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.6 stroke-linejoin=round><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><b>Couldn&#39;t reach the network</b><span>Check your connection and try again.</span><button class=signin style="margin-top:14px" onclick="'+fn+'">Retry</button></div>';}
+var CHAIN='sol';
+function toggleChain(e){if(e)e.stopPropagation();var cs=document.getElementById('chainsel');if(cs)cs.classList.toggle('open');}
+function setChain(c){CHAIN=c;var nm={sol:'SOL',bnb:'BNB',hood:'HOOD',kaspa:'KASPA'};var el=document.getElementById('chainName');if(el)el.textContent=nm[c]||c.toUpperCase();var td=document.querySelector('.chaintrig .cdot');if(td)td.className='cdot '+c;var cs=document.getElementById('chainsel');if(cs)cs.classList.remove('open');var _gs=document.querySelector('#v_discover .seg[data-tab=graduated]');if(_gs)_gs.style.display=(c==='sol')?'':'none';if(c!=='sol'&&DTAB==='graduated'){DTAB='trending';document.querySelectorAll('#v_discover .seg').forEach(function(x){x.classList.toggle('on',x.dataset.tab==='trending')});}if(VIEW!=='discover'){goView('discover');}else{loadDiscover();}}
+document.addEventListener('click',function(e){var cs=document.getElementById('chainsel');if(cs&&!cs.contains(e.target))cs.classList.remove('open');});
+async function loadDiscover(){var _b=document.getElementById('dlist');try{renderPresets();updateHiddenUI()}catch(e){}if(_b&&!_b._rows)_b.innerHTML=skelRows(9);
+  if(CHAIN==='hood'){if(_b)_b.innerHTML='<div style="padding:26px;color:var(--mut)">Robinhood-chain discovery is coming. For now, buy HOOD-chain tokens cross-chain from your wallet \u2014 pay with SOL.</div>';var _fc=document.getElementById('fcount');if(_fc)_fc.textContent='';return;}
+  var q=new URLSearchParams({tab:DTAB});var f=PF['discover']||{};Object.keys(f).forEach(function(k){if(f[k])q.set(k,f[k])});
+  if(quick.hide_rugs)q.set('hide_rugs','1');if(quick.snipers_only)q.set('snipers_only','1');
+  var _url=CHAIN==='kaspa'?(B+'api/kaspa/feed?'+q):(CHAIN==='bnb'?(B+'api/bnbtop'):(B+'api/feed?'+q));var d=await J(_url);if(CHAIN==='bnb'&&d&&d.coins){d={count:d.coins.length,coins:d.coins.map(function(c){return {ca:c.address,symbol:c.symbol,name:c.name,image:c.image,chain:'bnb',mc:null,liq:null,vol:c.vol24,change:c.change24,created:null,safety:null,safety_label:null,reasons:[],top10:null,holders:null,insiders:0,is_scam:false,sniper:false};})};}
+  if(!d||d._neterr){window._discRetry=(window._discRetry||0)+1;var _rb=document.getElementById('dlist'),_ck='ba_feed_'+CHAIN+'_'+DTAB,_cached=null;try{_cached=JSON.parse(localStorage.getItem(_ck)||'null')}catch(e){}if(_rb&&_rb._rows){if(window._discRetry===1)toast('Feed reconnecting — showing last update');setTimeout(loadDiscover,Math.min(15000,2500*window._discRetry));return}if(_cached&&_cached.d&&Array.isArray(_cached.d.coins)){d=_cached.d;toast('Feed reconnecting — showing saved coins');setTimeout(loadDiscover,Math.min(15000,2500*window._discRetry))}else if(window._discRetry<=4){if(_rb)_rb.innerHTML='<div style="padding:44px;text-align:center;color:var(--mut)">Reconnecting…</div>';setTimeout(loadDiscover,3000);return}else{document.getElementById('dlist').innerHTML=errCard('loadDiscover()');return}}else{window._discRetry=0;try{localStorage.setItem('ba_feed_'+CHAIN+'_'+DTAB,JSON.stringify({ts:Date.now(),d:d}))}catch(e){}}
+  document.getElementById('fcount').textContent=d.count+' coins'+(d.scored!=null?' \u00b7 '+d.scored+' safety-checked':'');
+  document.querySelectorAll('.head .sh').forEach(function(s){s.classList.toggle('act',s.dataset.k===SORT)});
+  d.coins.forEach(function(c){COINS[c.ca]=c});DISC_RAW=d.coins.slice();
+  var mk=axRow;// mobile → coin cards, desktop → table
+  var coins=sortCoins(d.coins);coins.forEach(function(c){pushHist(c.ca,c.mc)});
+  renderKOTH(coins);
+  reconcile(document.getElementById('dlist'),coins,mk)}
+function renderKOTH(coins){var box=document.getElementById('koth');
+  var cand=(coins||[]).filter(function(c){return c.change!=null&&(c.mc||0)>3000&&hidden.indexOf(c.ca)<0&&!c.is_scam}).sort(function(a,b){return (b.change||0)-(a.change||0)})[0];
+  if(!cand||cand.change<20){if(box)box.style.display='none';return}
+  if(!box){box=document.createElement('div');box.id='koth';box.className='koth';var head=document.querySelector('#v_discover .head');if(!head)return;head.parentNode.insertBefore(box,head)}
+  box.style.display='flex';box.onclick=function(){openCoin(safeCa(cand.ca))};
+  box.innerHTML='<span class=ktag>top runner</span>'+img(cand)+'<div class=kb><div class=ksym>'+esc(cand.symbol||'?')+'</div><div class=kmeta>'+fmt(cand.mc)+' mc · '+fmt(cand.vol)+' vol · '+ageTag(cand.created)+'</div></div><div class=kmc><div class="v up">▲ '+Math.round(cand.change)+'%</div><div class=subn>1h</div></div>'}
+var ZAP='<svg class=ico viewBox="0 0 24 24" fill=currentColor><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>';
+var FUNNEL='<svg class=ico viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round stroke-linecap=round><path d="M3 5h18l-7 8v5l-4 2v-7L3 5Z"/></svg>';
+var GEAR='<svg class=ico viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><circle cx=12 cy=12 r=3/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke-linecap=round/></svg>';
+var EYE='<svg class=ico viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:14px;height:14px"><path d="M2 2l20 20M6.7 6.7C4 8.3 2 12 2 12s4 6 10 6c2 0 3.8-.6 5.3-1.5M9.9 5.2A9.9 9.9 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-2.3 3M9.5 9.5a3.5 3.5 0 0 0 5 5"/></svg>';
+var TGT='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 style="width:11px;height:11px;vertical-align:-1px"><circle cx=12 cy=12 r=8/><circle cx=12 cy=12 r=3.2/><path d="M12 1v3M12 20v3M1 12h3M20 12h3" stroke-linecap=round/></svg>';
+var LINKI='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:11px;height:11px;vertical-align:-1px"><path d="M9 15l6-6M10.5 6.5l1-1a4 4 0 0 1 6 6l-1 1M13.5 17.5l-1 1a4 4 0 0 1-6-6l1-1"/></svg>';
+var ICO_GLOBE='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><circle cx=12 cy=12 r=9/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>';
+var ICO_PLANE='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><path d="M22 2 11 13M22 2 15 22l-4-9-9-4 20-7Z"/></svg>';
+var ICO_SHIELD='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.9><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" stroke-linejoin=round/><path d="M9 12l2 2 4-4" stroke-linecap=round stroke-linejoin=round/></svg>';
+var ICO_ALERT='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.9><path d="M12 3l9 16H3L12 3Z" stroke-linejoin=round/><path d="M12 10v4M12 17h.01" stroke-linecap=round/></svg>';
+var ICO_SEARCH='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><circle cx=11 cy=11 r=7/><path d="M20 20l-3.5-3.5"/></svg>';
+var ICO_CHART='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><path d="M3 3v18h18"/><rect x=7 y=11 width=3 height=6/><rect x=13 y=7 width=3 height=10/></svg>';
+var ICO_USERS='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><circle cx=9 cy=8 r=3.2/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 6.2a3.2 3.2 0 0 1 0 6M17 14.5a5.5 5.5 0 0 1 3.5 5.5"/></svg>';
+var ICO_USER='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><circle cx=12 cy=8 r=3.4/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>';
+var ICO_CROWN='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><path d="M3 7l4 4 5-6 5 6 4-4-2 12H5L3 7Z"/></svg>';
+var ICO_LOCK='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><rect x=5 y=11 width=14 height=9 rx=2/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+var GHOST='<svg viewBox="0 0 24 24" fill=currentColor style="width:11px;height:11px;vertical-align:-1px"><path d="M12 2a8 8 0 0 0-8 8v11l2.5-2 2.5 2 2.5-2 2.5 2 2.5-2 2.5 2V10a8 8 0 0 0-8-8Z" opacity=".85"/><circle cx=9 cy=10 r=1.3 fill="#0d0f12"/><circle cx=15 cy=10 r=1.3 fill="#0d0f12"/></svg>';
+var ICO_COPY='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><rect x=9 y=9 width=11 height=11 rx=2/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+var ICO_SCAN='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round style="width:12px;height:12px;vertical-align:-1px"><path d="M14 4h6v6M20 4l-8 8M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>';
+var ICO_XLOGO='<svg viewBox="0 0 24 24" fill=currentColor style="width:11px;height:11px;vertical-align:-1px"><path d="M18.9 2H22l-7.5 8.6L23 22h-6.8l-5-6.6L5.4 22H2.3l8-9.2L1.6 2h6.9l4.6 6.1L18.9 2Zm-1.2 18h1.7L7 4H5.2l12.5 16Z"/></svg>';
+/* live per-coin price history (session) -> sparklines */
+var HIST={};
+function pushHist(ca,mc){if(mc==null)return;var a=HIST[ca]||(HIST[ca]=[]);if(a[a.length-1]!==mc)a.push(mc);if(a.length>24)a.shift();}
+function spark(ca){var v=HIST[ca];if(!v||v.length<3)return '';var w=54,h=15,mn=Math.min.apply(null,v),mx=Math.max.apply(null,v),rng=(mx-mn)||1;
+  var d=v.map(function(x,i){return (i?'L':'M')+(i/(v.length-1)*w).toFixed(1)+' '+(h-((x-mn)/rng)*(h-2)-1).toFixed(1)}).join(' ');
+  return '<svg class=spark viewBox="0 0 '+w+' '+h+'" width='+w+' height='+h+'><path d="'+d+'" fill=none stroke="'+(v[v.length-1]>=v[0]?'#37e39a':'#ff5c6a')+'" stroke-width=1.4 stroke-linejoin=round stroke-linecap=round/></svg>'}
+/* keyed diff-render: update rows in place (no innerHTML wipe) -> preserves scroll, enables flash */
+function flashRow(el,up){if(!el)return;el.classList.remove('flash-up','flash-dn');void el.offsetWidth;el.classList.add(up?'flash-up':'flash-dn')}
+try{document.addEventListener('pointerdown',function(e){try{if(e.target.closest&&e.target.closest('#dlist,#v_discover,[id^="col_"]'))window._feedHold=Date.now()+1400;}catch(_){}},true);}catch(e){}
+function reconcile(box,items,mk){
+  // Card-click fix (8-21): while the user is pressing a card, skip the repaint — the
+  // innerHTML swap below was destroying the pressed node between mousedown and mouseup,
+  // eating the click so it took two taps to open.
+  if(window._feedHold&&Date.now()<window._feedHold&&box._rows)return;
+  try{
+    if(!items||!items.length){box.innerHTML='<div style="padding:26px;color:var(--mut)">no coins match your filters</div>';box._rows={};return}
+    if(!box._rows)box.innerHTML='';   // first run: drop the initial "loading live coins…" placeholder
+    var rows=box._rows||{},seen={},tmp=document.createElement('div');
+    items.forEach(function(c){var ca=c.ca;seen[ca]=1;tmp.innerHTML=mk(c);var fresh=tmp.firstChild;var cur=rows[ca];
+      if(cur&&cur.el&&cur.el.parentNode===box){
+        if(cur.el.innerHTML!==fresh.innerHTML)cur.el.innerHTML=fresh.innerHTML;
+        if(cur.el.className!==fresh.className)cur.el.className=fresh.className;
+        if(cur.mc!=null&&c.mc!=null&&c.mc!==cur.mc)flashRow(cur.el,c.mc>cur.mc);
+        cur.mc=c.mc;
+      }else{box.appendChild(fresh);rows[ca]={el:fresh,mc:c.mc};if(box._seeded){fresh.classList.add('flash-new')}}});
+    items.forEach(function(c,i){var el=rows[c.ca].el;if(box.children[i]!==el)box.insertBefore(el,box.children[i]||null)});
+    Object.keys(rows).forEach(function(k){if(!seen[k]){if(rows[k].el.parentNode===box)box.removeChild(rows[k].el);delete rows[k]}});
+    box._rows=rows;box._seeded=1;
+  }catch(e){box.innerHTML=items.map(mk).join('');box._rows=null}
+}
+/* toast notifications (replaces alert) */
+function toast(msg,ok){var box=document.getElementById('toasts');if(!box){box=document.createElement('div');box.id='toasts';document.body.appendChild(box)}
+  var t=document.createElement('div');t.className='toast'+(ok?' ok':'');t.innerHTML=(ok?'<svg class=ico viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2.5 stroke-linecap=round stroke-linejoin=round><path d="M20 6 9 17l-5-5"/></svg>':'')+esc(msg);
+  box.appendChild(t);setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove()},300)},2200)}
+function instAmt(){return localStorage.getItem('t_inst')||'0.5';}
+function instaBuy(ca,sym,ev){ev.stopPropagation();location.href=B+'wallet?ca='+encodeURIComponent(ca)+'&side=buy&sym='+encodeURIComponent(sym)+'&amt='+encodeURIComponent(instAmt())+(payCcy()==='usdc'?'&in=usdc':'');}
+function setInst(){var v=prompt('Instant-buy amount (SOL) — tapping the bolt on any coin opens a pre-filled buy for this much:',instAmt());if(v!=null&&!isNaN(parseFloat(v))&&parseFloat(v)>0){localStorage.setItem('t_inst',parseFloat(v));var b=document.getElementById('instbtn');if(b)b.innerHTML=ZAP+' '+parseFloat(v);}}
+var PF;try{PF=JSON.parse(localStorage.getItem('t_pf')||'null')}catch(e){}if(!PF||typeof PF!=='object')PF={};['new','trending','graduated','discover'].forEach(function(t){if(!PF[t])PF[t]={}});
+var CF_FIELDS=[['min_mc','Min market cap ($)'],['max_mc','Max market cap ($)'],['min_liq','Min liquidity ($)'],['max_liq','Max liquidity ($)'],['min_vol','Min volume ($)'],['max_vol','Max volume ($)'],['min_holders','Min holders'],['max_holders','Max holders'],['min_age','Min age (minutes)'],['max_age','Max age (minutes)'],['min_change','Min 1h change (%)'],['max_change','Max 1h change (%)'],['min_buys','Min buys (24h)'],['max_sells','Max sells (24h)'],['max_top10','Max top-10 holders (%)'],['max_insiders','Max insiders'],['min_safety','Min safety score']];
+var CF_TOGS=[['hide_rugs','Hide likely scams'],['snipers_only','Only coins a proven sniper holds'],['has_twitter','Has X / Twitter'],['has_telegram','Has Telegram'],['has_website','Has website'],['graduated_only','Graduated only']];
+function qstrCol(tab){var q=new URLSearchParams({tab:tab});var f=PF[tab]||{};Object.keys(f).forEach(function(k){if(f[k])q.set(k,f[k])});return q;}
+function colFCount(tab){var f=PF[tab]||{};return Object.keys(f).filter(function(k){return f[k]}).length;}
+function updateColFBadges(){['new','trending','graduated','discover'].forEach(function(t){var b=document.getElementById('cfb_'+t);if(b){var n=colFCount(t);b.innerHTML=(t==='discover')?(FUNNEL+(n?'<span style="margin-left:3px">'+n+'</span>':'')):(FUNNEL+'<span style="margin-left:5px">Filter'+(n?' '+n:'')+'</span>');b.classList.toggle('act',n>0);}});}
+function reloadFor(tab){if(tab==='discover')loadDiscover();else loadCol(tab);}
+var FILTER_CATS=[
+ {id:'metrics',label:'$ Metrics',ranges:[['Market Cap ($)','min_mc','max_mc'],['Liquidity ($)','min_liq','max_liq'],['Volume ($)','min_vol','max_vol'],['B.curve %','min_bond','max_bond'],['1h change %','min_change','max_change'],['Txns','min_txns',null]]},
+ {id:'audit',label:'Audit',ranges:[['Age (min)','min_age','max_age'],['Top-10 holders %',null,'max_top10'],['Insiders',null,'max_insiders'],['Holders','min_holders','max_holders'],['Safety score','min_safety',null]],togs:[['hide_rugs','Hide likely scams'],['snipers_only','Only proven-sniper coins']]},
+ {id:'protocols',label:'Protocols',lps:[['pump','pump.fun','#37e39a'],['bonk','LetsBonk','#ffae42'],['moon','Moonshot','#a78bfa'],['boop','Boop','#4aa3ff']]},
+ {id:'socials',label:'Socials',togs:[['has_socials','At least one social'],['has_twitter','Has X / Twitter'],['has_telegram','Has Telegram'],['has_website','Has Website']]}
+];
+var _fcat='metrics',_fwork={};
+function catActiveCount(f,c){var n=0;if(c.lps&&f.launchpads)n+=f.launchpads.split(',').filter(Boolean).length;if(c.ranges)c.ranges.forEach(function(r){if(r[1]&&f[r[1]])n++;if(r[2]&&f[r[2]])n++;});if(c.togs)c.togs.forEach(function(t){if(f[t[0]])n++;});return n;}
+function renderFCatBody(f){var c=null;for(var i=0;i<FILTER_CATS.length;i++)if(FILTER_CATS[i].id===_fcat)c=FILTER_CATS[i];if(!c)return '';var h='';
+  if(c.lps){h+='<div class=flabel>Launchpad</div><div class=lpills>'+c.lps.map(function(l){var on=(','+(f.launchpads||'')+',').indexOf(','+l[0]+',')>=0;return '<button type=button class="lpill'+(on?' on':'')+'" data-lp="'+l[0]+'" style="--lc:'+l[2]+'" onclick="this.classList.toggle(\'on\')">'+esc(l[1])+'</button>';}).join('')+'</div>';}
+  if(c.ranges){h+=c.ranges.map(function(r){return '<div class=frng><div class=frl>'+r[0]+'</div><div class=frr>'+(r[1]?'<input data-fk="'+r[1]+'" inputmode=decimal value="'+esc(f[r[1]]||'')+'" placeholder="Min">':'<span class=frx>—</span>')+(r[2]?'<input data-fk="'+r[2]+'" inputmode=decimal value="'+esc(f[r[2]]||'')+'" placeholder="Max">':'<span class=frx>—</span>')+'</div></div>';}).join('');}
+  if(c.togs){h+='<div class=ftogs>'+c.togs.map(function(t){return '<div class=ftog><span>'+t[1]+'</span><div class="sw'+(f[t[0]]?' on':'')+'" data-fk="'+t[0]+'" onclick="this.classList.toggle(\'on\')"></div></div>';}).join('')+'</div>';}
+  return h;}
+function _readFBody(){var kw=document.getElementById('cf_kw');if(kw){var v=kw.value.trim();if(v)_fwork.kw=v;else delete _fwork.kw;}var kwx=document.getElementById('cf_kwx');if(kwx){var vx=kwx.value.trim();if(vx)_fwork.kwx=vx;else delete _fwork.kwx;}
+  var fb=document.getElementById('fbody');if(!fb)return;
+  [].forEach.call(fb.querySelectorAll('[data-fk]'),function(el){var k=el.getAttribute('data-fk');if(el.classList.contains('sw')){if(el.classList.contains('on'))_fwork[k]='1';else delete _fwork[k];}else{var v=(el.value||'').trim();if(v)_fwork[k]=v;else delete _fwork[k];}});
+  var lps=[];[].forEach.call(fb.querySelectorAll('.lpill.on'),function(el){lps.push(el.getAttribute('data-lp'))});if(lps.length)_fwork.launchpads=lps.join(',');else delete _fwork.launchpads;}
+function setFCat(id){_readFBody();_fcat=id;var fb=document.getElementById('fbody');if(fb)fb.innerHTML=renderFCatBody(_fwork);
+  [].forEach.call(document.querySelectorAll('#colfbox .fcat'),function(b){var cid=b.getAttribute('data-c');b.classList.toggle('on',cid===id);var c=null;for(var i=0;i<FILTER_CATS.length;i++)if(FILTER_CATS[i].id===cid)c=FILTER_CATS[i];var n=c?catActiveCount(_fwork,c):0;var nb=b.querySelector('.fcatn');if(n){if(nb)nb.textContent=n;else b.insertAdjacentHTML('beforeend','<span class=fcatn>'+n+'</span>');}else if(nb)nb.remove();});}
+function openColF(tab){var m=document.getElementById('colfm');
+  if(!m){m=document.createElement('div');m.id='colfm';m.className='ov';m.innerHTML='<div class=fmodal id=colfbox></div>';document.body.appendChild(m);m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('on')});}
+  window._ftab=tab;_fwork=Object.assign({},PF[tab]||{});_fcat='metrics';var f=_fwork;
+  var names={new:'New Pairs',trending:'Trending',graduated:'Graduated',discover:'Discover'};
+  var tabs=FILTER_CATS.map(function(c){var n=catActiveCount(f,c);return '<button type=button class="fcat'+(c.id===_fcat?' on':'')+'" data-c="'+c.id+'" onclick="setFCat(\''+c.id+'\')">'+c.label+(n?'<span class=fcatn>'+n+'</span>':'')+'</button>';}).join('');
+  document.getElementById('colfbox').innerHTML='<div class=fhead><span class=ftitle>Filters <span class=fsub>— '+(names[tab]||tab)+'</span></span><div style="display:flex;gap:6px"><button type=button class=fic title="Reset filters" onclick="clearColF(\''+tab+'\')">↻</button><button type=button class=fic onclick="document.getElementById(\'colfm\').classList.remove(\'on\')">✕</button></div></div>'
+    +'<div class=fkw><div class=fkwc><label>Search keywords</label><input id=cf_kw value="'+esc(f.kw||'')+'" placeholder="pepe, dog…"></div><div class=fkwc><label>Exclude keywords</label><input id=cf_kwx value="'+esc(f.kwx||'')+'" placeholder="scam, test…"></div></div>'
+    +'<div class=fcats>'+tabs+'</div><div class=fbody id=fbody>'+renderFCatBody(f)+'</div>'
+    +'<div class=ffoot><button type=button class=fclear onclick="clearColF(\''+tab+'\')">Clear all</button><button type=button class=fapply onclick="applyColF(\''+tab+'\')">Apply filters</button></div>';
+  m.classList.add('on');}
+function applyColF(tab){_readFBody();var f={};Object.keys(_fwork).forEach(function(k){if(_fwork[k])f[k]=_fwork[k]});PF[tab]=f;try{localStorage.setItem('t_pf',JSON.stringify(PF))}catch(e){}var mm=document.getElementById('colfm');if(mm)mm.classList.remove('on');updateColFBadges();reloadFor(tab);try{toast('Filters applied',1)}catch(e){}}
+function clearColF(tab){PF[tab]={};localStorage.setItem('t_pf',JSON.stringify(PF));document.getElementById('colfm').classList.remove('on');updateColFBadges();reloadFor(tab);}
+var _colCoins={},_colQ={};
+function renderCol(tab){var coins=_colCoins[tab]||[];var q=(_colQ[tab]||'').trim().toLowerCase();if(q)coins=coins.filter(function(c){return ((c.symbol||'')+' '+(c.name||'')).toLowerCase().indexOf(q)>=0});var el=document.getElementById('col_'+tab);if(!el)return;el.innerHTML=coins.map(cardHtml).join('')||'<div style="padding:20px;color:var(--mut)">'+(q?'no matches':'none')+'</div>';}
+function filterCol(tab,q){_colQ[tab]=q;renderCol(tab);}
+async function loadCol(tab){var d=await J(B+'api/feed?'+qstrCol(tab));if(d._neterr){var _e=document.getElementById('col_'+tab);if(_e)_e.innerHTML=errCard("loadCol('"+tab+"')");return;}d.coins.forEach(function(c){COINS[c.ca]=c});
+  document.getElementById('c_'+tab).textContent=d.count;
+  _colCoins[tab]=d.coins;renderCol(tab);}
+async function loadPulse(){updateColFBadges();await Promise.all([loadCol('new'),loadCol('trending'),loadCol('graduated')])}
+async function loadWatch(){var d=await J(B+'api/feed?'+qstr('trending'));var w=d.coins.filter(function(c){return watch.indexOf(c.ca)>=0});
+  document.getElementById('v_watch').innerHTML='<div class=head><span>Pair info</span><span>Market Cap</span><span>Liquidity</span><span>Volume</span><span>Holders</span><span>Safety</span><span>Audit</span><span></span></div>'+(w.length?w.map(rowHtml).join(''):emptyState('<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.6 stroke-linejoin=round><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.9 6.7 19.5l1.2-6L3.4 9.3l6-.7L12 3Z"/></svg>','No coins watched yet','Tap the star on any coin to track it here and watch it live.'))}
+async function loadLeaderboard(){var d=await J(B+'api/leaderboard');
+  document.getElementById('v_leaderboard').innerHTML='<div class="lbrow h"><span>#</span><span>Trader</span><span>Total P&amp;L</span><span>Volume</span><span>Trades</span><span>Followers</span></div>'+
+    (d.rows||[]).map(function(t,i){var pnl=t.totalPnL||0;var nm=(t.displayName||t.userHandle||(t.address||'').slice(0,6)).replace(/['"\\]/g,'');var uid=/^[A-Za-z0-9_-]{1,64}$/.test(t.id||'')?t.id:'';var pic=safeUrl(t.profilePictureLink);
+      return '<div class=lbrow onclick="openTrader(\''+uid+'\',\''+esc(nm)+'\')"><span class=rank>'+(i+1)+'</span><span style="display:flex;align-items:center;gap:8px;min-width:0">'+(pic?'<img class=av style="width:28px;height:28px" src="'+pic+'">':'')+'<b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(nm)+'</b></span><span class="mono '+(pnl>=0?'up':'down')+'">'+(pnl>=0?'+':'-')+fmt(Math.abs(pnl)).slice(1)+'</span><span class="mono subn">'+fmt(t.totalVolume)+'</span><span class="mono subn">'+(t.numTrades||0)+'</span><span class="mono subn">'+(t.followers||0)+'</span></div>'}).join('')}
+async function loadActivity(){var d=await J(B+'api/activity');
+  document.getElementById('v_activity').innerHTML='<div style="padding:14px 18px;color:var(--dim);font-size:12px;border-bottom:1px solid var(--line)">Latest trades from the top traders</div>'+
+    (d.rows||[]).map(function(a){var pos=a.pnl>=0;var pic=safeUrl(a.pic);return '<div class=actrow onclick="openCoin(\''+safeCa(a.mint)+'\')">'+(pic?'<img class=av src="'+pic+'">':'<div class=av style="width:30px;height:30px"></div>')+'<div style="flex:1;min-width:0"><b>'+esc(a.trader)+'</b> <span style="color:var(--dim)">closed</span> <b>'+esc(a.sym||'?')+'</b></div><span class="mono '+(pos?'up':'down')+'">'+(pos?'+':'-')+fmt(Math.abs(a.pnl)).slice(1)+'</span></div>'}).join('')||'<div style="padding:22px;color:var(--mut)">warming up…</div>'}
+async function loadSnipers(){var d=await J(B+'api/snipers');
+  document.getElementById('v_snipers').innerHTML='<div style="padding:16px 18px;border-bottom:1px solid var(--line)"><div style="font-weight:600;font-size:16px"><svg class=ico style="color:var(--acc);width:16px;height:16px;vertical-align:-3px;margin-right:5px" viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2><circle cx=12 cy=12 r=8/><circle cx=12 cy=12 r=3.2/><path d="M12 1v3M12 20v3M1 12h3M20 12h3" stroke-linecap=round/></svg>Proven Snipers <span style="color:var(--mut);font-weight:500;font-size:12px">— the moat</span></div><div style="color:var(--dim);font-size:12.5px;margin-top:5px;max-width:680px">Ranked by <b style="color:var(--txt)">skill</b> (true hit-rate × avg multiple), NOT whale P&amp;L. Every wallet is verified against <b style="color:var(--txt)">every coin it touched</b> — winners <i>and</i> duds — so spray-bots that got lucky are filtered out. These wallets actually catch runners early and hold.</div></div>'+
+    '<div class="lbrow h" style="grid-template-columns:36px 1.3fr .9fr .9fr 1fr 2fr"><span>#</span><span>Wallet</span><span>Hit rate · <span style="color:var(--acc)">proven floor</span></span><span>Avg run</span><span>Runners</span><span>Recent catches</span></div>'+
+    '<div style="padding:0 18px 8px;color:var(--mut);font-size:11.5px">Ranked by the <b style="color:var(--dim)">95% confidence floor</b> — the statistically-proven minimum hit-rate. A lucky 3-for-3 can’t outrank a proven 60-for-100.</div>'+
+    (d.rows||[]).map(function(x,i){var hr=x.hit_rate,cls=hr>=50?'g':hr>=30?'y':'r';
+      var coins=(x.coins||[]).map(function(c){return '<span class=bdg>'+esc(c.sym||'?')+' '+(c.mult||'')+'x</span>'}).join(' ');
+      return '<div class=lbrow style="grid-template-columns:36px 1.3fr .9fr .9fr 1fr 2fr;cursor:pointer" onclick="window.open(\'https://solscan.io/account/'+safeCa(x.wallet)+'\',\'_blank\')"><span class=rank>'+(i+1)+'</span><span class=mono style="font-size:12px;display:inline-flex;align-items:center;gap:7px">'+avaHtml(x.wallet,22)+esc((x.wallet||'').slice(0,8))+'…</span><span><span class="saf '+cls+'">'+hr+'%</span>'+(x.confidence!=null?'<span class=subn style="margin-left:6px">floor '+x.confidence+'%</span>':'')+'</span><span class="mono up">'+(x.avg_mult||'—')+'x</span><span class="mono subn">'+(x.runners||0)+' / '+(x.total||0)+'</span><span class=badges>'+coins+'</span></div>'}).join('')||'<div style="padding:22px;color:var(--mut)">census still building the list — check back soon</div>'}
+function svgLine(pts,w,h){if(!pts.length)return '<div style="color:var(--mut);padding:10px">building the curve…</div>';
+  var xs=pts.map(function(p){return p.n}),minx=Math.min.apply(null,xs),maxx=Math.max.apply(null,xs),pad=30;var _a=pts.map(function(p){return p.auc}),miny=Math.max(0.4,Math.min(0.5,Math.min.apply(null,_a)-0.03)),maxy=Math.min(0.96,Math.max(Math.max.apply(null,_a)+0.03,0.62));
+  function X(n){return pad+(n-minx)/((maxx-minx)||1)*(w-pad-8)}function Y(a){return h-20-(a-miny)/(maxy-miny)*(h-40)}
+  var d=pts.map(function(p,i){return (i?'L':'M')+X(p.n).toFixed(0)+' '+Y(Math.max(miny,Math.min(maxy,p.auc))).toFixed(0)}).join(' ');
+  var grid='';[0.5,0.6,0.7,0.8].forEach(function(v){var y=Y(v);grid+='<line x1="'+pad+'" y1="'+y+'" x2="'+(w-8)+'" y2="'+y+'" stroke="#1a1e24"/><text x="2" y="'+(y+3)+'" fill="#4b5160" font-size="9">'+v+'</text>'});
+  grid+='<line x1="'+pad+'" y1="'+Y(0.5)+'" x2="'+(w-8)+'" y2="'+Y(0.5)+'" stroke="#4b5160" stroke-dasharray="3 3"/>';
+  var _l=pts[pts.length-1],_ex=X(_l.n),_ey=Y(Math.max(miny,Math.min(maxy,_l.auc)));
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="max-height:'+h+'px">'+grid+'<path d="'+d+'" fill="none" stroke="#37e39a" stroke-width="2" stroke-linejoin="round"/><circle cx="'+_ex.toFixed(0)+'" cy="'+_ey.toFixed(0)+'" r="3.5" fill="#37e39a"/><text x="'+(_ex-4).toFixed(0)+'" y="'+(_ey-8).toFixed(0)+'" fill="#37e39a" font-size="11" font-weight="700" text-anchor="end">'+_l.auc.toFixed(2)+'</text></svg>'}
+function svgGrowth(pts,w,h){if(!pts||!pts.length)return '<div style="color:var(--mut);padding:10px">no data yet</div>';
+  var maxn=Math.max.apply(null,pts.map(function(p){return p.n})),pad=34,minx=pts[0].t,maxx=pts[pts.length-1].t;
+  function X(t){return pad+(t-minx)/((maxx-minx)||1)*(w-pad-8)}function Y(n){return h-18-(n/(maxn||1))*(h-30)}
+  var dd=pts.map(function(p,i){return (i?'L':'M')+X(p.t).toFixed(0)+' '+Y(p.n).toFixed(0)}).join(' ');
+  var area=dd+' L'+X(maxx).toFixed(0)+' '+(h-18)+' L'+X(minx).toFixed(0)+' '+(h-18)+' Z';
+  var ex=X(maxx).toFixed(0),ey=Y(pts[pts.length-1].n).toFixed(0),gid='g'+(pts.length)+maxn;
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="max-height:'+h+'px"><defs><linearGradient id="'+gid+'" x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color="rgba(55,227,154,.28)"/><stop offset=1 stop-color="rgba(55,227,154,0)"/></linearGradient></defs><path d="'+area+'" fill="url(#'+gid+')"/><path d="'+dd+'" fill="none" stroke="#37e39a" stroke-width="2.2" stroke-linejoin="round"/><circle cx="'+ex+'" cy="'+ey+'" r="6" fill="rgba(55,227,154,.25)"><animate attributeName="r" values="4;8;4" dur="1.8s" repeatCount="indefinite"/></circle><circle cx="'+ex+'" cy="'+ey+'" r="3" fill="#37e39a"/><text x="2" y="13" fill="#4b5160" font-size="9">'+maxn+'</text><text x="2" y="'+(h-6)+'" fill="#4b5160" font-size="9">0</text></svg>'}
+function svgSpark(pts,w,h){if(!pts||!pts.length)return '';var a=pts.map(function(p){return p.auc}),mn=Math.min.apply(null,a)-0.01,mx=Math.max.apply(null,a)+0.01;function Y(v){return h-3-(v-mn)/((mx-mn)||1)*(h-6)}function X(i){return (i/((pts.length-1)||1))*(w-4)+2}var dd=pts.map(function(p,i){return (i?'L':'M')+X(i).toFixed(1)+' '+Y(p.auc).toFixed(1)}).join(' ');var lx=X(pts.length-1).toFixed(1),ly=Y(pts[pts.length-1].auc).toFixed(1);return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" style="display:inline-block;vertical-align:middle"><path d="'+dd+'" fill="none" stroke="#37e39a" stroke-width="2" stroke-linejoin="round"/><circle cx="'+lx+'" cy="'+ly+'" r="2.6" fill="#37e39a"/></svg>'}
+function svgCalib(cal,w,h){if(!cal||!cal.length)return '<div style="color:var(--mut);padding:10px">building the sample…</div>';var pad=26;function X(p){return pad+(p/100)*(w-pad-12)}function Y(p){return h-18-(p/100)*(h-30)}var diag='M'+X(0).toFixed(0)+' '+Y(0).toFixed(0)+' L'+X(100).toFixed(0)+' '+Y(100).toFixed(0);var grid='';[0,50,100].forEach(function(v){grid+='<text x="'+X(v).toFixed(0)+'" y="'+(h-5)+'" fill="#4b5160" font-size="8" text-anchor="middle">'+v+'%</text><text x="1" y="'+(Y(v)+3).toFixed(0)+'" fill="#4b5160" font-size="8">'+v+'</text>'});var dots=cal.map(function(c){var mx=(c.mid!=null?c.mid:((c.lo+c.hi)/2));var r=Math.max(3,Math.min(9,Math.sqrt(c.n||1)));return '<circle cx="'+X(mx).toFixed(1)+'" cy="'+Y(c.hit).toFixed(1)+'" r="'+r.toFixed(1)+'" fill="rgba(55,227,154,.8)" stroke="#0c0e12" stroke-width="1"/>'}).join('');return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="max-height:'+h+'px"><path d="'+diag+'" stroke="#4b5160" stroke-dasharray="3 3" fill="none"/>'+grid+dots+'<text x="'+(w-4)+'" y="12" fill="#4b5160" font-size="8" text-anchor="end">on the line = perfectly calibrated</text></svg>'}
+async function loadML(){var d=await J(B+'api/ml');
+  var _cv=(d.shadow_curve&&d.shadow_curve.length?d.shadow_curve:(d.curve||[]));var _delta=(_cv.length>1?(_cv[_cv.length-1].auc-_cv[0].auc):0);
+  var hero='<div class=mlhero style="margin:14px 18px;background:linear-gradient(150deg,rgba(55,227,154,.1),#0c0e12 72%);border:1px solid #173021;border-radius:12px;padding:20px 22px">'
+    +'<div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap"><div><div style="color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.08em">Live forward-tested accuracy</div>'
+    +'<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><div style="font-family:GeistMono,ui-monospace,monospace;font-weight:600;font-size:44px;letter-spacing:-1px;color:var(--acc);line-height:1">'+(d.shadow_auc!=null?d.shadow_auc:"—")+'</div>'
+    +(_delta?'<div style="font-weight:600;font-size:14px;color:'+(_delta>=0?"var(--acc)":"var(--red)")+'">'+(_delta>=0?"\u25b2 +":"\u25bc ")+_delta.toFixed(2)+' since launch</div>':'')+'</div>'
+    +'<div style="color:var(--mut);font-size:11px;margin-top:2px">shadow AUC \u00b7 0.5 = coin flip \u00b7 higher = sharper</div></div>'
+    +'<div style="flex:1;min-width:140px;text-align:right">'+(_cv.length>1?svgSpark(_cv,150,44):"")+'</div></div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin-top:16px">'
+    +[["Coins learned",(d.n_labeled||0),"and counting"],["Shadow fund","$"+(d.shadow_fund!=null?d.shadow_fund:"—"),(d.shadow_trades||0)+" trades"],["Snipers tracked",(d.snipers_tracked||"—"),"census \u00b7 live"],["Verdict",(d.shadow_auc==null?"\u23f3 learning":(d.shadow_auc>=0.7?"\ud83d\udfe2 proven":d.shadow_auc>=0.6?"\ud83d\udfe1 edge":"\ud83d\udd34 weak")),"live grade"]].map(function(t){return '<div style="background:#0c0e12;border:1px solid var(--line);border-radius:12px;padding:11px 13px"><div style="color:var(--mut);font-size:10px;text-transform:uppercase">'+t[0]+'</div><div style="font-family:GeistMono,ui-monospace,monospace;font-weight:600;font-size:19px;margin-top:2px">'+t[1]+'</div><div style="color:var(--mut);font-size:10.5px">'+t[2]+'</div></div>'}).join('')
+    +'</div></div>';
+  var cards=[['Shadow AUC',d.shadow_auc!=null?d.shadow_auc:'—','forward-tested, leak-free'],['Coins learned from',d.n_labeled||'—','labeled outcomes'],['Shadow fund','$'+(d.shadow_fund!=null?d.shadow_fund:'—'),(d.shadow_trades||0)+' paper trades'],['Snipers tracked',d.snipers_tracked||'—','census · live']];
+  var grades='',order=['high','normal','sniper','cabal','risky','avoid'];
+  order.forEach(function(t){var g=(d.grades||{})[t];if(!g||!g.n)return;grades+='<div class=lbrow style="grid-template-columns:1fr 1fr 1fr 1fr"><span style="font-weight:600">'+esc(t)+'</span><span class="mono subn">'+g.n+' coins</span><span class="mono up">'+g.hit2x+'% ran 2x</span><span class="mono down">'+g.rug+'% rugged</span></div>'});
+  var calib=(d.calibration||[]).map(function(c){return '<div style="display:flex;align-items:center;gap:10px;margin:4px 0"><span class=mono style="width:58px;color:var(--dim);font-size:12px">'+c.lo+'-'+c.hi+'%</span><div style="flex:1;background:#12151a;border-radius:5px;height:20px;overflow:hidden"><div style="height:100%;width:'+Math.round(c.hit)+'%;background:linear-gradient(90deg,var(--acc2),var(--acc))"></div></div><span class=mono style="width:80px;text-align:right;font-size:12px">'+c.hit+'% ran 2x</span><span class=subn style="width:46px;text-align:right">'+c.n+'</span></div>';}).join('');
+  var receipts=(d.receipts||[]).slice(0,40).map(function(p){var icon=p.rugged?'💀':(p.hit?'✅':'·');var cls=p.hit?'up':(p.rugged?'down':'subn');return '<div class=lbrow style="grid-template-columns:1.4fr .9fr 1.1fr .4fr"><span style="font-weight:600">'+esc(p.sym||'?')+'</span><span class="mono subn">model '+Math.round(p.prob*100)+'%</span><span class="mono '+cls+'">'+(p.mult!=null?p.mult+'x':'—')+' from 10m</span><span style="text-align:right">'+icon+'</span></div>';}).join('');
+  var hc=d.hiconf_hit!=null?('When the model was <b style="color:var(--acc)">≥60% sure</b>, <b style="color:var(--acc)">'+d.hiconf_hit+'%</b> actually ran 2x ('+d.hiconf_n+' picks) — vs <b>'+(d.loconf_hit!=null?d.loconf_hit+'%':'—')+'</b> when it wasn’t. That gap is the edge.'):'building the sample…';
+  var misses=(d.misses||[]).slice(0,15).map(function(p){return '<div class=lbrow style="grid-template-columns:1.4fr .9fr 1.1fr"><span style="font-weight:600">'+esc(p.sym||'?')+'</span><span class="mono subn">model '+Math.round(p.prob*100)+'%</span><span class="mono up">ran '+(p.mult!=null?p.mult+'x':'—')+' 😱</span></div>';}).join('');
+  var radar=d.runner_capture!=null?('The model flagged <b style="color:var(--acc)">'+d.runner_capture+'%</b> of the '+d.runners_seen+' coins that actually ran (rated ≥40%). <b style="color:var(--txt)">Watch this number</b> — if it starts dropping, the edge is fading.'):'building the sample…';
+  document.getElementById('v_ml').innerHTML=
+    '<div class=mlhead><div class=mltitle>Model lab <span style="color:var(--acc)">· live</span></div><div class=mlsub>Forward-tested predictions, calibration, misses, and model drift — published as they happen. No hindsight and no hidden backtest-only score.</div></div>'+
+    hero+
+    '<div class=dsec style="margin:14px 18px;border:1px solid #173021;border-radius:12px;background:linear-gradient(180deg,rgba(55,227,154,.05),transparent)"><h4>Verified track record <span style="color:var(--mut);text-transform:none;font-weight:500">— every pick, logged BEFORE the outcome</span></h4><div style="color:var(--dim);font-size:12px;margin-bottom:12px"><b style="color:var(--txt)">'+(d.scored_total||0)+'</b> coins scored at the 10-minute mark — each a prediction made before we knew what happened (no hindsight, no cheating). '+hc+'</div><div style="font-weight:600;font-size:11.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px">Calibration — higher confidence → more runners?</div>'+svgCalib(d.calibration||[],700,200)+'<div style="font-weight:600;font-size:11.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 6px">Recent picks — model % → what actually happened</div>'+(receipts||'<div class=subn>gathering…</div>')+'</div>'+
+    '<div class=dsec style="margin:14px 18px;border:1px solid #2a1518;border-radius:12px;background:linear-gradient(180deg,rgba(255,92,114,.04),transparent)"><h4>Skips &amp; misses <span style="color:var(--mut);text-transform:none;font-weight:500">— the edge-decay early warning</span></h4><div style="color:var(--dim);font-size:12px;margin-bottom:10px">'+radar+'</div><div style="color:var(--mut);font-size:11px;margin-bottom:12px">Of <b style="color:var(--txt)">'+(d.skipped_total||0)+'</b> coins the model skipped (rated &lt;40%), <b style="color:var(--acc)">'+(d.skip_accuracy!=null?d.skip_accuracy+'%':'—')+'</b> correctly died — that’s a good skip. The list below is the opposite: <b style="color:var(--red)">runners it skipped and missed.</b> If this list gets long, it’s a sign the model’s losing its edge.</div><div style="font-weight:600;font-size:11.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin:8px 0 6px">Runners we MISSED (rated &lt;40%, then ran)</div>'+(misses||'<div class=subn style="color:var(--acc)">none recently — the model is catching the runners ✅</div>')+'</div>'+
+    '<div class=dsec style="margin:14px 18px"><h4>Learning curve — accuracy (AUC) as it sees more coins</h4><div style="color:var(--mut);font-size:11px;margin-bottom:6px">0.5 = a coin flip. The green line is our forward-tested skill; the dashed line is random.</div>'+svgLine(d.curve||[],700,180)+'</div>'+
+    '<div class=dsec style="margin:14px 18px"><h4>Forward-tested accuracy (shadow AUC) over time</h4><div style="color:var(--mut);font-size:11px;margin-bottom:6px">The honest metric — scored on predictions made BEFORE the outcome existed. Noisy while the runner-sample is small; it smooths as more coins resolve.</div>'+svgLine(d.shadow_curve||[],700,150)+'</div>'+
+    '<div class=dsec style="margin:14px 18px"><h4>Coins learned from — growing over time</h4><div style="color:var(--mut);font-size:11px;margin-bottom:6px">Every finalized coin (winner AND dud) the model has trained on — the compounding moat.</div>'+svgGrowth(d.growth||[],700,140)+'</div>'+
+    '<div class=dsec style="margin:14px 18px"><h4>Grade accuracy — the receipts</h4><div style="color:var(--mut);font-size:11px;margin-bottom:8px">Of the coins our engine graded each tier, what actually happened. This is how you know the score is real.</div>'+(grades||'<div style="color:var(--mut)">gathering outcomes…</div>')+'</div>'}
+var _refreshBusy=false,_refreshQueued=false;
+async function refresh(){
+  if(document.hidden){_refreshQueued=true;return;}if(_refreshBusy){_refreshQueued=true;return;}_refreshBusy=true;
+  try{var p;if(VIEW=='launch'){startDropCountdown();return;}if(VIEW=='discover')p=loadDiscover();else if(VIEW=='pulse')p=loadPulse();else if(VIEW=='snipers')p=loadSnipers();else if(VIEW=='ml')p=loadML();else if(VIEW=='watch')p=loadWatch();else if(VIEW=='leaderboard')p=loadLeaderboard();else if(VIEW=='copy')p=loadFollowing();else if(VIEW=='activity')p=loadActivity();else if(VIEW=='airdrop')p=loadAirdrop();if(p&&typeof p.then==='function')await p;
+  }finally{_refreshBusy=false;if(_refreshQueued&&!document.hidden){_refreshQueued=false;setTimeout(refresh,50);}}
+}
+function enrollCohort(){var me=getMyAddr();var b=document.getElementById('cohortbadge');
+  if(!me){if(b)b.innerHTML='<span class=subn>sign up to lock your spot</span>';return;}
+  authPost('/seen',{ref:(refParam().replace(/^&ref=/,'')||'')}).then(function(s){if(!s||!s.rank)return;
+    var bb=document.getElementById('cohortbadge');
+    if(bb)bb.innerHTML='<div style="font-family:GeistMono,ui-monospace,monospace;font-weight:600;font-size:24px;color:#f5c451">'+s.multiplier+'×</div><div style="font-size:12px;color:var(--dim)">'+esc(s.cohort)+' · #'+Number(s.rank).toLocaleString()+'</div>';
+    var pv=document.getElementById('ptval');if(pv)pv.title=s.cohort+' cohort — '+s.multiplier+'× multiplier';});}
+function startAirdropCD(){var t=Date.UTC(2027,3,1,0,0,0);function p(n){return(n<10?'0':'')+n}function tk(){var el=document.getElementById('add');if(!el)return;var d=t-Date.now();if(d<=0){el.textContent='0';document.getElementById('adh').textContent='00';document.getElementById('adm').textContent='00';document.getElementById('ads').textContent='00';var l=document.getElementById('adcdlbl');if(l)l.textContent='Season 1 snapshot reached';return}var sec=Math.floor(d/1000);el.textContent=Math.floor(sec/86400);document.getElementById('adh').textContent=p(Math.floor((sec%86400)/3600));document.getElementById('adm').textContent=p(Math.floor((sec%3600)/60));document.getElementById('ads').textContent=p(sec%60)}tk();if(!window._adcdI)window._adcdI=setInterval(tk,1000)}
+function loadAirdrop(){var box=document.getElementById('v_airdrop');if(box._done){enrollCohort();loadRefStats();return;}box._done=1;
+  var me=getMyAddr();
+  box.innerHTML='<div style="max-width:860px;margin:0 auto;padding:22px 18px 90px">'+
+    '<div style="text-align:center;margin-bottom:8px"><span style="font-family:GeistMono,ui-monospace,monospace;font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#f5c451">◎ SOL rewards · season 1 live</span></div>'+
+    '<h1 style="text-align:center;font-size:clamp(26px,5vw,40px);font-weight:600;letter-spacing:-.02em;line-height:1.08;margin:6px 0 10px">The airdrop that pays real <span style="color:var(--acc)">SOL</span>.</h1>'+
+    '<p style="text-align:center;color:var(--dim);font-size:15px;max-width:600px;margin:0 auto 24px;line-height:1.55">Every other platform hands you a token that craters. We pay you back in real <b style="color:var(--txt)">SOL</b> — straight to your wallet, on-chain verifiable, funded by trading fees.</p>'+
+    // season-1 countdown
+    '<div style="background:linear-gradient(160deg,#141821,var(--pan) 70%);border:1px solid var(--line);border-radius:18px;padding:18px 18px 15px;margin-bottom:14px">'+
+      '<div id=adcdlbl style="font-family:GeistMono,ui-monospace,monospace;font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#f5c451;text-align:center;margin-bottom:12px">Season 1 snapshot \u00b7 end of March 2027</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">'+
+      [['add','Days','var(--acc)'],['adh','Hours','var(--txt)'],['adm','Mins','var(--txt)'],['ads','Secs','var(--txt)']].map(function(x){return '<div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 4px 8px;text-align:center"><div id='+x[0]+' style="font-family:GeistMono,ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:600;font-size:clamp(24px,6vw,34px);letter-spacing:-1px;line-height:1;color:'+x[2]+'">\u2014</div><div style="font-family:GeistMono,ui-monospace,monospace;font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin-top:7px">'+x[1]+'</div></div>'}).join('')+
+      '</div></div>'+
+    // rewards card
+    '<div style="background:linear-gradient(105deg,rgba(55,227,154,.1),var(--pan) 70%);border:1px solid var(--acc-line);border-radius:14px;padding:22px 24px;margin-bottom:14px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">'+
+        '<div><div style="font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:600">Your SOL rewards</div>'+
+        '<div id=ptval style="font-size:34px;font-weight:600;letter-spacing:-1px;color:var(--acc)">'+(me?'locked in':'—')+'</div>'+
+        '<div style="font-size:12.5px;color:var(--mut)">'+(me?'your spot is secured · every trade since launch counts (retroactive)':'sign up to lock your spot')+'</div></div>'+
+        (me?'<div class=bdg style="font-size:12px">◈ '+me.slice(0,4)+'…'+me.slice(-4)+'</div>':'<span class=signin onclick="showLogin()">Create wallet</span>')+
+      '</div></div>'+
+    // early-adopter bonus
+    '<div id=earlybox style="background:linear-gradient(105deg,rgba(245,196,81,.12),var(--pan) 72%);border:1px solid rgba(245,196,81,.34);border-radius:18px;padding:20px 22px;margin-bottom:14px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div><div style="font-family:GeistMono,ui-monospace,monospace;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#f5c451">⏳ early adopter bonus</div>'+
+      '<div style="font-weight:600;font-size:17px;margin-top:4px">The earlier you join, the bigger your SOL share.</div></div>'+
+      '<div id=cohortbadge style="text-align:right"></div></div>'+
+      '<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">'+
+      [['Genesis','first 1,000','3×'],['Pioneer','next 4,000','2×'],['Early','next 20,000','1.5×'],['Standard','after','1×']].map(function(t){return '<div style="flex:1;min-width:110px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px"><div style="font-weight:600;font-size:13.5px">'+t[0]+'</div><div style="font-size:11px;color:var(--mut);margin:2px 0 4px">'+t[1]+' wallets</div><div style="font-family:GeistMono,ui-monospace,monospace;font-weight:600;font-size:18px;color:#f5c451">'+t[2]+'</div></div>'}).join('')+
+      '</div><div style="font-size:12px;color:var(--mut);margin-top:10px">Your join spot locks in the moment you sign up — it never moves down. Spots fill in order.</div></div>'+
+    // pledge
+    '<div style="background:var(--pan);border:1px solid var(--line);border-left:3px solid #f5c451;border-radius:12px;padding:20px 22px;margin-bottom:14px">'+
+      '<div style="font-weight:600;font-size:15px;margin-bottom:10px">The BasedAlpha Pledge</div>'+
+      '<ul style="margin:0;padding-left:18px;color:var(--dim);font-size:13.5px;line-height:1.7">'+
+      '<li><b style="color:var(--txt)">Real SOL — not a token that dumps.</b> Paid straight to your wallet, on-chain.</li>'+
+      '<li><b style="color:var(--txt)">Points published weekly as a Merkle root</b> — we can\'t secretly change your balance. Verify it yourself.</li>'+
+      '<li><b style="color:var(--txt)">Half of every fee, forever.</b> 50% of our 0.30% flows to the SOL pool — a floor that can only go up, never down.</li>'+
+      '<li><b style="color:var(--txt)">A real snapshot date</b> — SOL hits your wallet. No vague "soon."</li>'+
+      '</ul></div>'+
+    // where the SOL comes from
+    '<div style="background:var(--pan);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:14px">'+
+      '<div style="font-weight:600;font-size:15px;margin-bottom:8px">Where the SOL comes from</div>'+
+      '<p style="color:var(--dim);font-size:13.5px;line-height:1.6;margin:0"><b style="color:var(--txt)">Half of every fee — forever.</b> A committed <b style="color:var(--txt)">50% of our 0.30% trading fee</b> flows straight into the SOL rewards pool (a floor that never drops). The more everyone trades, the bigger the payout — real SOL to your wallet at each snapshot, split by your points. No token, no cliff, nothing to dump.</p>'+
+    '</div>'+
+    // seasons
+    '<div style="background:var(--pan);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:14px">'+
+      '<div style="font-weight:600;font-size:15px;margin-bottom:8px">🔁 Seasons — not a one-shot</div>'+
+      '<p style="color:var(--dim);font-size:13.5px;line-height:1.6;margin:0"><b style="color:var(--txt)">Season 1 is the flagship.</b> The pool fills from the first trade and pays out in seasons — Season 1 accrues into one big headline drop, then payouts settle into a <b style="color:var(--txt)">quarterly cadence, forever</b>. Real SOL lands in your wallet every season, and your spot + points carry forward.</p>'+
+    '</div>'+
+    // referral — earn real SOL forever
+    '<div style="background:linear-gradient(105deg,rgba(55,227,154,.1),var(--pan) 70%);border:1px solid var(--acc-line);border-radius:12px;padding:20px 22px;margin-bottom:14px">'+
+      '<div style="font-weight:600;font-size:15px;margin-bottom:4px">Refer friends — earn real SOL, forever</div>'+
+      '<p style="color:var(--dim);font-size:13px;line-height:1.55;margin:0 0 12px">Every trade someone you invite makes pays you real SOL — an honest 50/50 split of our fee, streamed straight to your wallet. No cap, no decay, no claim button.</p>'+
+      '<div id=refbox style="color:var(--mut);font-size:13px">'+(me?'loading…':'Sign up to get your invite link')+'</div>'+'<div style="margin-top:12px"><span onclick="refHow()" style="color:var(--acc);font-weight:600;font-size:12.5px;cursor:pointer">ⓘ How referral rewards work →</span>'+'<div id=refhow style="display:none;margin-top:10px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:12.5px;color:var(--dim);line-height:1.65">'+'<b style="color:var(--txt)">Every trade pays a flat 0.30% fee — split three ways:</b><br>'+'• <b style="color:var(--acc)">0.15%</b> → the SOL airdrop pool (everyone shares)<br>'+'• <b style="color:var(--acc)">0.075%</b> → you, the referrer — on every trade they ever make<br>'+'• <b style="color:var(--txt)">0.075%</b> → the platform<br><br>'+'Invite someone who buys 10 SOL of a coin and you earn <b style="color:var(--acc)">0.0075 SOL</b> — no cap, no claim button, it streams to your wallet.'+'</div></div>'+
+    '<a href="https://devbasedsolana.com/earn-035eaace4c" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:14px;background:var(--acc);color:#04140c;font-weight:700;font-size:13.5px;padding:12px 18px;border-radius:10px;text-decoration:none">See exactly what you could earn, in detail →</a>'+
+    '</div>'+
+    // how to earn
+    '<div style="background:var(--pan);border:1px solid var(--line);border-radius:12px;padding:20px 22px">'+
+      '<div style="font-weight:600;font-size:15px;margin-bottom:12px">How to earn your SOL</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">'+
+      [['Trade','Fees you pay = points (√-scaled, whale/bot-proof)'],['Show up','Daily streaks multiply your points'],['Refer','Invite traders — capped + quality-gated'],['Use the tools','Safety scans + copy-trading count'],['Be good','Leaderboard performance earns more']].map(function(x){return '<div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 13px"><div style="font-weight:600;font-size:13.5px;color:var(--acc);margin-bottom:3px">'+x[0]+'</div><div style="font-size:12px;color:var(--mut);line-height:1.4">'+x[1]+'</div></div>'}).join('')+
+      '</div></div>'+
+    '<div style="text-align:center;color:var(--mut);font-size:11px;margin-top:18px">Not financial or tax advice. SOL rewards subject to eligibility &amp; jurisdiction. Terms at snapshot.</div>'+
+  '</div>';enrollCohort();startAirdropCD();loadRefStats();}
+var _fly=null;
+async function loadFlywheel(){var d=await J(B+'api/flywheel');_fly=d;var el=document.getElementById('flywheel');if(!el||!d)return;
+  var p=[];if(d.predictions)p.push(Number(d.predictions).toLocaleString()+' coins graded');
+  if(d.rugs_caught)p.push(d.rugs_caught+' rugs caught early'+(d.rug_catch_pct!=null?' ('+d.rug_catch_pct+'%)':''));
+  else if(d.reconciled)p.push(d.reconciled+' outcomes tracked');
+  el.textContent=p.length?('· '+p.join(' · ')):'';}
+/* nav / tabs */
+function nav(e){VIEW=e.dataset.view;document.querySelectorAll('.nav .lnk').forEach(function(x){x.classList.remove('on')});e.classList.add('on');
+  document.querySelectorAll('.view').forEach(function(x){x.classList.remove('on')});document.getElementById('v_'+VIEW).classList.add('on');if(VIEW==='discover'){try{renderPositions()}catch(e){}}try{var _ms=['watch','leaderboard','copy','activity','airdrop'];var _mt=document.querySelector('.moretrig');if(_mt)_mt.classList.toggle('on',_ms.indexOf(VIEW)>=0);var _nm=document.getElementById('navmore');if(_nm)_nm.classList.remove('open')}catch(e){}try{if(!window._routeBoot)history.pushState({view:VIEW},'',VIEW==='ml'?'/model':'/')}catch(e){}refresh()}
+var PRESETS=[
+ {id:'safe',label:'Safe',e:'🛡',f:{min_safety:'55'},hide_rugs:1},
+ {id:'degen',label:'Degen',e:'🎲',f:{max_age:'30',launchpads:'pump'}},
+ {id:'grad',label:'Graduating',e:'🎓',f:{min_bond:'80'}},
+ {id:'smart',label:'Smart money',e:'🧠',f:{snipers_only:'1'}},
+ {id:'nomayhem',label:'No rugs',e:'✓',f:{},hide_rugs:1}
+];
+var DISC_RAW=[];
+function presetFiltered(coins,f){f=f||{};var now=Date.now()/1000;return (coins||[]).filter(function(c){
+  if(f.hide_rugs&&(c.is_scam||(+c.safety||0)<25))return false;
+  if(f.min_safety&&(+c.safety||0)<+f.min_safety)return false;
+  if(f.max_age&&(!c.created||(now-(+c.created))>+f.max_age*60))return false;
+  if(f.min_age&&(!c.created||(now-(+c.created))<+f.min_age*60))return false;
+  if(f.min_bond&&(+c.bond_pct||0)<+f.min_bond)return false;
+  if(f.snipers_only&&!c.sniper)return false;
+  if(f.launchpads){var lp=c.launchpad||(/pump$/i.test(c.ca||'')?'pump':'');if((','+f.launchpads+',').indexOf(','+lp+',')<0)return false;}
+  return true;
+});}
+function renderDiscoverCached(){if(!DISC_RAW.length)return;var coins=sortCoins(presetFiltered(DISC_RAW,PF.discover||{}));var fc=document.getElementById('fcount');if(fc)fc.textContent=coins.length+' coins · filtered instantly';coins.forEach(function(c){pushHist(c.ca,c.mc)});renderKOTH(coins);reconcile(document.getElementById('dlist'),coins,axRow);}
+function renderPresets(){var el=document.getElementById('presetrow');if(!el)return;var cur=PF['discover']||{};
+  el.innerHTML=PRESETS.map(function(pr){var on=_presetActive(pr,cur);return '<button type=button aria-pressed="'+(on?'true':'false')+'" class="prchip'+(on?' on':'')+'" onclick="togglePreset(\''+pr.id+'\')"><span class=e>'+pr.e+'</span>'+pr.label+'</button>';}).join('');}
+function _presetActive(pr,cur){var keys=Object.keys(pr.f);if(pr.hide_rugs&&!cur.hide_rugs)return false;for(var i=0;i<keys.length;i++){if(String(cur[keys[i]]||'')!==String(pr.f[keys[i]]))return false;}return keys.length>0||!!pr.hide_rugs;}
+function togglePreset(id){var pr=null;for(var i=0;i<PRESETS.length;i++)if(PRESETS[i].id===id)pr=PRESETS[i];if(!pr)return;
+  var cur=PF['discover']||{};var was=_presetActive(pr,cur);
+  if(was){PF['discover']={};}else{var f=Object.assign({},pr.f);if(pr.hide_rugs)f.hide_rugs='1';PF['discover']=f;}
+  try{localStorage.setItem('t_pf',JSON.stringify(PF))}catch(e){}
+  renderPresets();updateColFBadges();renderDiscoverCached();loadDiscover();try{toast(was?'Filter cleared':pr.label+' filter on',1)}catch(e){}}
+function dtab(e){DTAB=e.dataset.tab;document.querySelectorAll('#v_discover .seg').forEach(function(x){x.classList.remove('on')});e.classList.add('on');loadDiscover()}
+/* filters + toggles */
+function openF(){document.getElementById('ov').classList.add('on')}
+function closeF(){document.getElementById('ov').classList.remove('on')}
+function ftab(e){document.querySelectorAll('.ftab').forEach(function(x){x.classList.remove('on')});e.classList.add('on');document.querySelectorAll('.fpane').forEach(function(x){x.classList.remove('on')});document.querySelector('.fpane[data-p="'+e.dataset.p+'"]').classList.add('on')}
+function sw(el,key){el.classList.toggle('on');F[key]=el.classList.contains('on')?'1':''}
+function toggleHide(){quick.hide_rugs^=1;document.getElementById('hidebtn').classList.toggle('on',!!quick.hide_rugs);refresh()}
+function toggleSnip(){quick.snipers_only^=1;document.getElementById('snipbtn').classList.toggle('on',!!quick.snipers_only);refresh()}
+function hide(ca,ev){toggleCoinHidden(ca,ev)}
+function toggleWatch(ca,ev){ev.stopPropagation();var i=watch.indexOf(ca);var added=i<0;if(i>=0)watch.splice(i,1);else watch.push(ca);localStorage.setItem('t_watch',JSON.stringify(watch));toast(added?'Added to watchlist':'Removed from watchlist',added);refresh()}
+var _searchT=null;
+function searchLive(q){q=(q||'').trim();var box=document.getElementById('searchres');if(!box)return;if(q.length<2){showRecents();return;}if(safeCa(q)){box.style.display='none';box.innerHTML='';return;}clearTimeout(_searchT);_searchT=setTimeout(function(){J(B+'api/search?q='+encodeURIComponent(q)).then(function(d){renderSearch((d&&d.tokens)||[])})},250);}
+function qsell(){var f=document.getElementById('tradeframe');if(!f||!window._qb)return;f.src=B+'wallet?embed=1&ca='+encodeURIComponent(_qb.ca)+'&side=sell&sym='+encodeURIComponent(_qb.sym||'');try{toast('Loading sell \u2192',1)}catch(e){}}
+var _bridgeReady=false,_bridgeAuthed=false,_buyCbs={},_buySeq=0,_pendingPosts=[];
+function _ensureBridge(){var f=document.getElementById('sbridge');if(f)return f;f=document.createElement('iframe');f.id='sbridge';f.src=B+'wallet?bridge=1';f.setAttribute('title','trade');f.style.cssText='position:absolute;width:0;height:0;border:0;left:-9999px;top:-9999px';document.body.appendChild(f);return f;}
+window.addEventListener('message',function(e){if(e.origin!==location.origin)return;var d=e.data||{};
+  if(d.type==='ba-bridge-ready'){_bridgeReady=true;_bridgeAuthed=!!d.authed;var q=_pendingPosts;_pendingPosts=[];q.forEach(function(fn){try{fn()}catch(_){}});}
+  else if(d.type==='ba-buy-result'){var cb=_buyCbs[d.id];if(cb)cb(d);}
+  else if(d.type==='ba-authpost-result'){var cb=_buyCbs[d.id];if(cb)cb(d);}
+});
+function authPost(path,body){return new Promise(function(resolve){var f=_ensureBridge();var id=++_buySeq;
+  var tid=setTimeout(function(){if(_buyCbs[id]){delete _buyCbs[id];resolve({ok:false,error:'timeout'});}},20000);
+  _buyCbs[id]=function(res){clearTimeout(tid);delete _buyCbs[id];resolve(res||{ok:false});};
+  var go=function(){try{f.contentWindow.postMessage({type:'ba-authpost',path:path,body:body,id:id},location.origin)}catch(e){resolve({ok:false});}};
+  if(_bridgeReady)go();else _pendingPosts.push(go);
+});}
+function instaBuy(ca,sol,sym){var f=_ensureBridge();var id=++_buySeq;
+  var tid=setTimeout(function(){if(_buyCbs[id]){delete _buyCbs[id];try{toast('Buy timed out — try again',0)}catch(e){}}},30000);
+  _buyCbs[id]=function(res){clearTimeout(tid);delete _buyCbs[id];
+    if(res.ok){try{toast('✅ Bought '+sol+' SOL of '+(sym||'')+'!',1)}catch(e){}try{if(typeof loadBalWidget==='function')loadBalWidget();}catch(e){}try{if(typeof renderPositions==='function')renderPositions();}catch(e){}}
+    else if(res.error==='not-authed'){_bridgeAuthed=false;try{toast('Sign in first — opening buy panel',0)}catch(e){}quickBuyCard(ca,null);}
+    else{try{toast('Buy failed: '+(res.error||'try again'),0)}catch(e){}}};
+  try{toast('⚡ Buying '+sol+' SOL of '+(sym||'')+'…',1)}catch(e){}
+  var post=function(){try{f.contentWindow.postMessage({type:'ba-buy',mint:ca,sol:sol,id:id},location.origin)}catch(e){}};
+  if(_bridgeReady)post();else _pendingPosts.push(post);}
+function toggleInstaBuy(){var on=(localStorage.getItem('as_instabuy')!=='0');on=!on;try{localStorage.setItem('as_instabuy',on?'1':'0')}catch(e){}var sw=document.getElementById('instasw');if(sw)sw.classList.toggle('on',on);try{toast(on?'\u26a1 Instant buy ON':'Instant buy off \u2014 taps open the panel',1)}catch(e){}if(on){try{if(localStorage.getItem('as_had_wallet'))_ensureBridge()}catch(e){}}}
+function setBuyDefault(a){try{localStorage.setItem('as_qbdefault',String(a))}catch(e){}var box=document.getElementById('bsizes');if(box)box.querySelectorAll('.bsz').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-a')===String(a))});try{toast('Default buy set to '+a+' SOL',1)}catch(e){}}
+function cardBuy(ca,ev){if(ev){ev.stopPropagation();}
+  var c=(typeof COINS!=='undefined'&&COINS[ca])||{};
+  var instant=(localStorage.getItem('as_instabuy')!=='0');
+  if(!instant||!_bridgeAuthed){return quickBuyCard(ca,null);}
+  var amt=parseFloat(localStorage.getItem('as_qbdefault')||'0.25')||0.25;
+  if(!_buyGate(c,ca,amt))return;
+  instaBuy(ca,amt,c.symbol||'');}
+function _buyGate(c,ca,amt){var vd=(typeof verdictOf==='function')?verdictOf(c):{k:'clear'};
+  if(vd.k==='avoid'||c.is_scam){_riskBuyModal(c,ca,amt);return false;}
+  if(vd.k==='caution'||c.mayhem){if(window._armBuy!==ca){window._armBuy=ca;try{toast('⚠ '+_whyLine(c,'caution')+' — tap ⚡ again to buy anyway',0)}catch(e){}setTimeout(function(){if(window._armBuy===ca)window._armBuy=null;},4500);return false;}window._armBuy=null;}
+  return true;}
+function _riskBuyModal(c,ca,amt){var why=_whyLine(c,'risk');
+  var reasons=(c.reasons||[]).filter(function(r){return /\ud83d\udd34|\u26a0\ufe0f|\ud83d\udfe1/.test(r);}).slice(0,3).map(function(r){return '<div style="font-size:12px;color:var(--dim);margin-top:4px">'+esc(r)+'</div>';}).join('');
+  _closeRiskBuy();var bd=document.createElement('div');bd.className='mdrawer-bd on';bd.id='riskbuybd';bd.onclick=function(e){if(e.target===bd)_closeRiskBuy();};
+  var d=document.createElement('div');d.className='alertpop';d.id='riskbuypop';
+  d.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:#ff5c6a;background:rgba(255,92,106,.12)">'+(typeof ICO_ALERT!=='undefined'?ICO_ALERT:'⚠')+'</div><div><div style="font-weight:700;font-size:15px;color:#ff5c6a">High rug risk</div><div style="font-size:12px;color:var(--dim)">'+esc(c.symbol||'This coin')+' — our model flags it</div></div></div>'
+    +'<div style="background:rgba(255,92,106,.06);border:1px solid rgba(255,92,106,.22);border-radius:10px;padding:10px 12px;margin:2px 0 13px"><div style="font-size:12.5px;color:var(--txt);font-weight:600">'+why+'</div>'+reasons+'</div>'
+    +'<div style="display:flex;gap:8px"><button onclick="_closeRiskBuy()" style="flex:1.3;padding:12px;border-radius:10px;border:1px solid #1f4d38;background:rgba(55,227,154,.1);color:#37e39a;font-weight:700;cursor:pointer">Cancel — keep me safe</button>'
+    +'<button onclick="_confirmRiskBuy(\''+ca+'\','+amt+',\''+jsq(c.symbol||'')+'\')" style="flex:1;padding:12px;border-radius:10px;border:1px solid #7b3540;background:transparent;color:#8f99aa;font-weight:600;cursor:pointer;font-size:12.5px">Buy '+amt+' anyway</button></div>';
+  document.body.appendChild(bd);document.body.appendChild(d);}
+function _closeRiskBuy(){var a=document.getElementById('riskbuybd'),b=document.getElementById('riskbuypop');if(a)a.remove();if(b)b.remove();}
+function _confirmRiskBuy(ca,amt,sym){_closeRiskBuy();instaBuy(ca,amt,sym);}
+var _popPxTimer=null;
+function _popContent(ca,sym){
+  return '<div class=pop-wrap><div class=pop-hd id=pophd><img id=popimg src="" onerror="this.style.visibility=\'hidden\'"><div style="min-width:0"><div class=sy id=popsy><span class=live></span>'+esc(sym||'')+'</div><div class=px id=poppx>loading…</div></div><span class=x onclick="closeTradePopout()">×</span></div><div class=pop-search><input id=popca autocomplete=off spellcheck=false placeholder="Paste any contract to trade it here →" onkeydown="if(event.key===\'Enter\')popSearchCA(this.value)" onpaste="var el=this;setTimeout(function(){popSearchCA(el.value)},60)"><span class=pop-hint>low fee \u00b7 any chain\u2019s coin</span></div><iframe class=pop-fr id=popfr src="'+B+'wallet?embed=1&ca='+encodeURIComponent(ca)+'&sym='+encodeURIComponent(sym||'')+'"></iframe></div>';
+}
+function _popStartPrice(ca){if(_popPxTimer)clearInterval(_popPxTimer);function upd(){J(B+'api/coin?ca='+encodeURIComponent(ca)).then(function(d){var px=document.getElementById('poppx');var im=document.getElementById('popimg');if(!px)return;var p=d&&(d.price_usd||d.price);var ch=(d&&(d.change24!=null?d.change24:d.change));var chh=(ch!=null)?' <span class=chg style="color:'+(ch>=0?'#37e39a':'#ff5c6a')+'">'+(ch>=0?'▲':'▼')+Math.abs(+ch).toFixed(1)+'%</span>':'';px.innerHTML=(p?'$'+_fmtPx(p):'')+chh+(d&&d.mc?'  ·  '+fmt(d.mc):'');if(im&&d&&d.image&&!im.src)im.src=safeUrl(d.image);}).catch(function(){});}upd();_popPxTimer=setInterval(upd,5000);}
+function _ensureAlertPush(cb){try{if(!('Notification' in window)){cb(true);return;}if(Notification.permission==='granted'){cb(true);return;}if(typeof enableAlerts==='function'){enableAlerts();}Notification.requestPermission().then(function(p){cb(p==='granted');});}catch(e){cb(true);}}
+function setCoinAlert(ca,sym){if(!getMyAddr()){try{toast('Sign in to set alerts',0)}catch(e){}return;}var px=window._coinPx||0;var mc=window._coinMc||0;
+  closeAlertPop();
+  var bd=document.createElement('div');bd.className='mdrawer-bd on';bd.id='alertbd';bd.onclick=closeAlertPop;
+  var d=document.createElement('div');d.className='alertpop';d.id='alertpop';
+  var chips=[['2x',2],['3x',3],['5x',5],['10x',10]].map(function(m){return '<button class=achip onclick="createCoinAlert(\''+ca+'\',\''+jsq(sym)+'\',\'mc\','+(mc*m[1])+',\'above\')">'+m[0]+'</button>';}).join('');
+  var down='<button class="achip dn" onclick="createCoinAlert(\''+ca+'\',\''+jsq(sym)+'\',\'mc\','+(mc*0.5)+',\'below\')">−50%</button>';
+  d.innerHTML='<div class=alerth><b>\ud83d\udd14 Alert on '+esc(sym||'coin')+'</b><span onclick="closeAlertPop()" style="cursor:pointer;color:var(--mut);font-size:20px;line-height:1">\u00d7</span></div>'+
+    '<div class=alertsub>Get a push when market cap hits\u2026 (now '+(mc?fmt(mc):'\u2014')+')</div>'+
+    '<div class=achips>'+chips+down+'</div>'+
+    '<div class=alertcustom><input id=alertcustomin inputmode=decimal placeholder="Custom target MC ($)"><button class=achip onclick="(function(){var v=parseFloat(document.getElementById(\'alertcustomin\').value);if(!(v>0)){toast(\'Enter a target\',0);return;}createCoinAlert(\''+ca+'\',\''+jsq(sym)+'\',\'mc\',v,(v>='+mc+'?\'above\':\'below\'));})()">Set</button></div>';
+  document.body.appendChild(bd);document.body.appendChild(d);
+}
+function closeAlertPop(){['alertbd','alertpop'].forEach(function(id){var e=document.getElementById(id);if(e)e.remove();});}
+var _ordMode='tp';var _ordPct=100;
+function openOrderPop(ca,sym){if(!getMyAddr()){try{toast('Sign in to set auto orders',0)}catch(e){}return;}closeOrderPop();_ordMode='tp';_ordPct=100;
+  var bd=document.createElement('div');bd.className='mdrawer-bd on';bd.id='ordbd';bd.onclick=closeOrderPop;
+  var d=document.createElement('div');d.className='alertpop';d.id='ordpop';
+  document.body.appendChild(bd);document.body.appendChild(d);renderOrderPop(ca,sym);}
+function closeOrderPop(){['ordbd','ordpop'].forEach(function(id){var e=document.getElementById(id);if(e)e.remove();});}
+function setOrderMode(m,ca,sym){_ordMode=m;_ordPct=100;renderOrderPop(ca,sym);}
+function setOrdPct(pp){_ordPct=pp;var box=document.getElementById('ordpctrow');if(box)box.querySelectorAll('.achip').forEach(function(b){b.classList.toggle('on',+b.getAttribute('data-p')===pp)});}
+function renderOrderPop(ca,sym){var d=document.getElementById('ordpop');if(!d)return;var mc=window._coinMc||0;var es=jsq(sym);
+  var tabs=[['tp','Take profit'],['sl','Stop loss'],['limit','Limit buy']].map(function(t){return '<button class="ordtab'+(_ordMode===t[0]?' on':'')+'" onclick="setOrderMode(\''+t[0]+'\',\''+ca+'\',\''+es+'\')">'+t[1]+'</button>';}).join('');
+  function chip(lbl,target,dir){return '<button class="achip'+(dir==='below'?' dn':'')+'" onclick="armOrder(\''+ca+'\',\''+es+'\',\''+_ordMode+'\','+target+')">'+lbl+'</button>';}
+  var body='';
+  if(_ordMode==='limit'){
+    body='<div class=alertsub>Buy automatically when market cap drops to… (now '+(mc?fmt(mc):'—')+')</div>'
+      +'<div class=achips>'+chip('−20%',mc*0.8,'below')+chip('−35%',mc*0.65,'below')+chip('−50%',mc*0.5,'below')+'</div>'
+      +'<div class=ordfield><label>Amount to buy</label><div class=alertcustom><input id=ordsol inputmode=decimal placeholder="SOL amount" value="'+(parseFloat(localStorage.getItem('as_qbdefault')||'0.25')||0.25)+'"><span class=ordunit>SOL</span></div></div>';
+  }else{
+    var presets=(_ordMode==='tp')?[['2x',mc*2],['3x',mc*3],['5x',mc*5],['10x',mc*10]]:[['−30%',mc*0.7],['−50%',mc*0.5],['−70%',mc*0.3]];
+    var dir=(_ordMode==='tp')?'above':'below';
+    body='<div class=alertsub>'+(_ordMode==='tp'?'Sell to lock in profit when MC hits…':'Sell to cut losses when MC drops to…')+' (now '+(mc?fmt(mc):'—')+')</div>'
+      +'<div class=achips>'+presets.map(function(pp){return chip(pp[0],pp[1],dir);}).join('')+'</div>'
+      +'<div class=ordfield><label>How much to sell</label><div class=achips id=ordpctrow>'+[25,50,100].map(function(pp){return '<button class="achip'+(_ordPct===pp?' on':'')+'" data-p='+pp+' onclick="setOrdPct('+pp+')">'+pp+'%</button>';}).join('')+'</div></div>';
+  }
+  d.innerHTML='<div class=alerth><b>⚡ Auto-trade '+(es||'coin')+'</b><span onclick="closeOrderPop()" style="cursor:pointer;color:var(--mut);font-size:20px;line-height:1">×</span></div>'
+    +'<div class=ordtabs>'+tabs+'</div>'+body
+    +'<div class=alertcustom style="margin-top:10px"><input id=ordcustom inputmode=decimal placeholder="Custom target MC ($)"><button class=achip onclick="armCustom(\''+ca+'\',\''+es+'\')">Arm</button></div>'
+    +'<div id=ordlistbox style="margin-top:14px"></div>'
+    +'<div style="color:var(--mut);font-size:11px;margin-top:10px;line-height:1.5">Runs on our servers — fires the moment your target is hit, even if the app is closed. Cancel anytime.</div>';
+  _renderOrderList(ca);}
+function armCustom(ca,sym){var el=document.getElementById('ordcustom');var v=parseFloat(el?el.value:'');if(!(v>0)){try{toast('Enter a target MC',0)}catch(e){}return;}armOrder(ca,sym,_ordMode,v);}
+function armOrder(ca,sym,mode,target){if(!getMyAddr()){try{toast('Sign in to set auto orders',0)}catch(e){}return;}if(!(target>0)){try{toast('Enter a target',0)}catch(e){}return;}
+  var body={mint:ca,sym:sym,kind:'mc',target:target};
+  if(mode==='limit'){body.side='buy';body.dir='below';var el=document.getElementById('ordsol');var sol=parseFloat(el?el.value:'0')||0;if(!(sol>0)){try{toast('Enter a SOL amount',0)}catch(e){}return;}body.amountLamports=Math.round(sol*1e9);body.label='limit';}
+  else{body.side='sell';body.dir=(mode==='tp'?'above':'below');body.sellPct=_ordPct||100;body.label=mode;}
+  authPost('/order/create',body).then(function(r){if(r&&r.ok){try{toast('✅ Order armed — auto-executes on trigger',1)}catch(e){}_renderOrderList(ca);}else{try{toast('Could not arm: '+((r&&r.error)||'try again'),0)}catch(e){}}});}
+function _renderOrderList(ca){var box=document.getElementById('ordlistbox');if(!box)return;var me=getMyAddr();if(!me){box.innerHTML='';return;}
+  authPost('/order/list',{}).then(function(d){var b2=document.getElementById('ordlistbox');if(!b2)return;var rows=((d&&d.orders)||[]).filter(function(o){return o.mint===ca&&(o.status==='armed'||o.status==='held_risky');});
+    if(!rows.length){b2.innerHTML='<div style="color:var(--mut);font-size:11.5px;border-top:1px solid var(--line);padding-top:10px">No open orders on this coin yet.</div>';return;}
+    b2.innerHTML='<div style="font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;border-top:1px solid var(--line);padding-top:10px;margin-bottom:6px">Open orders</div>'+rows.map(function(o){
+      var lbl=o.label==='limit'?'Limit buy':o.label==='sl'?'Stop loss':'Take profit';var arrow=o.dir==='above'?'≥':'≤';var amt=o.side==='buy'?((o.amount_lamports/1e9).toFixed(3)+' SOL'):(o.sell_pct+'%');
+      if(o.status==='held_risky'){return '<div class=ordrow style="opacity:.9"><div><span class=ordbadge style="background:rgba(255,92,106,.14);color:#ff8a94;border:1px solid #7b3540">\ud83d\udee1 Held \u2014 turned risky</span> <span class=ordwhen style="color:var(--mut)">'+lbl+' '+arrow+' '+fmt(o.target)+' \u00b7 we stopped this buy</span></div><button class=ordx onclick="cancelOrder(\''+jsq(String(o.id))+'\',\''+ca+'\')">Dismiss</button></div>';}
+      return '<div class=ordrow><div><span class="ordbadge '+esc(o.label||'')+'">'+lbl+'</span> <span class=ordwhen>MC '+arrow+' '+fmt(o.target)+' · '+amt+'</span></div><button class=ordx onclick="cancelOrder(\''+jsq(String(o.id))+'\',\''+ca+'\')">Cancel</button></div>';
+    }).join('');
+  }).catch(function(){});}
+function cancelOrder(id,ca){authPost('/order/cancel',{id:id}).then(function(r){if(r&&r.ok){try{toast('Order cancelled',1)}catch(e){}_renderOrderList(ca);}else{try{toast('Could not cancel',0)}catch(e){}}});}
+
+function createCoinAlert(ca,sym,kind,target,dir){_ensureAlertPush(function(ok){if(!ok){try{toast('Allow notifications to get alerts',0)}catch(e){}return;}
+  authPost('/alert/create',{mint:ca,sym:sym,kind:kind,target:target,dir:dir}).then(function(r){if(r&&r.ok){try{toast('\ud83d\udd14 Alert set \u2014 we\u2019ll ping you',1)}catch(e){}}else{try{toast((r&&r.error==='not-authed')?'Sign in to set alerts':'Could not set alert')}catch(e){}}});
+  closeAlertPop();
+});}
+function popSearchCA(v){var ca=safeCa(String(v||'').trim());if(!ca){try{toast('Paste a valid contract address',0)}catch(e){}return;}var f=document.getElementById('popfr');if(f)f.src=B+'wallet?embed=1&ca='+encodeURIComponent(ca);var sy=document.getElementById('popsy');if(sy)sy.innerHTML='<span class=live></span>'+esc(ca.slice(0,4)+'\u2026'+ca.slice(-4));var im=document.getElementById('popimg');if(im){im.src='';im.style.visibility='hidden';}window._qb={ca:ca,sym:''};_popStartPrice(ca);var el=document.getElementById('popca');if(el)el.value='';try{toast('Loaded \u2014 buy/sell it here',1)}catch(e){}}
+async function openTradePopout(ca,sym){ca=ca||(window._qb&&_qb.ca);sym=sym||(window._qb&&_qb.sym)||'';if(!ca)return;
+  closeTradePopout();
+  if(window.documentPictureInPicture&&documentPictureInPicture.requestWindow){
+    try{var pw=await documentPictureInPicture.requestWindow({width:372,height:560});
+      // carry styles over
+      [].forEach.call(document.styleSheets,function(ss){try{var css=[].map.call(ss.cssRules,function(r){return r.cssText}).join('');var st=pw.document.createElement('style');st.textContent=css;pw.document.head.appendChild(st);}catch(e){var ln=pw.document.createElement('link');if(ss.href){ln.rel='stylesheet';ln.href=ss.href;pw.document.head.appendChild(ln);}}});
+      pw.document.body.style.margin='0';pw.document.body.innerHTML=_popContent(ca,sym);
+      window._popWin=pw;_popStartPrice(ca);
+      pw.addEventListener('pagehide',function(){if(_popPxTimer)clearInterval(_popPxTimer);window._popWin=null;});
+      try{toast('⚡ Trade panel popped out — drag it anywhere',1)}catch(e){}
+      return;
+    }catch(e){}
+  }
+  // fallback: on-page draggable floating panel
+  var d=document.createElement('div');d.className='floatpop';d.id='floatpop';d.innerHTML=_popContent(ca,sym);
+  document.body.appendChild(d);_popStartPrice(ca);_popDrag(d,document.getElementById('pophd'));
+  try{toast('⚡ Floating trade panel — drag it, buy/sell while you scan',1)}catch(e){}
+}
+function closeTradePopout(){if(_popPxTimer){clearInterval(_popPxTimer);_popPxTimer=null;}try{if(window._popWin){window._popWin.close();window._popWin=null;}}catch(e){}var f=document.getElementById('floatpop');if(f)f.remove();}
+function _popDrag(box,handle){if(!handle)return;var sx,sy,ox,oy,drag=false;handle.addEventListener('mousedown',function(e){if(e.target.classList.contains('x'))return;drag=true;sx=e.clientX;sy=e.clientY;var r=box.getBoundingClientRect();ox=r.left;oy=r.top;box.style.right='auto';box.style.bottom='auto';box.style.left=ox+'px';box.style.top=oy+'px';e.preventDefault();});
+  document.addEventListener('mousemove',function(e){if(!drag)return;box.style.left=Math.max(0,Math.min(ox+e.clientX-sx,innerWidth-box.offsetWidth))+'px';box.style.top=Math.max(0,Math.min(oy+e.clientY-sy,innerHeight-box.offsetHeight))+'px';});
+  document.addEventListener('mouseup',function(){drag=false;});}
+function _isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
+function armFloatingTrade(ca,sym){ca=ca||(window._qb&&_qb.ca);sym=sym||(window._qb&&_qb.sym)||'';if(!ca)return;
+  if(!('serviceWorker' in navigator)||!('Notification' in window)){try{toast('This browser can\x27t pin a trade control — use the pop-out instead',0)}catch(e){}return;}
+  var amt=parseFloat(localStorage.getItem('as_qbdefault')||'0.25')||0.25;
+  Notification.requestPermission().then(function(perm){
+    if(perm!=='granted'){try{toast('Allow notifications to trade from anywhere',0)}catch(e){}return;}
+    navigator.serviceWorker.ready.then(function(reg){
+      var ios=_isIOS();
+      var opts={body:ios?('Tap to open '+esc(sym||'')+' and buy '+amt+' SOL instantly.'):('Tap Buy or Sell from any app · '+amt+' SOL preset'),
+        icon:'/icon-192.png',badge:'/icon-192.png',tag:'batrade',renotify:true,requireInteraction:true,silent:true,
+        data:{mint:ca,sym:sym,sol:amt,url:'/?ntrade=buy&mint='+encodeURIComponent(ca)+'&sol='+amt}};
+      if(!ios){opts.actions=[{action:'buy',title:'⚡ Buy '+amt},{action:'sell',title:'Sell'}];}
+      reg.showNotification('⚡ '+(sym||'BasedAlpha')+' — trade anywhere',opts);
+      try{_ensureBridge()}catch(e){}
+      try{toast(ios?'Pinned — tap it from any app to jump back & buy':'Trade control pinned to your notifications ✅',1)}catch(e){}
+    });
+  });
+}
+try{navigator.serviceWorker&&navigator.serviceWorker.addEventListener('message',function(e){var d=e.data||{};if(d.type!=='notif-trade')return;
+  if(d.side==='buy'){instaBuy(d.mint,d.sol||0.25,d.sym||'');}
+  else{openCoin(d.mint);setTimeout(function(){try{if(window._qb&&_qb.ca===d.mint)qsell()}catch(_){}} ,1400);}
+});}catch(e){}
+function quickBuyCard(ca,ev){if(ev){ev.stopPropagation();}var a=localStorage.getItem('as_qbdefault')||'0.25';window._qbPending=a;openCoin(ca);try{toast('Buying '+a+' SOL \u2014 confirm in panel',1)}catch(e){}}
+function qbuy(a){var f=document.getElementById('tradeframe');if(!f||!window._qb)return;try{localStorage.setItem('as_qbdefault',a)}catch(e){}var inq=(typeof payCcy==='function'&&payCcy()==='usdc')?'&in=usdc':'';f.src=B+'wallet?embed=1&ca='+encodeURIComponent(_qb.ca)+'&side=buy&sym='+encodeURIComponent(_qb.sym||'')+'&amt='+encodeURIComponent(a)+inq;try{toast('Loading '+a+' SOL buy →',1)}catch(e){}}
+function toggleHotkeys(){var e=document.getElementById('hkcheat');if(e){e.remove();return;}var d=document.createElement('div');d.className='hkcheat';d.id='hkcheat';d.onclick=function(ev){if(ev.target===d)d.remove();};var rows=[['/','Search'],['J / K','Move through the feed'],['Enter','Open highlighted coin'],['Esc','Close'],['?','This menu']];d.innerHTML='<div class=card><div style="font-weight:700;font-size:15px;margin-bottom:14px;color:#eafff2">Keyboard shortcuts</div>'+rows.map(function(r){return '<div class=row><kbd>'+r[0]+'</kbd><span>'+r[1]+'</span></div>'}).join('')+'</div>';document.body.appendChild(d);}
+function _wlGet(){try{return JSON.parse(localStorage.getItem('as_watchlist')||'{}')}catch(e){return {}}}
+function _wlSet(o){try{localStorage.setItem('as_watchlist',JSON.stringify(o))}catch(e){}updateWlCount();}
+function isWatched(ca){return !!_wlGet()[ca];}
+function toggleWatch(ca){if(!ca)return;var o=_wlGet();if(o[ca]){delete o[ca];try{toast('Removed from watchlist')}catch(e){}}else{var c=(typeof COINS!=='undefined'&&COINS[ca])||{};o[ca]={ca:ca,sym:c.symbol||'',image:c.image||'',mc:c.mc||null,ts:Date.now()};try{toast('★ Added to watchlist',1)}catch(e){}}_wlSet(o);document.querySelectorAll('.wstar[data-ca="'+ca+'"]').forEach(function(st){st.classList.toggle('on',!!_wlGet()[ca]);});}
+function updateWlCount(){var n=Object.keys(_wlGet()).length;var el=document.getElementById('wlcount');if(el){el.textContent=n;el.style.display=n?'flex':'none';}}
+function openWatchlist(){var o=_wlGet();var arr=Object.keys(o).map(function(k){return o[k]}).sort(function(a,b){return (b.ts||0)-(a.ts||0)});
+  closeWatchlist();
+  var bd=document.createElement('div');bd.className='mdrawer-bd on';bd.id='wlbd';bd.onclick=closeWatchlist;
+  var d=document.createElement('div');d.className='mdrawer wldrawer on';d.id='wldr';
+  var rows=arr.length?arr.map(function(t){var cm=(typeof COINS!=='undefined'&&COINS[t.ca]&&COINS[t.ca].mc)||null;var dl=(cm&&t.mc)?((cm-t.mc)/t.mc*100):null;var im=safeUrl(t.image);
+    return '<div class=wrow data-open="'+t.ca+'">'+(im?'<img src="'+im+'" onerror="this.style.visibility=\'hidden\'">':'<div style="width:30px;height:30px;border-radius:50%;background:#1a1e24;flex:none"></div>')+'<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13.5px">'+esc(t.sym||'?')+'</div><div style="font-size:11px;color:var(--mut)">'+(t.mc?fmt(t.mc)+' mc':'')+'</div></div>'+(dl!=null?'<div class="'+(dl>=0?'up':'down')+'" style="font-weight:700;font-size:12.5px">'+(dl>=0?'+':'')+dl.toFixed(0)+'%</div>':'')+'<span class=wx data-ca="'+t.ca+'">✕</span></div>';}).join(''):'<div style="color:var(--mut);padding:22px 4px;font-size:13px">No coins yet — tap the ★ on any coin to add it here.</div>';
+  d.innerHTML='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><b style="font-size:15px">★ Watchlist</b><span style="margin-left:auto;color:var(--mut);cursor:pointer;font-size:22px;line-height:1" onclick="closeWatchlist()">×</span></div>'+rows;
+  document.body.appendChild(bd);document.body.appendChild(d);
+}
+function closeWatchlist(){['wlbd','wldr'].forEach(function(id){var e=document.getElementById(id);if(e){e.classList.remove('on');setTimeout(function(){if(e.parentNode)e.remove()},280);}});}
+document.addEventListener('click',function(e){if(!e.target.closest)return;
+  var st=e.target.closest('.wstar');if(st){e.stopPropagation();e.preventDefault();toggleWatch(st.getAttribute('data-ca'));return;}
+  var wx=e.target.closest('.wx');if(wx){e.stopPropagation();e.preventDefault();var ca=wx.getAttribute('data-ca');toggleWatch(ca);var rw=wx.closest('.wrow');if(rw)rw.remove();return;}
+  var wr=e.target.closest('.wrow');if(wr&&wr.getAttribute('data-open')){var ca=wr.getAttribute('data-open');closeWatchlist();openCoin(ca);return;}
+},true);
+function pushRecent(c){if(!c||!c.ca)return;var a=[];try{a=JSON.parse(localStorage.getItem('as_recent')||'[]')}catch(e){}a=a.filter(function(x){return x.ca!==c.ca});a.unshift({ca:c.ca,symbol:c.symbol||'',name:c.name||'',image:c.image||'',mc:c.mc||null});a=a.slice(0,8);try{localStorage.setItem('as_recent',JSON.stringify(a))}catch(e){}}
+function showRecents(){var box=document.getElementById('searchres');if(!box)return;var inp=document.getElementById('search');if(inp&&inp.value.trim().length>=2)return;var a=[];try{a=JSON.parse(localStorage.getItem('as_recent')||'[]')}catch(e){}if(!a.length){box.style.display='none';box.innerHTML='';return;}box.innerHTML='<div style="padding:9px 11px 5px;font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;font-weight:700">Recently viewed</div>'+a.map(function(t){var im=safeUrl(t.image);return '<div onmousedown="pickSearch(\''+safeCa(t.ca)+'\')" style="display:flex;align-items:center;gap:10px;padding:9px 11px;cursor:pointer;border-bottom:1px solid var(--line)">'+(im?'<img src="'+im+'" style="width:26px;height:26px;border-radius:50%;flex:none" onerror="this.style.visibility=\'hidden\'">':'<div style="width:26px;height:26px;border-radius:50%;background:#1a1e24;flex:none"></div>')+'<div style="min-width:0;flex:1"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.symbol||'?')+' <span style="color:var(--mut);font-weight:500">'+esc(t.name||'')+'</span></div>'+(t.mc?'<div style="font-size:11px;color:var(--mut)">'+fmt(t.mc)+' mc</div>':'')+'</div></div>';}).join('');box.style.display='block';}
+function renderSearch(rows){var box=document.getElementById('searchres');if(!box)return;if(!rows.length){box.style.display='none';box.innerHTML='';return;}
+  box.innerHTML=rows.slice(0,8).map(function(t){var im=safeUrl(t.image);var ch=t.change;var cc=ch>=0?'var(--acc)':'var(--red)';
+    return '<div onmousedown="pickSearch(\''+safeCa(t.ca)+'\')" style="display:flex;align-items:center;gap:10px;padding:9px 11px;cursor:pointer;border-bottom:1px solid var(--line)">'+(im?'<img src="'+im+'" style="width:26px;height:26px;border-radius:50%;flex:none" onerror="this.style.visibility=\'hidden\'">':'<div style="width:26px;height:26px;border-radius:50%;background:#1a1e24;flex:none"></div>')+'<div style="min-width:0;flex:1"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.symbol||'?')+' <span style="color:var(--mut);font-weight:500">'+esc(t.name||'')+'</span></div><div style="font-size:11px;color:var(--mut)">'+fmt(t.mc)+' mc</div></div>'+(ch!=null?'<div style="font-size:12px;font-weight:600;color:'+cc+';flex:none">'+(ch>=0?'+':'')+Math.round(ch)+'%</div>':'')+'</div>';}).join('');
+  box.style.display='block';}
+function pickSearch(ca){hideSearch();var inp=document.getElementById('search');if(inp)inp.value='';if(ca)openCoin(ca);}
+function hideSearch(){var box=document.getElementById('searchres');if(box){box.style.display='none';box.innerHTML='';}}
+function doSearch(){var v=document.getElementById('search').value.trim();var ca=safeCa(v);if(ca){pickSearch(ca);return;}if(v.length<2)return;J(B+'api/search?q='+encodeURIComponent(v)).then(function(d){var t=(d&&d.tokens)||[];if(t.length)pickSearch(t[0].ca);});}
+function loc(p){location.href=B+p}
+/* drawers */
+function copyCA(ca,ev){ev.stopPropagation();try{navigator.clipboard.writeText(ca)}catch(e){}var t=ev.currentTarget;var o=t.getAttribute('data-tip');t.setAttribute('data-tip','Copied ✓');setTimeout(function(){t.setAttribute('data-tip',o)},1000);}
+function tweetPrev(el,url){if(el._l)return;el._l=1;fetch(B+'api/tweet?url='+url).then(function(r){return r.json()}).then(function(d){if(d&&d.text){el.setAttribute('data-tip',(d.author?('@'+d.author+' · '):'')+d.text.slice(0,220));el.classList.add('twok');}}).catch(function(){});}
+function twIcon(url){if(/\/status\/\d+/.test(url)){return '<a href="'+safeUrl(url)+'" target=_blank rel=noreferrer class="ci2 tw tip tipwrap" data-tip="Hover to preview tweet…" onmouseenter="tweetPrev(this,\''+encodeURIComponent(url)+'\')">'+ICO_XLOGO+'</a>';}return '<a href="'+safeUrl(url)+'" target=_blank rel=noreferrer class="ci2 tip" data-tip="View on X">'+ICO_XLOGO+'</a>';}
+function coinIconsInline(ca){var c=COINS[ca]||{};var o=[];
+  function ic(label,inner,href){return '<a href="'+safeUrl(href)+'" target=_blank rel=noreferrer class="ci2 tip" data-tip="'+esc(label)+'">'+inner+'</a>';}
+  o.push('<span class=ci2age>'+ageTag(c.created)+'</span>');
+  if(c.twitter)o.push(twIcon(c.twitter));
+  if(c.website)o.push(ic('Website',ICO_GLOBE,c.website));
+  if(c.telegram)o.push(ic('Telegram',ICO_PLANE,c.telegram));
+  o.push('<span class="ci2 tip" data-tip="Copy contract address" onclick="copyCA(\''+safeCa(ca)+'\',event)">'+ICO_COPY+'</span>');
+  o.push(ic('Search $'+(c.symbol||'')+' on X',ICO_SEARCH,'https://x.com/search?q='+encodeURIComponent('$'+(c.symbol||''))+'&f=live'));
+  o.push(ic('Chart on Dexscreener',ICO_CHART,'https://dexscreener.com/solana/'+ca));
+  o.push(ic('View on Solscan',ICO_SCAN,'https://solscan.io/token/'+ca));
+  if(c.holders!=null)o.push('<span class="ci2 stat tip" data-tip="Holders">'+ICO_USERS+' '+c.holders+'</span>');
+  return o.join('');}
+function statPills(c,dev,nsnip){c=c||{};dev=dev||{};
+  function pill(ico,label,val,good){var cl=good===true?'g':good===false?'r':'';return '<span class="spill '+cl+' tip" data-tip="'+esc(label)+'">'+ico+' '+val+'</span>';}
+  var t10=c.top10;var ins=(dev.insiders!=null?dev.insiders:c.insiders);
+  return '<div class=spills>'+
+    pill(ICO_USER,'Top-10 holders %',(t10!=null?Math.round(t10)+'%':'—'),t10==null?null:(t10<=15?true:(t10>30?false:null)))+
+    pill(ICO_CROWN,'Dev holdings %',(dev.dev_sold?'0%':(dev.dev_pct!=null?dev.dev_pct+'%':'—')),dev.dev_pct!=null?(dev.dev_pct<5):(dev.dev_sold?true:null))+
+    pill(TGT,'Proven snipers holding',(nsnip||0),nsnip>0?true:null)+
+    pill(GHOST,'Insiders detected',(ins!=null?ins:'—'),ins!=null?(ins===0):null)+
+    pill(ICO_LOCK,'LP '+(dev.lp_locked?'locked':'unlocked'),(dev.lp_locked?'locked':'open'),dev.lp_locked?true:(dev.lp_locked===false?false:null))+
+    '</div>';}
+function reasonStatus(r){var t=(' '+(r||'')+' ').toLowerCase();
+  if(/not renounc|unlock|mintable|can mint|high |concentrat|insider|dev (holds|owns)|low liq|risky|rug|bundl|sniper|honeypot|blacklist|few holder|top ?-?10|whale|freeze authority(?! renounc)/.test(t))return 'b';
+  if(/lock|renounc|verified|establish|distribut|burn|clean|healthy|no mint|no freeze|safe/.test(t))return 'g';
+  return 'n';}
+function riIcon(st){
+  if(st==='g')return '<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2.4 stroke-linecap=round stroke-linejoin=round><path d="M20 6 9 17l-5-5"/></svg>';
+  if(st==='b')return '<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2.4 stroke-linecap=round><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  return '<svg viewBox="0 0 24 24" fill=currentColor><circle cx=12 cy=12 r=2.6/></svg>';}
+function chStats(s,c){s=s||{};c=c||{};
+  function st(l,v){return (v==null||v==='')?'':'<div class=chs><span class=chsl>'+l+'</span><span class=chsv>'+v+'</span></div>';}
+  var liq=s.liq||s.liquidity||c.liq;var vol=s.vol||c.vol;var sup=c.supply||s.supply;var hold=s.holders||c.holders;var txn=((c.buys||0)+(c.sells||0))||((s.buys||0)+(s.sells||0));var _mc=s.mc||c.mc;var _price=s.price_usd||c.price_usd;var _chg=(s.change24!=null?s.change24:(s.change!=null?s.change:c.change));var _chgH=(_chg!=null)?'<span style="color:'+(_chg>=0?'var(--grn)':'var(--red)')+'">'+(_chg>=0?'▲':'▼')+Math.abs(_chg).toFixed(1)+'%</span>':null;
+  var bond=(c.graduated?'<span style="color:var(--acc)">Graduated</span>':(c.bond_pct!=null?c.bond_pct+'%':null));
+  var supTxt=(sup!=null)?(sup>=1e9?(sup/1e9).toFixed(0).replace(/\.0$/,'')+'B':sup>=1e6?(sup/1e6).toFixed(0)+'M':sup>=1e3?(sup/1e3).toFixed(0)+'K':(''+Math.round(sup))):null;
+  var rows=st('Market cap',_mc!=null?fmt(_mc):null)+st('Price',_price?'$'+_fmtPx(_price):null)+st('Change',_chgH)+st('Liquidity',liq!=null?fmt(liq):null)+st('Volume',vol!=null?fmt(vol):null)+st('Supply',supTxt)+st('B.Curve',bond)+st('Holders',hold!=null?Number(hold).toLocaleString():null)+st('Txns 24h',txn?Number(txn).toLocaleString():null);
+  return rows?'<div class=ch-stats>'+rows+'</div>':'';}
+function coinHeader(s,ca,H,sc,cls,lbl,shareUrl){var c=COINS[ca]||{};var dev=(H&&H.dev)||{};var pimg=safeUrl(s.image||c.image),mono=esc((String(s.symbol||c.symbol||'?').replace(/[^A-Za-z0-9]/g,'').slice(0,3)).toUpperCase()||'?');
+  var nsnip=((H&&H.holders)||[]).filter(function(x){return x.tag==='sniper'}).length;
+  var px=s.price_usd||c.price_usd;var chg=(s.change24!=null?s.change24:(s.change!=null?s.change:(c.change!=null?c.change:null)));
+  return '<div class=ch>'+
+    '<div class=ch-top>'+
+      '<div class=ch-av style="display:grid;place-items:center;font-weight:700;color:#dce5e9;background:hsl('+coinHue(s.symbol||c.symbol)+' 35% 24%);overflow:hidden;position:relative"><span>'+mono+'</span>'+(pimg?'<img src="'+pimg+'" loading=eager decoding=async onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">':'')+'</div>'+
+      '<div class=ch-id>'+
+        '<div class=ch-name>'+esc(s.symbol||c.symbol||'?')+' <span class=ch-sub>'+esc((s.name||c.name||'').slice(0,24))+'</span> '+lpBadge(c)+'</div>'+
+        '<div class=ch-icons>'+coinIconsInline(ca)+'</div>'+
+      '</div>'+
+      '<div class=ch-right>'+
+        '<span class="saf '+cls+'" style="margin-top:5px">'+(sc==null?'…':sc)+' '+lbl+'</span>'+
+      '</div>'+
+      '<div class=ch-actions>'+
+        '<span class="wstar cha'+(isWatched(ca)?' on':'')+'" data-ca="'+ca+'" title="Watchlist">★</span>'+
+        '<span class="cha tip" data-tip="Pop out — trade anywhere" onclick="openTradePopout(\''+ca+'\',\''+jsq(s.symbol||c.symbol)+'\')">\u2197\ufe0e</span>'+
+        '<span class="cha tip" data-tip="Copy CA" onclick="copyCA(\''+ca+'\',event)">'+ICO_COPY+'</span>'+
+        '<a href="'+shareUrl+'" target=_blank rel="noopener noreferrer" class="cha tip" data-tip="Share on X">'+ICO_XLOGO+'</a>'+(c.dev?'<span class="cha tip" data-tip="Blacklist dev \u2014 hide all their coins" onclick="blacklistDev(\''+jsq(c.dev)+'\',event)"><svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2><circle cx=12 cy=12 r=9/><path d="M5.6 5.6l12.8 12.8"/></svg></span>':'')+(c.twitter?'<span class="cha tip" data-tip="Hide coins from this X profile" onclick="blacklistTwitter(\''+jsq(c.twitter)+'\',event)"><svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2><circle cx=12 cy=12 r=9/><path d="M15 9l-6 6M9 9l6 6"/></svg></span>':'')+'<span class="cha tip" data-tip="Hide this coin" onclick="toggleCoinHidden(\''+ca+'\',event)">'+EYE+'</span>'+
+      '</div>'+
+    '</div>'+
+    chStats(s,c)+
+    statPills(c,dev,nsnip)+
+  '</div>';}
+var REM=[['rocket','🚀'],['skull','💀'],['cap','🧢'],['eyes','👀']];
+function react(id,emoji,el,ev){ev.stopPropagation();var k='r_'+id+'_'+emoji;if(localStorage.getItem(k))return;localStorage.setItem(k,'1');
+  var c=el.querySelector('.rc');if(c)c.textContent=(parseInt(c.textContent||'0')+1);el.classList.add('did');
+  fetch(B+'api/react',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,emoji:emoji})}).catch(function(){});}
+/* ===== call-out rewards — Phase-0 SHADOW leaderboard strip ===== */
+var _cs=null;
+function loadCallStats(){try{J(B+'api/callstats').then(function(d){_cs=d;}).catch(function(){});}catch(e){}}
+loadCallStats();setInterval(loadCallStats,60000);
+function shortW(w){return w?(w.slice(0,4)+'…'+w.slice(-4)):'anon';}
+function callerStrip(){
+  if(!_cs||!_cs.top||!_cs.top.length)return'';
+  var rows=_cs.top.slice(0,3).map(function(c,i){
+    return '<span style="display:inline-flex;gap:5px;align-items:center;background:var(--pan2,#12151a);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-size:11px"><b style="color:var(--acc)">#'+(i+1)+'</b> <span class=mono>'+shortW(c.caller)+'</span> ◎'+(c.would_reward||0).toFixed(3)+' <span style="color:var(--mut)">· '+c.follows+' follow'+(c.follows===1?'':'s')+'</span></span>';
+  }).join(' ');
+  return '<div style="margin-bottom:10px"><div class=subn style="font-size:11px;margin-bottom:5px"><b>Caller rewards</b> — top callers by would-be fee share <span style="color:var(--mut)">(shadow: tracking, ◎'+(_cs.total_would_reward||0).toFixed(3)+' owed if live)</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">'+rows+'</div></div>';
+}
+function tradeWall(W,sym,ca){W=W||{};var posts=W.posts||[];
+  var head='<div class="dsec takessec"><h4>Community feed <span style="color:var(--mut);text-transform:none;font-weight:500">— who’s aping &amp; why</span></h4>';
+  var me=getMyAddr();var compose=me?'<div style="display:flex;gap:6px;margin-bottom:10px"><input id=takeinput placeholder="drop your take…" maxlength=280 style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 11px;font-size:13px"><button onclick="postTake(\''+safeCa(ca)+'\',\'buy\')" style="background:var(--acc);color:#04120c;border:0;border-radius:9px;padding:0 13px;font-weight:600;cursor:pointer;font-size:12px">Buy</button><button onclick="postTake(\''+safeCa(ca)+'\',\'sell\')" style="background:#241417;color:var(--red);border:1px solid #3a1f22;border-radius:9px;padding:0 13px;font-weight:600;cursor:pointer;font-size:12px">Sell</button></div>':'';
+  if(W.snipers_aped>=2)head+='<div style="background:rgba(55,227,154,.12);color:var(--acc);border:1px solid #173021;border-radius:9px;padding:9px 12px;font-weight:600;font-size:12.5px;margin-bottom:9px">'+W.snipers_aped+' proven snipers just aped this coin</div>';
+  if(!posts.length)return head+compose+'<div class=subn style="padding:4px 0">No takes yet — drop your take and you’ll be first here.</div></div>';
+  var rows=posts.map(function(p){
+    var side=p.side==='sell'?'<span class=down style="font-weight:600">sold</span>':'<span class=up style="font-weight:600">bought</span>';
+    var snip=p.sniper?'<span class="hbadge snip" style="margin-left:5px">'+TGT+' proven sniper</span>':'';
+    var conv=p.conviction?'<span class=subn style="margin-left:auto">'+p.conviction+'/10</span>':'';
+    var note=p.note?'<div style="margin-top:5px;color:var(--txt);font-size:12.5px;line-height:1.5">'+esc(p.note)+'</div>':'';
+    var rb=REM.map(function(e){var n=(p.reacts&&p.reacts[e[0]])||0;var did=localStorage.getItem('r_'+p.id+'_'+e[0])?' did':'';return '<span class="react'+did+'" onclick="react(\''+jsq(p.id)+'\',\''+e[0]+'\',this,event)">'+e[1]+' <span class=rc>'+n+'</span></span>';}).join('');
+    var callbtn=p.eligible_call?'<a class=callbtn href="'+B+'wallet?ca='+encodeURIComponent(ca)+'&side=buy&sym='+encodeURIComponent(sym||'')+'&call='+encodeURIComponent(p.id)+'&caller='+encodeURIComponent(p.wallet)+'">Buy this call</a>':'';
+    var callnote=p.eligible_call?'<div class=subn style="margin-top:6px;font-size:11px;color:var(--mut)">🤝 aping this call credits '+esc(p.username||'the caller')+' a slice of your fee — <b>shadow mode, pays nothing yet</b></div>':'';
+    return '<div class=wpost><div class=wrow1><span class=wava>'+esc(p.avatar||'🦊')+'</span><span class=wname>'+esc(p.username||'anon')+'</span> '+side+snip+conv+'</div>'+note+callnote+'<div class=reacts>'+rb+callbtn+'</div></div>';
+  }).join('');
+  return head+compose+callerStrip()+'<div class=wlist>'+rows+'</div></div>';
+}
+/* POST with retry — the funnel drops ~20% of writes; retrying makes them ~99% reliable */
+function postJ(path,body,tries){tries=tries||3;return (async function(){for(var i=0;i<tries;i++){try{var r=await fetch(B+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(r.ok)return await r.json();}catch(e){}await new Promise(function(s){setTimeout(s,400)});}return null;})();}
+function postTake(ca,side){var me=getMyAddr();if(!me){showLogin();return;}var inp=document.getElementById('takeinput');var note=((inp&&inp.value)||'').trim();if(!note){if(inp)inp.focus();return;}var uname='';try{uname=localStorage.getItem('t_username')||''}catch(e){}
+  authPost('/take',{ca:ca,side:side,note:note,username:uname}).then(function(d){if(d&&d.ok){if(inp)inp.value='';try{toast('Take posted',true)}catch(e){}setTimeout(function(){openCoin(ca)},450);}else{try{toast(d&&d.error==='not-authed'?'Sign in to post a take':((d&&d.error)||'could not post — tap again'))}catch(e){}}});}
+function tapeRows(T){
+  if(!T||!T.length)return '<div class=subn style="padding:4px 0">No recent swaps yet — this coin may be pre-graduation or quiet.</div>';
+  return T.slice(0,30).map(function(x){var buy=x.side!=='sell';var amt=x.amt||0;var addr=x.addr?String(x.addr):'';var sa=addr?addr.slice(0,4)+'\u2026'+addr.slice(-4):'';var when=x.t?ageStr(x.t)+' ago':'';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-size:12.5px">'
+      +'<span class="'+(buy?'up':'down')+'" style="font-weight:700;width:38px">'+(buy?'BUY':'SELL')+'</span>'
+      +'<span class=mono style="flex:1;font-weight:600">$'+(amt>=1000?(amt/1000).toFixed(1)+'k':Math.round(amt))+'</span>'
+      +(sa?'<span class=subn style="font-family:ui-monospace;font-size:11px">'+sa+'</span>':'')
+      +'<span class=subn style="width:58px;text-align:right">'+esc(when)+'</span></div>';}).join('');
+}
+function swapsSection(T){return '<div class="dsec swapssec"><h4>Live trades <span style="color:var(--mut);text-transform:none;font-weight:500">\u2014 buys &amp; sells</span></h4><div id=tradetape style="margin-top:2px">'+tapeRows(T)+'</div></div>';}
+function feedControls(){return '<div style="display:flex;gap:6px;padding:12px 20px 0"><button class="txwin on" data-fm=all onclick="setFeedMode(\'all\',this)">All</button><button class=txwin data-fm=thesis onclick="setFeedMode(\'thesis\',this)">Theses</button><button class=txwin data-fm=trades onclick="setFeedMode(\'trades\',this)">Trades</button></div>';}
+function setFeedMode(mode,btn){var p=btn&&btn.closest('.ctabp');if(!p)return;p.querySelectorAll('[data-fm]').forEach(function(x){x.classList.toggle('on',x.dataset.fm===mode)});var takes=p.querySelector('.takessec'),swaps=p.querySelector('.swapssec');if(takes)takes.style.display=mode==='trades'?'none':'';if(swaps)swaps.style.display=mode==='thesis'?'none':'';}
+function transactionSummary(T,s,win){T=Array.isArray(T)?T:[];s=s||{};win=win||'1h';var now=Date.now()/1000,secs=win==='5m'?300:(win==='1h'?3600:86400);var rows=T.filter(function(x){return !x.t||now-(+x.t)<=secs});
+  var buys=rows.filter(function(x){return x.side!=='sell'}),sells=rows.filter(function(x){return x.side==='sell'});var bv=buys.reduce(function(a,x){return a+(+x.amt||0)},0),sv=sells.reduce(function(a,x){return a+(+x.amt||0)},0);
+  if(win==='1d'){buys.length=+s.buys||buys.length;sells.length=+s.sells||sells.length;}
+  var total=buys.length+sells.length||1,bp=Math.round(buys.length/total*100),sp=100-bp;var uniq=function(a){var o={};a.forEach(function(x){if(x.addr)o[x.addr]=1});return Object.keys(o).length};
+  var vol=win==='1d'&&s.vol!=null?fmt(s.vol):(fmt(bv)+' buy / '+fmt(sv)+' sell');
+  return '<div class=txsum-head><b>Transactions</b><div class=txwins>'+['5m','1h','1d'].map(function(w){return '<button class="txwin'+(w===win?' on':'')+'" onclick="setTxWindow(\''+w+'\')">'+w.toUpperCase()+'</button>'}).join('')+'</div></div><div class=txgrid><div class=txmetric><strong>'+Number(buys.length).toLocaleString()+' buys</strong>'+uniq(buys)+' recent buyers<div class="txbar buy"><i style="width:'+bp+'%"></i></div></div><div class=txmetric style="text-align:right"><strong>'+Number(sells.length).toLocaleString()+' sells</strong>'+uniq(sells)+' recent sellers<div class="txbar sell"><i style="width:'+sp+'%;margin-left:auto"></i></div></div></div><div style="margin-top:12px;color:var(--mut);font-size:12px">Volume · <b style="color:var(--txt)">'+vol+'</b></div>';
+}
+function setTxWindow(win){window._txWin=win;var el=document.getElementById('txsummary');if(el)el.innerHTML=transactionSummary(window._coinTrades||[],window._coinSummary||{},win);}
+var _tapeTimer=null;
+function startTape(ca){stopTape();_tapeTimer=setInterval(function(){if(document.hidden)return;if(ca!==_chartCA){stopTape();return;}J(B+'api/trades?ca='+encodeURIComponent(ca)).then(function(T){var box=document.getElementById('tradetape');if(!box||ca!==_chartCA)return;box.innerHTML=tapeRows(Array.isArray(T)?T:[]);}).catch(function(){});},6000);}
+function stopTape(){if(_tapeTimer){clearInterval(_tapeTimer);_tapeTimer=null;}}
+var _coinLiveTimer=null,_coinLiveBusy=false;
+function stopCoinLive(){if(_coinLiveTimer){clearInterval(_coinLiveTimer);_coinLiveTimer=null;}_coinLiveBusy=false;}
+function startCoinLive(ca){stopCoinLive();_coinLiveTimer=setInterval(async function(){
+  if(document.hidden||_coinLiveBusy||ca!==_chartCA)return;_coinLiveBusy=true;
+  try{var rr=await Promise.all([J(B+'api/coin?ca='+encodeURIComponent(ca)),J(B+'api/holders?ca='+encodeURIComponent(ca))]);var s=rr[0]||{},H=rr[1]||{};if(H.dev&&H.dev.holders!=null)s.holders=H.dev.holders;
+    var c=COINS[ca]||(COINS[ca]={});['twitter','telegram','website','image','symbol','name','created','mc','liq','vol','holders','change','price_usd','top10','buys','sells','bond_pct','graduated'].forEach(function(k){if(s[k]!=null)c[k]=s[k];});
+    window._coinPx=+s.price_usd||window._coinPx||0;window._coinMc=+s.mc||window._coinMc||0;
+    var sc=s.score,cls=sc==null?'q':(sc>=70?'g':sc>=45?'y':'r'),lbl=sc==null?'—':(sc>=70?'CLEAN':sc>=45?'CAUTION':'RISKY');
+    var hd=document.getElementById('coinlivehead');if(hd)hd.innerHTML=coinHeader(s,ca,H,sc,cls,lbl,'https://twitter.com/intent/tweet?url='+encodeURIComponent('https://basedalpha.fun/'));
+    var hp=document.getElementById('coinliveholders');if(hp)hp.innerHTML=smartMoney(H.holders||[])+devCard(H.dev);
+    var fr=document.getElementById('coinfresh');if(fr){fr.textContent='live · updated now';fr.classList.remove('down');}
+  }catch(e){var fr=document.getElementById('coinfresh');if(fr){fr.textContent='live · reconnecting…';fr.classList.add('down');}}
+  finally{_coinLiveBusy=false;}
+},4000);}
+function devCard(d){
+  if(!d||!Object.keys(d).length)return'';
+  function chip(k,v,good){return '<div class=dstat><div class=k>'+k+'</div><div class="v '+(good===true?'up':good===false?'down':'')+'">'+v+'</div></div>';}
+  var devHold=d.dev_sold?'Sold ✓':(d.dev_pct!=null?d.dev_pct+'%':'—');
+  var devGood=d.dev_sold?true:(d.dev_pct!=null?(d.dev_pct<5):null);
+  var chips=[chip('Dev holdings',devHold,devGood),
+    chip('Mint auth',d.mint_renounced?'Renounced ✓':'⚠ Active',d.mint_renounced),
+    chip('Freeze auth',d.freeze_renounced?'Renounced ✓':'⚠ Active',d.freeze_renounced),
+    chip('Insiders',(d.insiders||0),d.insiders?false:true),
+    chip('LP',d.lp_locked?((d.lp_locked_pct!=null?d.lp_locked_pct+'% ':'')+'Locked ✓'):'Unlocked',d.lp_locked?true:null),
+    chip('Holders',d.holders!=null?Number(d.holders).toLocaleString():'—',null)].join('');
+  var rug=d.rugged?'<div style="background:rgba(255,92,106,.13);color:var(--red);border:1px solid #2a1518;border-radius:9px;padding:9px 12px;font-weight:600;font-size:12.5px;margin-bottom:10px">⚠ RugCheck flags this token as RUGGED — extreme caution</div>':'';
+  return '<div class=dsec><h4>Dev &amp; authority</h4>'+rug+'<div class=dstats style="margin:0">'+chips+'</div></div>';
+}
+function smartMoney(hs){
+  if(!hs||!hs.length)return'';
+  var td={sniper:{e:'🎯',c:'snip',l:'proven sniper'},insider:{e:'⚠️',c:'bad',l:'insider'},whale:{e:'🐋',c:'',l:'whale'}};
+  var tagged=hs.slice(0,20);
+  var nsnip=hs.filter(function(x){return x.tag==='sniper'}).length;
+  var rows=tagged.slice(0,10).map(function(x){
+    var t=td[x.tag]||{e:'\ud83d\udc64',c:'',l:'holder'};
+    var extra=(x.tag==='sniper'&&x.hit!=null)?'<span class=subn style="margin-left:6px">'+x.hit+'% hit · '+(x.mult||'?')+'x</span>':'';
+    return '<div class=hrow onclick="window.open(\'https://solscan.io/account/'+safeCa(x.wallet)+'\',\'_blank\')"><span class="hbadge '+t.c+'">'+t.e+' '+t.l+'</span><span class=mono style="font-size:11px;color:var(--dim)">'+esc((x.wallet||'').slice(0,4))+'…'+esc(x.wallet.slice(-4))+'</span>'+extra+'<span class=num style="margin-left:auto">'+x.pct+'%</span><span class=copybtn title="Copy wallet" onclick="event.stopPropagation();navigator.clipboard.writeText(\''+safeCa(x.wallet)+'\');toast(\'Wallet copied\',1)">'+ICO_COPY+'</span></div>';
+  }).join('');
+  var head=nsnip?'<div style="color:var(--acc);font-size:12.5px;font-weight:600;margin-bottom:8px">'+nsnip+' proven '+(nsnip>1?'snipers':'sniper')+' holding this coin</div>':'';
+  return '<div class=dsec><h4>Top holders <span style="color:var(--mut);text-transform:none;font-weight:500">— smart-money tags + concentration</span></h4>'+head+'<div class=hlist>'+(rows||'<div class=subn style="padding:4px 0">Holder data is still indexing.</div>')+'</div></div>';
+}
+async function openBnbCoin(addr){
+  addr=String(addr||'').trim();
+  if(!/^0x[a-fA-F0-9]{40}$/.test(addr)){try{toast('Invalid BNB address',0)}catch(e){}return;}
+  document.getElementById('cov').classList.add('on');
+  var el=document.getElementById('cdrawer');el.classList.remove('narrow');el.style.width='min(1500px,96vw)';
+  el.innerHTML='<div style="padding:20px"><div class=skel style="height:46px;border-radius:10px;margin-bottom:14px"></div><div class=skel style="height:400px;border-radius:14px"></div></div>';
+  var d=await J(B+'api/bnb/coin?addr='+encodeURIComponent(addr));
+  if(!d||!d.ok){el.innerHTML='<div style="padding:24px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:16px">BNB coin</b><button onclick="closeCoin()" style="background:none;border:0;color:var(--mut);font-size:24px;cursor:pointer">×</button></div><div style="color:var(--mut);font-size:13px">'+esc((d&&d.error)||'Could not load this coin.')+'</div></div>';return;}
+  var sym=jsq(d.symbol);var chg=d.change;
+  var chip=function(k,v){return '<div style="flex:1;min-width:82px"><div style="font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px">'+k+'</div><div style="font-size:15px;font-weight:600;margin-top:2px">'+v+'</div></div>';};
+  var img=d.image?('<img src="'+safeUrl(d.image)+'" onerror="this.style.display=\'none\'" style="width:38px;height:38px;border-radius:50%;object-fit:cover">'):('<span class="cdot bnb" style="width:34px;height:34px"></span>');
+  var socials='';
+  if(d.twitter)socials+='<a href="'+safeUrl(d.twitter)+'" target="_blank" rel="noopener" class=popbtn>𝕏</a>';
+  if(d.telegram)socials+='<a href="'+safeUrl(d.telegram)+'" target="_blank" rel="noopener" class=popbtn>Telegram</a>';
+  if(d.website)socials+='<a href="'+safeUrl(d.website)+'" target="_blank" rel="noopener" class=popbtn>Website</a>';
+  var buyUrl=B+'wallet?chain=bnb&token='+encodeURIComponent(addr)+'&sym='+encodeURIComponent(d.symbol||'');
+  el.innerHTML=
+   '<div style="padding:18px 22px 6px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">'+img+
+     '<div style="min-width:0"><div style="font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+sym+' <span style="color:var(--mut);font-weight:500;font-size:13px">'+esc(d.name||'')+'</span> <span style="background:#f0b90b;color:#111;font-weight:700;font-size:10px;padding:2px 7px;border-radius:6px">BNB</span></div></div>'+
+     '<div style="margin-left:auto;display:flex;gap:6px;align-items:center">'+socials+'<button onclick="closeCoin()" style="background:none;border:0;color:var(--mut);font-size:24px;cursor:pointer;line-height:1;margin-left:4px">×</button></div>'+
+   '</div>'+
+   '<div style="display:flex;flex-wrap:wrap;gap:14px;padding:6px 22px 4px">'+
+     chip('Market cap',(d.mc?_fmtMcAxis(d.mc):'—'))+chip('Price',(d.price?('$'+_fmtPx(d.price)):'—'))+chip('24h',(chg!=null?('<span style="color:'+(chg>=0?'#37e39a':'#ff5c6a')+'">'+(chg>=0?'▲':'▼')+Math.abs(chg).toFixed(1)+'%</span>'):'—'))+chip('Liquidity',(d.liq?_fmtMcAxis(d.liq):'—'))+chip('Volume 24h',(d.vol?_fmtMcAxis(d.vol):'—'))+chip('Txns 24h',(((d.buys||0)+(d.sells||0))||'—'))+
+   '</div>'+
+   '<div class=chartwrap style="margin:16px 20px"><iframe title="Chart" src="https://dexscreener.com/bsc/'+encodeURIComponent(d.pair||addr)+'?embed=1&theme=dark&trades=0&info=0" style="width:100%;height:480px;border:0;display:block"></iframe></div>'+
+   '<div style="margin:4px 22px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">'+
+     '<a href="'+buyUrl+'" target="_blank" rel="noopener" class="lp-btn pri" style="text-decoration:none">Trade '+sym+' on BNB →</a>'+
+     '<span style="color:var(--mut);font-size:12px">Pay with SOL or USDC — delivered to your BNB wallet, low fee.</span>'+
+   '</div>';
+}
+async function openKaspaCoin(tick){
+  tick=String(tick||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16);if(!tick){try{toast('Invalid ticker',0)}catch(e){}return;}
+  document.getElementById('cov').classList.add('on');
+  var el=document.getElementById('cdrawer');el.classList.add('narrow');el.style.width='min(700px,96vw)';
+  el.innerHTML='<div style="padding:22px"><div class=skel style="height:130px;border-radius:14px"></div></div>';
+  var d=await J(B+'api/kaspa/coin?tick='+encodeURIComponent(tick));
+  if(!d||!d.ok){el.innerHTML='<div style="padding:22px">'+errCard('openKaspaCoin()')+'</div>';return;}
+  var sc=d.safety,lbl=d.safety_label||'';
+  var vc=(sc==null?'#8a94a6':(sc<45?'#ff5c5c':(sc<70?'#f5b544':'#20b978')));
+  var reasons=(d.reasons||[]).map(function(r){return '<div style="padding:5px 0;font-size:13.5px;color:var(--txt)">'+esc(r)+'</div>'}).join('');
+  var fmtN=function(n){if(n==null)return '—';n=Number(n);if(n>=1e9)return (n/1e9).toFixed(2)+'B';if(n>=1e6)return (n/1e6).toFixed(2)+'M';if(n>=1e3)return (n/1e3).toFixed(1)+'K';return String(Math.round(n));};
+  var stat=function(k,v){return '<div style="flex:1;min-width:84px"><div style="font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px">'+k+'</div><div style="font-size:15px;font-weight:600;margin-top:2px">'+v+'</div></div>';};
+  var kspr='https://t.me/kspr_home_bot',market='https://kaspa.com/tokens/marketplace',explorer='https://kaspa.stream/token/'+encodeURIComponent(tick),moonpay='https://changenow.io/exchange?to=kas';
+  el.innerHTML=
+   '<div style="padding:20px 22px">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'+
+      '<div style="display:flex;align-items:center;gap:10px"><span class="cdot kaspa" style="width:26px;height:26px"></span><div><div style="font-size:20px;font-weight:700">'+esc(tick)+'</div><div style="font-size:12px;color:var(--mut)">KRC-20 · Kaspa</div></div></div>'+
+      '<button onclick="closeCoin()" style="background:none;border:0;color:var(--mut);font-size:24px;cursor:pointer;line-height:1">×</button>'+
+    '</div>'+
+    '<div style="border-left:3px solid '+vc+';border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--pan);border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)">'+
+      '<div style="font-size:22px;font-weight:800;color:'+vc+'">'+(sc==null?'?':sc)+'<span style="font-size:13px;color:var(--mut);font-weight:600">/100</span> &nbsp; '+esc(lbl)+'</div>'+
+      '<div style="margin-top:8px">'+reasons+'</div>'+
+    '</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:14px;padding:10px 2px 14px">'+
+      stat('Market cap',(d.mc?('$'+fmtN(d.mc)):'—'))+stat('Holders',fmtN(d.holders))+stat('Minted',(d.minted_pct==null?'—':d.minted_pct+'%'))+stat('Pre-mint',(d.pre_pct==null?'—':d.pre_pct+'%'))+stat('Supply',fmtN(d.max_supply))+stat('State',esc(d.state||'—'))+
+    '</div>'+
+    (d.deployer?'<div style="font-size:11px;color:var(--mut);word-break:break-all;margin-bottom:14px">Deployer '+esc(d.deployer)+'</div>':'')+
+    '<div style="font-size:12.5px;color:var(--mut);margin-bottom:11px;line-height:1.5">Add KAS to your BasedAlpha wallet to trade Kaspa coins. Deposit KAS once, then trade any KRC-20 from here — no Telegram, no separate app.</div>'+
+    '<div style="display:flex;flex-direction:column;gap:9px">'+
+      '<a href="'+B+'wallet?tab=kaspa" style="display:block;text-align:center;background:#37e39a;color:#04120c;font-weight:800;padding:14px;border-radius:12px;text-decoration:none">Add KAS to start trading →</a>'+
+      '<div style="font-size:11px;color:var(--mut);text-align:center;margin:1px 0 2px">Prefer another route? These still work:</div>'+
+      '<div style="display:flex;gap:9px">'+
+        '<a href="'+kspr+'" target="_blank" rel="noopener" style="flex:1;text-align:center;background:var(--pan);border:1px solid var(--line);color:var(--dim);font-weight:600;font-size:12.5px;padding:10px;border-radius:11px;text-decoration:none">KSPR bot</a>'+
+        '<a href="'+market+'" target="_blank" rel="noopener" style="flex:1;text-align:center;background:var(--pan);border:1px solid var(--line);color:var(--dim);font-weight:600;font-size:12.5px;padding:10px;border-radius:11px;text-decoration:none">KaspaCom</a>'+
+        '<a href="'+moonpay+'" target="_blank" rel="noopener" style="flex:1;text-align:center;background:var(--pan);border:1px solid var(--line);color:var(--dim);font-weight:600;font-size:12.5px;padding:10px;border-radius:11px;text-decoration:none">Get KAS</a>'+
+      '</div>'+
+      '<a href="'+explorer+'" target="_blank" rel="noopener" style="text-align:center;color:var(--mut);font-size:12px;padding:4px;text-decoration:none">View on kaspa.stream →</a>'+
+    '</div>'+
+   '</div>';
+}
+async function openCoin(ca){if(typeof CHAIN!=='undefined'&&CHAIN==='kaspa')return openKaspaCoin(ca);if((typeof CHAIN!=='undefined'&&CHAIN==='bnb')||/^0x[a-fA-F0-9]{40}$/.test(String(ca||'')))return openBnbCoin(ca);ca=safeCa(ca);if(!ca){try{toast('Invalid coin address',0)}catch(e){}return;}var _pend=window._qbPending;window._qbPending=null;document.getElementById('cov').classList.add('on');var el=document.getElementById('cdrawer');el.classList.remove('narrow');el.style.width='min(1900px,97vw)';el.innerHTML='<div style="padding:20px"><div class=skel style="height:46px;border-radius:10px;margin-bottom:14px"></div><div class=skel style="height:320px;border-radius:14px;margin-bottom:14px"></div><div class=skel style="height:70px;border-radius:10px;margin-bottom:12px"></div><div class=skel style="height:70px;border-radius:10px"></div></div>';
+  var myAddr0=getMyAddr(),cached=COINS[ca]||{};if(cached&&cached.symbol){try{var _csc=cached.safety,_ccl=(_csc==null?'q':(_csc>=70?'g':_csc>=45?'y':'r')),_clb=(_csc==null?'\u2026':(_csc>=70?'CLEAN':_csc>=45?'CAUTION':'RISKY'));el.innerHTML='<div id=coinlivehead>'+coinHeader(cached,ca,{},_csc,_ccl,_clb,'#')+'</div><div class=note style="margin:-7px 20px 8px;text-align:right;color:var(--mut)">loading live data\u2026</div><div style="padding:0 20px"><div class=skel style="height:320px;border-radius:14px;margin-bottom:12px"></div><div class=skel style="height:70px;border-radius:10px"></div></div>';}catch(e){}}function quick(p,fallback,ms){return Promise.race([Promise.resolve(p).catch(function(){return fallback}),new Promise(function(resolve){setTimeout(function(){resolve(fallback)},ms||2200)})])}var rr=await Promise.all([quick(J(B+'api/coin?ca='+ca),cached,1800),quick(J(B+'api/holders?ca='+ca),{},2200),quick(J(B+'api/wall?ca='+ca),{},1800),quick(J(B+'api/trades?ca='+ca),[],1800),myAddr0?quick(J(B+'api/tokenbalance?owner='+encodeURIComponent(myAddr0)+'&mint='+ca),null,1500):Promise.resolve(null)]);var s=rr[0]||cached,H=rr[1]||{},W=rr[2]||{},T=Array.isArray(rr[3])?rr[3]:[];window._coinTrades=T;window._coinSummary=s;window._txWin='1h';try{var _cc=COINS[ca]||(COINS[ca]={});['twitter','telegram','website','image','symbol','name','created','graduated','bond_pct'].forEach(function(k){if(s[k]&&!_cc[k])_cc[k]=s[k];});}catch(e){}try{window._coinPx=+s.price_usd||0;window._coinMc=+s.mc||0;window._coinSym=s.symbol||'';}catch(e){}var myTok=(rr[4]&&rr[4].ui)||0;var myTokV=myTok&&s.price_usd?myTok*s.price_usd:0;var sc=s.score,cls=sc==null?'q':(sc>=70?'g':sc>=45?'y':'r'),lbl=sc==null?'—':(sc>=70?'CLEAN':sc>=45?'CAUTION':'RISKY');
+  try{pushRecent({ca:ca,symbol:s.symbol,name:s.name,image:s.image,mc:s.mc});}catch(e){}window._qb={ca:ca,sym:s.symbol};var smap=smartMoney(H.holders||[]);var wall=tradeWall(W,s.symbol||'',ca);window._coinTakes=(W&&W.posts)||[];
+  var nsnip=(H.holders||[]).filter(function(x){return x.tag==='sniper'}).length;
+  var shareTxt=encodeURIComponent('$'+(s.symbol||'?')+' — graded '+lbl+' ('+(sc==null?'?':sc)+'/100) on BasedAlpha 🛡️'+(nsnip?', '+nsnip+' proven sniper'+(nsnip>1?'s':'')+' in':'')+'. Trade at 0.3%, no minimum 👇');
+  var shareUrl='https://twitter.com/intent/tweet?text='+shareTxt+'&url='+encodeURIComponent('https://basedalpha.fun/');
+  var reasons=(s.reasons||[]).map(function(r){var st=reasonStatus(r);return '<div class="chk chk-'+st+'">'+riIcon(st)+'<span>'+esc(r)+'</span></div>'}).join('')||'<div class=ri style=color:var(--mut)>no data yet</div>';
+  var t10=s.top10_pct!=null?Math.round(s.top10_pct)+'%':(s.top10_pct_all!=null?Math.round(s.top10_pct_all)+'%':'—');var pimg=safeUrl(s.image);
+  el.innerHTML='<div id=coinlivehead>'+coinHeader(s,ca,H,sc,cls,lbl,shareUrl)+'</div><div id=coinfresh class=note style="margin:-7px 20px 8px;text-align:right">live · updated now</div>'+coinVerdictBanner(ca,H)+intelPanel(H)+(myTok>0?'<div style="margin:10px 20px 0;padding:12px 15px;background:linear-gradient(90deg,rgba(55,227,154,.15),rgba(55,227,154,.03));border:1px solid rgba(55,227,154,.32);border-radius:13px;display:flex;align-items:baseline;gap:8px"><span style="color:var(--mut);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Your bag</span><b style="color:var(--acc);font-size:15px">'+Number(myTok).toLocaleString(undefined,{maximumFractionDigits:myTok<1?6:2})+' '+esc(s.symbol||'')+'</b>'+(myTokV?'<span style="color:var(--txt);font-weight:600;font-size:13px">≈ $'+Number(myTokV).toLocaleString(undefined,{maximumFractionDigits:2})+'</span>':'')+'</div>':'')+
+'<div class=coin-top><div class=coin-chart><div class=chartwrap><div class=chartbar>'+
+      ['1s','5s','10s','15s','30s','1m','5m','15m','1h','4h','1d'].map(function(tf){return '<span class="tfseg'+(tf==='1s'?' on':'')+'" data-tf="'+tf+'" onclick="setChartTF(this)">'+tf+'</span>'}).join('')+
+      '<span class=cbright><span class="cunit on" data-u="price" onclick="setChartUnit(this)">Price</span><span class=cunit data-u="mc" onclick="setChartUnit(this)">MC</span><span class=cma onclick="toggleChartMA(this)" title="Moving averages (9 &amp; 21)">MA</span><button class=cbexp onclick="toggleChartFull()" title="Fullscreen chart"><svg viewBox="0 0 24 24" width=13 height=13 fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button><span class=cpro onclick="toggleChartPro(this)" title="Full TradingView chart — indicators, drawing tools, more timeframes">Pro</span><span class=note>live</span></span></div>'+
+      '<div id=lwcbox></div></div></div><div class=coin-trade>'+
+    '<div style="margin:16px 20px 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-weight:600;font-size:13.5px;color:var(--txt)">'+ZAP+' Trade instantly</span><span style="color:var(--mut);font-weight:600;font-size:12px">· 0.3% · no min</span>'+
+      '<button class=popbtn style="margin-left:auto" onclick="openTradePopout(\''+ca+'\',\''+esc((s.symbol||'').replace(/[\x27\x22]/g,''))+'\')"><svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>Pop out — trade anywhere</button>'+ 
+      '<button class=popbtn onclick="armFloatingTrade(\''+ca+'\',\''+esc((s.symbol||'').replace(/[\x27\x22]/g,''))+'\')" title="Pin a Buy/Sell control to your phone notifications"><svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20a2 2 0 0 0 4 0"/></svg>Trade from your phone</button>'+ 
+      '<button class=popbtn onclick="setCoinAlert(\''+ca+'\',\''+esc((s.symbol||'').replace(/[\x27\x22]/g,''))+'\')" title="Get a push when the price hits your target"><svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20a2 2 0 0 0 4 0"/></svg>Set price alert</button>'+ 
+      '<button class=popbtn onclick="openOrderPop(\''+ca+'\',\''+esc((s.symbol||'').replace(/[\x27\x22]/g,''))+'\')" title="Set a limit buy, take-profit or stop-loss that fires automatically"><svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M4 18V9M9 18V5M14 18v-6M19 18V8"/></svg>Limit / auto</button>'+ 
+    '</div>'+
+    '<div style="margin:2px 16px 18px"><iframe id=tradeframe title="Trade" src="'+B+'wallet?embed=1&ca='+encodeURIComponent(ca)+'&side=buy&sym='+encodeURIComponent(s.symbol||'')+(payCcy()==='usdc'?'&in=usdc':'')+(_pend?'&amt='+encodeURIComponent(_pend):'')+'" style="width:100%;height:620px;border:1px solid var(--line);border-radius:12px;background:var(--bg);display:block"></iframe></div>'+
+    '</div></div><div class=ctabs><span class="ctab on" data-p=holders onclick="ctab(this)">Holders ('+Number((H.dev&&H.dev.holders)||s.holders||0).toLocaleString()+')</span><span class=ctab data-p=feed onclick="ctab(this)">Feed'+((W.posts||[]).length?' ('+(W.posts||[]).length+')':'')+'</span><span class=ctab data-p=about onclick="ctab(this)">About</span></div>'+
+    '<div class=ctabp data-p=holders id=coinliveholders>'+smap+devCard(H.dev)+'</div>'+ 
+    '<div class=ctabp data-p=feed style="display:none">'+feedControls()+wall+swapsSection(T)+'</div>'+
+    '<div class=ctabp data-p=about style="display:none">'+
+      '<div class=dsec><h4>Description <a href="https://x.com/search?q='+encodeURIComponent((s.symbol||'')+' '+ca)+'" target=_blank rel=noopener style="float:right;color:var(--acc);text-decoration:none;text-transform:none;font-size:12px">Search on X →</a></h4><div class=subn>'+(s.description?esc(s.description):'No description available for this asset.')+'</div></div><div class=txsum id=txsummary>'+transactionSummary(T,s,'1h')+'</div>'+
+      '<div class=dstats><div class=dstat><div class=k>Market cap</div><div class=v>'+fmt(s.mc)+'</div></div><div class=dstat><div class=k>Liquidity</div><div class=v>'+fmt(s.liq||s.liquidity)+'</div></div><div class=dstat><div class=k>Holders</div><div class=v>'+(s.holders||'—')+'</div></div><div class=dstat><div class=k>Top 10</div><div class=v>'+t10+'</div></div><div class=dstat><div class=k>Insiders</div><div class=v>'+(s.graph_insiders||0)+'</div></div><div class=dstat><div class=k>Verdict</div><div class="v '+(cls=='g'?'up':cls=='r'?'down':'')+'">'+lbl+'</div></div></div>'+
+      '<div class=dsec><h4>Safety breakdown</h4><div class=rlist>'+reasons+'</div></div>'+
+    '</div>';
+  initChart(ca);startTape(ca);startCoinLive(ca);}
+function closeCoin(){try{stopTape();stopCoinLive();_stopChartTimer()}catch(e){}document.getElementById('cov').classList.remove('on');if(_chart){try{_chart.remove()}catch(e){}_chart=null;}}
+document.addEventListener('keydown',function(e){
+  var cov=document.getElementById('cov');var open=cov&&cov.classList.contains('on');
+  var typing=document.activeElement&&['INPUT','TEXTAREA'].indexOf(document.activeElement.tagName)>=0;
+  if(e.key==='Escape'){var hk=document.getElementById('hkcheat');if(hk){hk.remove();return;}if(open){closeCoin();return;}if(typing){document.activeElement.blur();}return;}
+  if(typing)return;
+  if(e.key==='/'){var sb=document.getElementById('search');if(sb){e.preventDefault();sb.focus();}return;}
+  if(e.key==='?'){toggleHotkeys();return;}
+  if(open)return;
+  if(e.key==='j'||e.key==='k'||e.key==='ArrowDown'||e.key==='ArrowUp'){var rows=[].slice.call(document.querySelectorAll('.ba-row'));if(!rows.length)return;e.preventDefault();if(window._cur==null)window._cur=-1;window._cur+=(e.key==='k'||e.key==='ArrowUp')?-1:1;window._cur=Math.max(0,Math.min(rows.length-1,window._cur));rows.forEach(function(r){r.classList.remove('row-focused')});var el=rows[window._cur];el.classList.add('row-focused');el.scrollIntoView({block:'nearest',behavior:'smooth'});return;}
+  if(e.key==='Enter'&&window._cur!=null){var rw=[].slice.call(document.querySelectorAll('.ba-row'));if(rw[window._cur])rw[window._cur].click();return;}
+});
+/* ===== TradingView Lightweight Charts (replaces the slow dexscreener iframe) ===== */
+var _chart=null,_cser=null,_vser=null,_chartCA=null,_chartTF='1s',_chartTimer=null,_chartRefreshing=false;
+function _fmtPx(p){if(p==null)return'';p=+p;if(p>=1)return p.toFixed(3);if(p>=0.01)return p.toFixed(4);if(p>=0.0001)return p.toFixed(6);var e=Math.floor(Math.log10(p));var zeros=-e-1;var sig=Math.round(p/Math.pow(10,e-2));var sub='₀₁₂₃₄₅₆₇₈₉';var zs=String(zeros).split('').map(function(d){return sub[+d]}).join('');return '0.0'+zs+sig;}
+var _chartUnit='mc';   // default to MarketCap axis (clean $K) like Axiom; price mode still toggleable
+function _chartMult(){var p=window._coinPx||0,m=window._coinMc||0;return (p>0&&m>0)?(m/p):null;}
+function _fmtMcAxis(v){if(v>=1e9)return '$'+(v/1e9).toFixed(2)+'B';if(v>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(v>=1e3)return '$'+(v/1e3).toFixed(1)+'K';return '$'+Math.round(v);}
+function _fmtChartVal(v){if(_chartUnit==='mc'){var m=_chartMult();if(m)return _fmtMcAxis(v*m);}return _fmtPx(v);}
+function setChartUnit(el){var u=el.dataset.u;if(u===_chartUnit)return;_chartUnit=u;var pn=el.parentNode;if(pn)pn.querySelectorAll('.cunit').forEach(function(x){x.classList.toggle('on',x===el)});drawChart();}
+function toggleChartFull(){var w=document.querySelector('#cdrawer .chartwrap');if(!w)return;try{if(document.fullscreenElement){document.exitFullscreen();}else{(w.requestFullscreen||w.webkitRequestFullscreen||w.msRequestFullscreen).call(w);}}catch(e){}}
+var _chartPro=false;
+function toggleChartPro(el){_chartPro=!_chartPro;el.classList.toggle('on',_chartPro);el.textContent=_chartPro?'Fast':'Pro';var bar=el.closest('.chartbar');if(bar)bar.classList.toggle('pro',_chartPro);drawChart();}
+var _chartMA=false;
+function toggleChartMA(el){_chartMA=!_chartMA;el.classList.toggle('on',_chartMA);drawChart();}
+function _sma(c,period){var out=[],sum=0;for(var i=0;i<c.length;i++){sum+=c[i][4];if(i>=period)sum-=c[i-period][4];if(i>=period-1)out.push({time:c[i][0],value:sum/period});}return out;}
+function chartFallback(box){if(box)box.innerHTML='<iframe class=chart style="height:320px;border-radius:0" src="https://dexscreener.com/solana/'+_chartCA+'?embed=1&theme=dark&info=0&trades=0"></iframe>';}
+function ctab(el){var p=el.dataset.p;var bar=el.parentElement;[].forEach.call(bar.children,function(x){if(x.classList.contains('ctab'))x.classList.toggle('on',x===el)});var host=bar.parentElement;[].forEach.call(host.querySelectorAll('.ctabp'),function(x){x.style.display=x.dataset.p===p?'':'none'});}
+function _stopChartTimer(){if(_chartTimer){clearInterval(_chartTimer);_chartTimer=null;}}
+function _chartRefreshMs(){return ({'1s':1500,'5s':2500,'10s':3500,'15s':4500,'30s':6000}[_chartTF]||10000);}
+async function refreshChartLive(){
+  if(document.hidden||_chartRefreshing||!_chart||!_cser||!_vser||_chartPro||!_chartCA)return;
+  _chartRefreshing=true;var ca=_chartCA,tf=_chartTF;
+  try{var r=await J(B+'api/ohlcv?ca='+encodeURIComponent(ca)+'&tf='+tf);if(ca!==_chartCA||tf!==_chartTF)return;var c=(r&&r.candles)||[];if(c.length<2)return;
+    _cser.setData(c.map(function(x){return{time:x[0],open:x[1],high:x[2],low:x[3],close:x[4]};}));
+    _vser.setData(c.map(function(x){return{time:x[0],value:x[5],color:x[4]>=x[1]?'rgba(55,227,154,.4)':'rgba(255,92,106,.4)'};}));
+  }catch(e){}finally{_chartRefreshing=false;}
+}
+function _startChartTimer(){_stopChartTimer();_chartTimer=setInterval(refreshChartLive,_chartRefreshMs());}
+function initChart(ca){_chartCA=ca;_chartTF='1s';drawChart();}
+function setChartTF(el){var tf=el.dataset.tf;if(tf===_chartTF)return;_chartTF=tf;
+  _stopChartTimer();var p=el.parentNode;if(p)p.querySelectorAll('.tfseg').forEach(function(x){x.classList.toggle('on',x===el)});drawChart();}
+async function drawChart(){
+  var box=document.getElementById('lwcbox');if(!box)return;
+  if(_chartPro){if(_chart){try{_chart.remove()}catch(e){}_chart=null;}box.style.height='440px';box.innerHTML='<iframe title="Advanced chart" src="https://dexscreener.com/solana/'+encodeURIComponent(_chartCA)+'?embed=1&theme=dark&trades=0&info=0" style="width:100%;height:440px;border:0;display:block"></iframe>';return;}
+  if(typeof LightweightCharts==='undefined'){return chartFallback(box);}
+  var ca=_chartCA;
+  var r=await J(B+'api/ohlcv?ca='+encodeURIComponent(ca)+'&tf='+_chartTF).catch(function(){return null;});
+  if(ca!==_chartCA)return;                                  // user switched coins mid-fetch
+  var c=(r&&r.candles)||[];
+  if(c.length<2&&_chartTF!=='1m'){var r2=await J(B+'api/ohlcv?ca='+encodeURIComponent(ca)+'&tf=1m').catch(function(){return null;});if(ca!==_chartCA)return;var c2=(r2&&r2.candles)||[];if(c2.length>=2)c=c2;}
+  if(c.length<2){return chartFallback(box);}
+  if(_chart){try{_chart.remove()}catch(e){}_chart=null;}
+  box.style.height='';box.innerHTML='';
+  _chart=LightweightCharts.createChart(box,{autoSize:true,
+    layout:{background:{type:'solid',color:'#0a0c0f'},textColor:'#8b95a5',fontFamily:"GeistMono,ui-monospace,'SF Mono',Menlo,monospace",fontSize:11},
+    grid:{vertLines:{visible:false},horzLines:{color:'rgba(255,255,255,.05)'}},
+    timeScale:{borderColor:'#1e242d',timeVisible:true,secondsVisible:/s$/.test(_chartTF),rightOffset:5,barSpacing:/s$/.test(_chartTF)?4.2:5.2,minBarSpacing:2.5},
+    rightPriceScale:{borderColor:'#1e242d',mode:1,scaleMargins:{top:.08,bottom:.24},entireTextOnly:true},
+    crosshair:{mode:1,vertLine:{color:'#4b5563',width:1,style:2,labelBackgroundColor:'#20b978'},horzLine:{color:'#4b5563',width:1,style:2,labelBackgroundColor:'#20b978'}},
+    localization:{priceFormatter:_fmtChartVal}});
+  _cser=_chart.addCandlestickSeries({upColor:'#37e39a',downColor:'#ff5c6a',wickUpColor:'#37e39a',wickDownColor:'#ff5c6a',borderVisible:false,
+    priceFormat:{type:'custom',formatter:_fmtChartVal,minMove:0.000000001}});
+  _cser.setData(c.map(function(x){return{time:x[0],open:x[1],high:x[2],low:x[3],close:x[4]};}));
+  _vser=_chart.addHistogramSeries({priceScaleId:'',priceFormat:{type:'volume'},color:'#2a3340'});
+  _vser.setData(c.map(function(x){return{time:x[0],value:x[5],color:x[4]>=x[1]?'rgba(55,227,154,.4)':'rgba(255,92,106,.4)'};}));
+  if(_chartMA){try{var _ma1=_chart.addLineSeries({color:'#f5c451',lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});_ma1.setData(_sma(c,9));var _ma2=_chart.addLineSeries({color:'#5b9dff',lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});_ma2.setData(_sma(c,21));}catch(e){}}
+  _chart.priceScale('').applyOptions({scaleMargins:{top:.84,bottom:0}});
+  _chart.timeScale().fitContent();
+  // Sparse new launches used to stretch two candles across the entire viewport.
+  // Reserve a normal 40-bar canvas so early price action stays readable.
+  try{var _ts=_chart.timeScale();if(c.length<40){_ts.applyOptions({barSpacing:5.5,rightOffset:5,fixLeftEdge:false});_ts.setVisibleLogicalRange({from:Math.min(-3,c.length-40),to:c.length+4});}}catch(e){}
+  loadTradeMarkers(ca);
+  try{overlayTakes();overlayTrades();_chart.timeScale().subscribeVisibleTimeRangeChange(function(){overlayTakes();overlayTrades();});}catch(e){}
+  _startChartTimer();
+}
+/* green ▲ markers on the chart showing where people bought + how much (pump.fun trades) */
+function closeTakePop(){var e=document.getElementById('takepop');if(e)e.remove();}
+function showTakePop(t,x){try{var ov=document.getElementById('takeov');if(!ov)return;closeTakePop();
+  var w=ov.clientWidth||300;var av=t.avatar||'';var isUrl=/^https?:/.test(av);
+  var side=t.side==='sell'?'<span class=down style="font-weight:600">SOLD</span>':'<span class=up style="font-weight:600">BOUGHT</span>';
+  var when=t.ts?ageStr(Math.floor(t.ts)):'';
+  var avh=isUrl?('<img src="'+safeUrl(av)+'" style="width:30px;height:30px;border-radius:50%;object-fit:cover">'):('<div style="width:30px;height:30px;border-radius:50%;background:#161c26;display:grid;place-items:center;font-size:15px">'+(esc(av)||'\u25c8')+'</div>');
+  var wal=t.wallet?safeCa(t.wallet):'';
+  var p=document.createElement('div');p.className='takepop';p.id='takepop';
+  p.style.left=Math.max(4,Math.min(x-108,w-220))+'px';p.style.top='46px';
+  p.innerHTML='<div style="display:flex;align-items:center;gap:9px;margin-bottom:'+(t.note?'8px':'10px')+'">'+avh+'<div style="min-width:0;flex:1"><div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(t.username||'trader')+'</div><div class=subn style="font-size:11px">'+side+' \u00b7 '+when+'</div></div><span onclick="closeTakePop()" style="cursor:pointer;color:var(--mut);font-size:16px;line-height:1">\u00d7</span></div>'
+    +(t.note?'<div style="font-size:12.5px;color:var(--txt);line-height:1.45;margin-bottom:10px">'+esc(t.note)+'</div>':'')
+    +(wal?'<button onclick="chartFollow(\''+wal+'\',this)" style="width:100%;background:var(--acc);color:#04120c;border:0;border-radius:9px;padding:9px;font-weight:600;cursor:pointer;font-size:12.5px">Follow</button>':'');
+  ov.appendChild(p);
+}catch(e){}}
+function chartFollow(wal,btn){try{var me=getMyAddr();if(!me){showLogin();return;}authPost('/xfollow',{target:wal,on:1});if(btn){btn.textContent='Following \u2713';btn.disabled=true;btn.style.opacity=.7;}}catch(e){}}
+function overlayTakes(){try{
+  var box=document.getElementById('lwcbox');if(!box||!_chart||!_cser)return;
+  box.style.position='relative';var ov=document.getElementById('takeov');
+  if(!ov){ov=document.createElement('div');ov.id='takeov';ov.style.cssText='position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;z-index:3;overflow:hidden';box.appendChild(ov);}
+  var pop=document.getElementById('takepop');ov.innerHTML='';if(pop)ov.appendChild(pop);
+  var takes=window._coinTakes||[];if(!takes.length)return;
+  var tsc=_chart.timeScale();var placed=0;
+  takes.forEach(function(t,i){if(!t.ts||placed>=30)return;var x=tsc.timeToCoordinate(Math.floor(t.ts));if(x==null)return;placed++;
+    var av=t.avatar||'';var isUrl=/^https?:/.test(av);var y=10+((i%3)*30);
+    var el=document.createElement('div');el.className='takebub'+(t.side==='sell'?' sell':'');
+    el.style.cssText='position:absolute;left:'+x+'px;top:'+y+'px;transform:translateX(-50%);pointer-events:auto;cursor:pointer';
+    el.innerHTML=isUrl?('<img src="'+safeUrl(av)+'">'):('<span>'+(esc(av)||'\u25c8')+'</span>');
+    el.onclick=function(ev){ev.stopPropagation();showTakePop(t,x);};
+    ov.appendChild(el);
+  });
+}catch(e){}}
+var _coinTrades=[];
+function loadTradeMarkers(ca){J(B+'api/trades?ca='+encodeURIComponent(ca)).then(function(tr){if(ca!==_chartCA)return;var fol={};try{getFollows().forEach(function(f){fol[f.uid]=1});}catch(e){}var arr=(Array.isArray(tr)?tr:[]).filter(function(t){return (t.top&&t.top<=250)||(t.uid&&fol[t.uid]);});_coinTrades=arr.slice().sort(function(a,b){return (b.amt||0)-(a.amt||0)}).slice(0,40);overlayTrades();});}
+function overlayTrades(){try{
+  var box=document.getElementById('lwcbox');if(!box||!_chart||!_cser)return;box.style.position='relative';
+  var ov=document.getElementById('tradeov');
+  if(!ov){ov=document.createElement('div');ov.id='tradeov';ov.style.cssText='position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;z-index:3;overflow:hidden';box.appendChild(ov);}
+  var keep=document.getElementById('tradepop');ov.innerHTML='';if(keep)ov.appendChild(keep);
+  var tsc=_chart.timeScale();
+  _coinTrades.forEach(function(t){if(!t.t)return;var x=tsc.timeToCoordinate(Math.floor(t.t));if(x==null)return;
+    var y=(t.price&&_cser.priceToCoordinate)?_cser.priceToCoordinate(t.price):null;if(y==null)y=box.clientHeight*0.55;
+    var buy=t.side!=='sell';var amt=t.amt||0;var sz=(t.top&&t.top<=50)?30:26;
+    var el=document.createElement('div');el.className='tradebub '+(buy?'b':'s');
+    el.style.cssText='position:absolute;left:'+x+'px;top:'+y+'px;width:'+sz+'px;height:'+sz+'px;border-radius:50%;overflow:hidden;background:#0e1218;border:2px solid '+(buy?'#37e39a':'#ff5c72')+';box-shadow:0 2px 8px -2px rgba(0,0,0,.7);transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;display:grid;place-items:center;font-size:11px;font-weight:700;color:'+(buy?'#37e39a':'#ff5c72')+';';
+    if(t.pic){el.innerHTML='<img src="'+safeUrl(t.pic)+'" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">';}
+    else{el.textContent=(t.name||'?').slice(0,1).toUpperCase();}
+    el.onmouseenter=function(){showTradePop(t,x,y);};el.onmouseleave=function(){var e=document.getElementById('tradepop');if(e)e.remove();};
+    el.onclick=function(ev){ev.stopPropagation();showTradePop(t,x,y);};
+    ov.appendChild(el);});
+}catch(e){}}
+function showTradePop(t,x,y){try{var ov=document.getElementById('tradeov');if(!ov)return;var old=document.getElementById('tradepop');if(old)old.remove();
+  var buy=t.side!=='sell';var amt=t.amt||0;var box=document.getElementById('lwcbox');var w=box?box.clientWidth:300;
+  var p=document.createElement('div');p.id='tradepop';
+  p.style.cssText='position:absolute;left:'+Math.max(4,Math.min(x-72,w-150))+'px;top:'+Math.max(4,y-54)+'px;background:#0e1218;border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:12px;pointer-events:none;z-index:6;white-space:nowrap;box-shadow:0 8px 24px -8px rgba(0,0,0,.8)';
+  p.innerHTML='<b style="color:'+(buy?'#37e39a':'#ff5c72')+'">'+(buy?'BOUGHT':'SOLD')+'</b> $'+(amt>=1000?(amt/1000).toFixed(1)+'k':Math.round(amt))+(t.name?' <span style="color:var(--txt)">by '+esc(t.name)+'</span>':'')+(t.top&&t.top<=250?' <span style="color:#f4b552">#'+t.top+'</span>':'')+'<div style="color:var(--mut);font-size:10.5px;margin-top:1px">'+(t.t?ageStr(Math.floor(t.t)):'')+'</div>';
+  ov.appendChild(p);
+}catch(e){}}
+function loadBuyMarkers(ca){J(B+'api/trades?ca='+encodeURIComponent(ca)).then(function(tr){
+  if(ca!==_chartCA||!_cser||!Array.isArray(tr)||!tr.length)return;
+  var top=tr.slice().sort(function(a,b){return (b.amt||0)-(a.amt||0)}).slice(0,12),seen={},mk=[];
+  top.forEach(function(x){if(!x.t||seen[x.t])return;seen[x.t]=1;
+    mk.push({time:x.t,position:'belowBar',color:'#37e39a',shape:'arrowUp',
+      text:'$'+((x.amt||0)>=1000?(x.amt/1000).toFixed(1)+'k':Math.round(x.amt||0))});});
+  mk.sort(function(a,b){return a.time-b.time});
+  try{_cser.setMarkers(mk);}catch(e){}
+});}
+/* ===== follow system: localStorage UI state + server-backed social graph (by wallet addr) ===== */
+function getMyAddr(){try{var w=JSON.parse(localStorage.getItem('terminal_wallet')||'null');return (w&&w.address)||''}catch(e){return ''}}
+function refCapture(){try{var r=new URLSearchParams(location.search).get('ref');var m=location.pathname.match(/^\/i\/([A-Za-z0-9_]{2,60})/);if(m){r=m[1];try{history.replaceState(null,'','/')}catch(e){}}if(r){localStorage.setItem('t_ref',r.trim());window._freshRef=r.trim();}}catch(e){}}
+function rwGo(){rwClose();showLogin();}
+function rwClose(){var e=document.getElementById('refwel');if(e)e.remove();}
+function showRefWelcome(){try{
+  
+  if(getMyAddr())return;var ref=window._freshRef||'';
+  if(!ref)return;
+  try{if(sessionStorage.getItem('refwel_seen'))return;}catch(e){}
+  J(B+'api/refinfo?ref='+encodeURIComponent(ref)).then(function(d){
+    if(!d||!d.ok||getMyAddr())return;
+    try{sessionStorage.setItem('refwel_seen','1')}catch(e){}
+    var name=esc(d.name||'a friend');var av=d.avatar||'';
+    var avHtml=/^https?:/.test(av)?('<img class=rw-av src="'+safeUrl(av)+'">'):('<div class="rw-av rw-emoji">'+(esc(av)||'\u25c8')+'</div>');
+    var SHIELD='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4" stroke-linecap=round/></svg>';
+    var ZAP='<svg viewBox="0 0 24 24" fill=currentColor><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>';
+    var COIN='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2><circle cx=12 cy=12 r=9/><path d="M12 7v10M14.5 9.4c0-1-1.1-1.6-2.5-1.6s-2.5.6-2.5 1.7c0 2.4 5 1.3 5 3.7 0 1.1-1.1 1.7-2.5 1.7s-2.5-.6-2.5-1.6" stroke-linecap=round/></svg>';
+    var el=document.createElement('div');el.className='refwel';el.id='refwel';
+    el.addEventListener('click',function(ev){if(ev.target===el)rwClose();});
+    el.innerHTML='<div class=rw-card>'+
+      '<div class=rw-brand><svg viewBox="0 0 24 24" fill=none stroke="var(--acc)" stroke-width=2 stroke-linejoin=round><path d="M12 3 3 20h18L12 3Z"/></svg>BasedAlpha</div>'+
+      '<div class=rw-inv>'+avHtml+'<div><div class=rw-eye>YOU&#39;RE INVITED BY</div><div class=rw-name>'+name+'</div></div></div>'+
+      '<h1 class=rw-h1>Welcome to BasedAlpha</h1>'+
+      '<p class=rw-sub>The memecoin terminal that puts a rug-safety grade on <b>every</b> coin \u2014 then lets you trade it in one tap.</p>'+
+      '<div class=rw-feats>'+
+        '<div>'+SHIELD+'<span>Every coin graded for scams before you ape</span></div>'+
+        '<div>'+ZAP+'<span>One-tap buys with fast, protected fills</span></div>'+
+        '<div>'+COIN+'<span>Earn real SOL \u2014 half of every fee goes back to users</span></div>'+
+      '</div>'+
+      '<button class=rw-cta onclick="rwGo()">Create your free wallet \u2192</button>'+
+      '<button class=rw-skip onclick="rwClose()">Explore first</button>'+
+    '</div>';
+    document.body.appendChild(el);
+  }).catch(function(){});
+}catch(e){}}
+refCapture();
+showRefWelcome();
+function refParam(){var r='';try{r=localStorage.getItem('t_ref')||''}catch(e){}return r?('&ref='+encodeURIComponent(r)):'';}
+function myRefLink(){var c=getMyAddr();try{var u=(localStorage.getItem('t_username')||'').trim().toLowerCase();if(u&&/^[a-z0-9_]{2,20}$/.test(u))c=u;}catch(e){}return 'https://basedalpha.fun/?ref='+encodeURIComponent(c)+'&v=2';}
+function copyRef(){var el=document.getElementById('reflink');if(!el)return;el.select();try{navigator.clipboard.writeText(el.value)}catch(e){try{document.execCommand('copy')}catch(_){}}try{var b=event&&event.target;if(b){var t=b.textContent;b.textContent='Copied ✓';setTimeout(function(){b.textContent=t},1500);}}catch(e){}}
+function loadRefStats(){var me=getMyAddr();var box=document.getElementById('refbox');if(!box)return;if(!me){box.innerHTML='<div style="color:var(--mut);font-size:13px;margin-bottom:10px">Sign in to get your personal invite link.</div><button onclick="showLogin()" style="background:var(--acc);color:#04120c;border:0;border-radius:11px;padding:13px 18px;font-weight:600;cursor:pointer;width:100%">Sign in to get your link</button>';return;}
+  try{var _u=(localStorage.getItem('t_username')||'').trim().toLowerCase();if(_u&&/^[a-z0-9_]{2,20}$/.test(_u))authPost('/refcode',{code:_u});}catch(e){}
+  authPost('/refstats',{}).then(function(r){if(!r||!document.getElementById('refbox'))return;var link=myRefLink();
+    document.getElementById('refbox').innerHTML='<div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">'+avaHtml(me,40)+'<div><div style="font-weight:600;font-size:15px">Your invite link</div><div style="color:var(--mut);font-size:12px">Share it — earn 0.075% of every trade they make, forever</div></div></div>'+'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"><input id=reflink onclick="copyRef()" readonly value="'+esc(link)+'" style="width:100%;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 12px;font-family:GeistMono,ui-monospace,monospace;font-size:12px;cursor:pointer"><button onclick="copyRef()" style="background:var(--acc);color:#04120c;border:1px solid #0b3d27;border-radius:10px;padding:14px 18px;font-weight:600;cursor:pointer;width:100%;font-size:14.5px;box-shadow:0 6px 18px -6px rgba(0,0,0,.6)">⧉ Copy invite link</button></div>'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'
+      +'<div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px"><div style="font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em">Invited</div><div style="font-family:GeistMono,ui-monospace,monospace;font-weight:600;font-size:20px">'+(r.invited||0)+'</div></div>'
+      +'<div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px"><div style="font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em">Active</div><div style="font-family:GeistMono,ui-monospace,monospace;font-weight:600;font-size:20px">'+(r.active||0)+'</div></div>'
+      +'<div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px"><div style="font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em">SOL earned</div><div style="font-family:GeistMono,ui-monospace,monospace;font-weight:600;font-size:20px;color:var(--acc)">'+(Number(r.solEarned)||0).toFixed(3)+'</div></div>'
+      +'</div>';});}
+function getFollows(){try{return JSON.parse(localStorage.getItem('t_follows')||'[]')}catch(e){return[]}}
+function isFollowing(uid){return getFollows().some(function(f){return f.uid===uid})}
+function toggleFollow(uid,name,pic){var f=getFollows();var i=f.findIndex(function(x){return x.uid===uid});
+  if(i>=0)f.splice(i,1);else f.push({uid:uid,name:name,pic:pic||''});localStorage.setItem('t_follows',JSON.stringify(f));return i<0;}
+function uiFollow(uid,name,pic,btn){var now=toggleFollow(uid,name,pic);btn.textContent=now?'✓ Following':'+ Follow';btn.className=now?'folb on':'folb';
+  var b=document.getElementById('copycount');if(b)b.textContent=getFollows().length?(' '+getFollows().length):'';
+  var me=getMyAddr();if(me){try{authPost('/xfollow',{target:uid,name:name||'',pic:pic||'',on:now});}catch(e){}}
+  else if(now){toast('Followed — sign up to sync followers');}
+  var sc=document.getElementById('xsoc_'+uid);if(sc)setTimeout(function(){renderSocial(uid)},400);setTimeout(loadFollowingRail,450);}
+/* BasedAlpha follower/following counts + follower list for a trader (server social graph) */
+function renderSocial(uid){var box=document.getElementById('xsoc_'+uid);if(!box)return;
+  J(B+'api/xsocial?me='+encodeURIComponent(getMyAddr())+'&id='+encodeURIComponent(uid)).then(function(s){
+    if(!s)return;var fol=(s.followers||[]);
+    box.innerHTML='<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span><b style="color:var(--txt)">'+(s.followers_count||0)+'</b> <span class=dim>followers</span></span><span><b style="color:var(--txt)">'+(s.id_following_count||0)+'</b> <span class=dim>following</span></span>'+(s.is_following?'<span class="bdg snip">you follow</span>':'')+'</div>'+ 
+      (fol.length?'<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">'+fol.slice(0,20).map(function(f){var a=f.addr||'';return '<span class=bdg title="'+a+'">'+a.slice(0,4)+'…'+a.slice(-4)+'</span>'}).join('')+'</div>':'<div class=subn style="margin-top:6px">be the first to follow — others who follow will show here</div>');
+  });}
+/* ===== Following rail — verified profile/coin/wall data only ===== */
+var _folTab='alerts',_folFilter='all',_folData={events:[],profiles:[],tokens:[]},_folLoading=false,_folNewest=0;
+function _folTs(v){if(!v)return 0;var n=+v;if(isFinite(n)&&n>0)return n>1e12?n/1000:n;var d=Date.parse(v);return isNaN(d)?0:d/1000;}
+function _folAge(ts){if(!ts)return 'holding';return ageStr(ts)+' ago';}
+function _folImg(pic,seed){return safeUrl(pic)?'<img class=folav src="'+safeUrl(pic)+'" onerror="this.style.visibility=\'hidden\'">':avaHtml(seed||'trader',25);}
+function setFolFilter(v,btn){_folFilter=v;document.querySelectorAll('[data-ff]').forEach(function(x){x.classList.toggle('on',x===btn)});renderFollowingRail();}
+function setFolTab(v,btn){_folTab=v;document.querySelectorAll('[data-ft]').forEach(function(x){x.classList.toggle('on',x===btn)});var f=document.querySelector('#folrail .folfilters');if(f)f.style.display=v==='alerts'?'':'none';renderFollowingRail();}
+function toggleFolSound(){var on=localStorage.getItem('ba_folsound')!=='1';localStorage.setItem('ba_folsound',on?'1':'0');var b=document.getElementById('folsound');if(b)b.classList.toggle('on',on);}
+function _folBeep(){if(localStorage.getItem('ba_folsound')!=='1')return;try{var A=window.AudioContext||window.webkitAudioContext,a=new A(),o=a.createOscillator(),g=a.createGain();o.frequency.value=680;g.gain.value=.035;o.connect(g);g.connect(a.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.12);o.stop(a.currentTime+.13);}catch(e){}}
+function toggleFolCollapse(){var r=document.getElementById('folrail');if(r)r.classList.toggle('collapsed');}
+function openFolMobile(){var r=document.getElementById('folrail'),s=document.getElementById('folshade');if(r)r.classList.add('mobile-open');if(s)s.classList.add('on');}
+function closeFolMobile(){var r=document.getElementById('folrail'),s=document.getElementById('folshade');if(r)r.classList.remove('mobile-open');if(s)s.classList.remove('on');}
+function _folEventHtml(e){var click=e.mint?' onclick="openCoin(\''+safeCa(e.mint)+'\')"':'';var amt=e.cost?('$'+Number(e.cost).toLocaleString()):'';var mc=e.mc?('MC '+fmt(e.mc)):'';var typ=e.holding?'hold':e.type;return '<div class=folevent'+click+'>'+_folImg(e.pic,e.uid)+'<div class=folcopy><div class=who>'+esc(e.trader||'trader')+' <span class="foltype '+typ+'">'+esc(typ)+'</span></div><div><span class=token>$'+esc(e.sym||'?')+'</span> '+esc(amt)+'</div>'+(e.note?'<div class=folnote>'+esc(e.note)+'</div>':'')+'</div><div class=folmeta>'+esc(_folAge(e.ts))+'<br>'+esc(mc)+'</div></div>';}
+function renderFollowingRail(){var box=document.getElementById('folbody');if(!box)return;var d=_folData;
+  if(!getFollows().length){box.innerHTML='<div class=folempty>Follow a verified trader from Leaderboard to build your private activity rail.</div>';return;}
+  if(_folTab==='alerts'){var a=d.events.filter(function(e){return _folFilter==='all'||e.type===_folFilter});box.innerHTML=a.slice(0,30).map(_folEventHtml).join('')||'<div class=folempty>No verified '+esc(_folFilter==='all'?'activity':_folFilter+' activity')+' yet.</div>';return;}
+  if(_folTab==='feed'){var f=d.events.filter(function(e){return e.type==='thesis'});box.innerHTML=f.map(_folEventHtml).join('')||'<div class=folempty>No theses from followed traders on their tracked coins yet.</div>';return;}
+  if(_folTab==='tokens'){box.innerHTML=d.tokens.slice(0,20).map(function(t){return '<div class=foltoken onclick="openCoin(\''+safeCa(t.mint)+'\')"><div style="display:flex;justify-content:space-between;gap:8px"><b>$'+esc(t.sym||'?')+'</b><span class=mono style="color:var(--acc)">'+t.people+' followed trader'+(t.people===1?'':'s')+'</span></div><div class=subn style="margin-top:3px">'+(t.mc?'MC '+fmt(t.mc)+' · ':'')+fmt(t.cost)+' tracked cost</div></div>';}).join('')||'<div class=folempty>No current tracked tokens.</div>';return;}
+  if(_folTab==='leaders'){var p=d.profiles.slice().sort(function(a,b){return ((b.data.windows||{})['7d']||{}).pnl-((a.data.windows||{})['7d']||{}).pnl});box.innerHTML=p.map(function(x,i){var w=((x.data.windows||{})['7d']||{}),nm=(x.data.ident||{}).name||x.follow.name||'trader';return '<div class=folleader onclick="openTrader(\''+x.follow.uid+'\',\''+jsq(nm)+'\')"><span class=folrank>#'+(i+1)+'</span><span style="min-width:0"><b style="display:block;overflow:hidden;text-overflow:ellipsis">'+esc(nm)+'</b><span class=subn>'+(w.winrate!=null?w.winrate+'% win · ':'')+(w.trades||0)+' closed</span></span><span class="mono '+((w.pnl||0)>=0?'up':'down')+'">'+((w.pnl||0)>=0?'+':'-')+'$'+Math.abs(w.pnl||0).toLocaleString()+'</span></div>';}).join('')||'<div class=folempty>Leaderboard is warming up.</div>';}
+}
+async function loadFollowingRail(){if(_folLoading||document.hidden||!document.getElementById('folbody'))return;var hb=document.querySelector('[data-ff=buy]');if(hb)hb.textContent='Holdings';var follows=getFollows().slice(0,8);if(!follows.length){_folData={events:[],profiles:[],tokens:[]};renderFollowingRail();return;}_folLoading=true;
+  try{var profiles=await Promise.all(follows.map(function(f){return J(B+'api/traderprofile?uid='+encodeURIComponent(f.uid)).then(function(d){return{follow:f,data:d||{}}})}));var events=[],mints={},wallets={};
+    profiles.forEach(function(x){var d=x.data||{},id=d.ident||{},nm=id.name||x.follow.name||'trader',pic=id.pic||x.follow.pic||'';if(id.wallet)wallets[id.wallet]={uid:x.follow.uid,trader:nm,pic:pic};(d.open||[]).slice(0,2).forEach(function(o){if(!safeCa(o.mint))return;mints[o.mint]=1;events.push({type:'buy',uid:x.follow.uid,trader:nm,pic:pic,sym:o.sym,mint:o.mint,cost:o.cost||0,ts:0,holding:true});});(d.recent||[]).slice(0,3).forEach(function(t){if(!safeCa(t.mint))return;mints[t.mint]=1;events.push({type:'sell',uid:x.follow.uid,trader:nm,pic:pic,sym:t.sym,mint:t.mint,cost:t.cost||0,ts:_folTs(t.closed),pnl:t.pnl});});});
+    var mintList=Object.keys(mints).slice(0,8),coins=await Promise.all(mintList.map(function(m){return J(B+'api/coin?ca='+m).then(function(c){return[m,c||{}]})})),coinBy={};coins.forEach(function(x){coinBy[x[0]]=x[1]});events.forEach(function(e){var c=coinBy[e.mint]||{};e.mc=c.mc||0;if(!e.sym)e.sym=c.symbol;});
+    var wallMints=mintList.slice(0,6),walls=await Promise.all(wallMints.map(function(m){return J(B+'api/wall?ca='+m).then(function(w){return[m,w||{}]})}));walls.forEach(function(x){(x[1].posts||[]).forEach(function(p){var who=wallets[p.wallet];if(!who)return;var c=coinBy[x[0]]||{};events.push({type:'thesis',uid:who.uid,trader:who.trader,pic:who.pic,sym:c.symbol||'?',mint:x[0],mc:c.mc||0,ts:+p.ts||0,note:p.note||''});});});events.sort(function(a,b){return(b.ts||0)-(a.ts||0)});
+    var tg={};events.filter(function(e){return e.type==='buy'}).forEach(function(e){var z=tg[e.mint]||(tg[e.mint]={mint:e.mint,sym:e.sym,mc:e.mc,cost:0,uids:{}});z.cost+=+e.cost||0;z.uids[e.uid]=1;});var tokens=Object.keys(tg).map(function(k){var z=tg[k];z.people=Object.keys(z.uids).length;return z}).sort(function(a,b){return b.people-a.people||b.cost-a.cost});
+    var newest=events.reduce(function(n,e){return Math.max(n,e.ts||0)},0);if(_folNewest&&newest>_folNewest)_folBeep();_folNewest=Math.max(_folNewest,newest);_folData={events:events,profiles:profiles,tokens:tokens};renderFollowingRail();
+  }finally{_folLoading=false;}}
+function closeClans(){var x=document.getElementById('clanov');if(x)x.classList.remove('on');}
+var _clans=[],_clanOpen='';
+function clanApi(action,body){body=body||{};body.action=action;return authPost('/clan',body);}
+function clanMoney(n){n=+n||0;return (n>=0?'+':'-')+'$'+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0});}
+function clanCreate(){var name=prompt('Clan name (2–32 characters)');if(!name)return;var pub=confirm('Make this clan public and discoverable?\n\nCancel keeps it private (recommended).');clanApi('create',{name:name,privacy:pub?'public':'private'}).then(function(r){if(!r||!r.ok)return toast((r&&r.error)||'Could not create clan',0);_clanOpen=r.clan.id;loadClans();toast('Clan created',1);});}
+function clanJoin(){var code=prompt('Paste a clan invite code');if(!code)return;clanApi('join',{code:code.trim()}).then(function(r){if(!r||!r.ok)return toast((r&&r.error)||'Could not join clan',0);_clanOpen=r.clan.id;loadClans();toast('Joined clan',1);});}
+function clanSelect(id){_clanOpen=id;renderClans();}
+function clanInvite(id){clanApi('invite',{clan_id:id,max_uses:1,ttl_seconds:86400}).then(function(r){if(!r||!r.ok)return toast((r&&r.error)||'Could not create invite',0);prompt('One-use invite (expires in 24 hours). Copy it now:',r.code);});}
+function clanLeave(id){if(!confirm('Leave this clan?'))return;clanApi('leave',{clan_id:id}).then(function(r){if(!r||!r.ok)return toast((r&&r.error)||'Could not leave',0);_clanOpen='';loadClans();});}
+function clanPrivacy(id,isPublic){clanApi('update',{clan_id:id,privacy:isPublic?'public':'private'}).then(function(r){if(!r||!r.ok)return toast((r&&r.error)||'Could not update privacy',0);loadClans();});}
+function clanShare(id,key,on){var b={clan_id:id};b[key]=on;clanApi('update',b).then(function(r){if(!r||!r.ok)return toast((r&&r.error)||'Could not save setting',0);loadClans();});}
+function renderClans(){var p=document.getElementById('clanpanel');if(!p)return;var c=_clans.filter(function(x){return x.id===_clanOpen})[0];
+  var cards=_clans.map(function(x){return '<button class="clanchoice'+(x.id===_clanOpen?' on':'')+'" onclick="clanSelect(\''+jsq(x.id)+'\')">'+esc(x.name)+' · '+x.member_count+'</button>';}).join('')||'<span class=subn>No clans yet. Create one or join with an invite.</span>';
+  var detail='';if(c){var w=(c.aggregate||{}).windows||{},h=(c.aggregate||{}).holdings||[],mine=!!c.role,owner=c.role==='owner';detail='<div class=clansection><div style="display:flex;align-items:center;gap:8px"><b style="font-size:18px">'+esc(c.name)+'</b><span class=bdg>'+esc(c.privacy)+'</span><span class=subn>'+c.member_count+' member'+(c.member_count===1?'':'s')+'</span></div><div class=clanwindows>'+['24h','7d','30d','1y'].map(function(k){var z=w[k]||{};return '<span class="clanwin'+(k==='7d'?' on':'')+'">'+k.toUpperCase()+' '+clanMoney(z.pnl)+'</span>';}).join('')+'</div><div style="display:flex;gap:7px;flex-wrap:wrap">'+(mine?'<button class=clanbtn onclick="clanInvite(\''+jsq(c.id)+'\')">New invite</button>':'')+(owner?'<button class=clanchoice onclick="clanPrivacy(\''+jsq(c.id)+'\','+(c.privacy!=='public')+')">Make '+(c.privacy==='public'?'private':'public')+'</button>':'')+(mine?'<button class=clanchoice onclick="clanLeave(\''+jsq(c.id)+'\')">Leave</button>':'')+'</div></div><div class=clansection><b>Members</b><div class=clanmembers style="margin-top:9px">'+((c.members||[]).map(function(m){return '<div class=clanmember><span style="font-size:22px">'+esc(m.avatar||'👤')+'</span><div><b>'+esc(m.username)+'</b><div class=subn>'+esc(m.role)+'</div></div></div>';}).join('')||'<span class=subn>Members keep their profiles private.</span>')+'</div></div><div class=clansection><b>Aggregated verified holdings</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:9px">'+(h.slice(0,12).map(function(v){return '<span class=bdg>$'+esc(v.sym||'?')+' · '+v.members+' member'+(v.members===1?'':'s')+' · '+fmt(v.cost)+'</span>';}).join('')||'<span class=subn>No members have opted to share holdings.</span>')+'</div>'+(mine?'<div class=clanprivacy><label class=clanchoice><input type=checkbox onchange="clanShare(\''+jsq(c.id)+'\',\'share_pnl\',this.checked)"> Share my verified P&amp;L</label><label class=clanchoice><input type=checkbox onchange="clanShare(\''+jsq(c.id)+'\',\'share_holdings\',this.checked)"> Share my holdings in aggregate</label></div>':'')+'<div class=subn>Only server-verified results are counted. Wallet addresses and individual balances are never shown.</div></div>';}
+  p.innerHTML='<div class=clanh><b>Clans</b><button class=folicon onclick="closeClans()">×</button></div><div class=clansection><div style="font-size:18px;font-weight:600">Trade together without exposing wallets.</div><div class=subn style="margin-top:4px">Private by default · verified performance only · individual wallets stay hidden.</div><div style="display:flex;gap:8px;margin-top:11px"><button class=clanbtn onclick="clanCreate()">Create clan</button><button class=clanchoice onclick="clanJoin()">Join with code</button></div></div><div class=clansection><div class=clanprivacy>'+cards+'</div></div>'+detail;}
+function loadClans(){clanApi('list',{}).then(function(r){if(!r||!r.ok){_clans=[];renderClans();return toast((r&&r.error)||'Sign in to use clans',0);}_clans=r.clans||[];if(!_clanOpen&&_clans.length)_clanOpen=_clans[0].id;renderClans();});}
+function openClans(){var x=document.getElementById('clanov'),p=document.getElementById('clanpanel');if(!x||!p)return;x.classList.add('on');p.innerHTML='<div class=clanh><b>Clans</b><button class=folicon onclick="closeClans()">×</button></div><div class=folempty>Loading secure clans…</div>';loadClans();}
+// one-tap copy: opens the wallet prefilled, stamped with the trader we copied (attribution)
+function copyTrade(mint,sym,uid,ev){if(ev)ev.stopPropagation();location.href=B+'wallet?ca='+encodeURIComponent(mint)+'&side=buy&sym='+encodeURIComponent(sym||'')+'&amt='+encodeURIComponent(instAmt())+'&copyfrom='+encodeURIComponent(uid||'');}
+function pnlCard(w,lbl){w=w||{};var p=(w.pnl||0)>=0;return '<div class=pcard><div class=pk>'+lbl+'</div><div class="pv '+(p?'up':'down')+'">'+(p?'+$':'-$')+fmt(Math.abs(w.pnl||0)).slice(1)+'</div><div class=subn style="font-size:10px">'+(w.winrate!=null?w.winrate+'% · '+w.trades+'t':'no trades')+'</div></div>';}
+async function openTrader(uid,name){document.getElementById('cov').classList.add('on');var el=document.getElementById('cdrawer');el.classList.add('narrow');el.style.width='min(620px,96vw)';el.innerHTML='<div style="padding:30px;color:var(--mut)">loading '+esc(name||'')+'…</div>';
+  var d=await J(B+'api/traderprofile?uid='+encodeURIComponent(uid));var id=d.ident||{},cm=d.copy_mult,cc=cm==null?'q':(cm>=1.3?'g':'r');var W=d.windows||{};var fol=isFollowing(uid);
+  var head='<div class=traderhero><div class=traderid>'+(safeUrl(id.pic)?'<img class=av src="'+safeUrl(id.pic)+'">':avaHtml(uid,62))+'<div style="min-width:0;flex:1"><div class=tradername>'+esc(id.name||name||'trader')+'</div><div class=verifiedhist>✓ VERIFIED TRADE HISTORY</div></div><button id=folbtn class="'+(fol?'folb on':'folb')+'" onclick="uiFollow(\''+uid+'\',\''+esc((id.name||name||'').replace(/[\\'\"]/g,''))+'\',\''+safeUrl(id.pic)+'\',this)">'+(fol?'✓ Following':'+ Follow')+'</button><span class=dclose onclick=closeCoin()>✕</span></div></div><div class=traderfacts><span><b>'+Number(id.followers||0).toLocaleString()+'</b> source followers</span><span><b>'+Number(d.n_closed||0).toLocaleString()+'</b> verified closed</span><span><b>'+((d.open||[]).length)+'</b> open positions</span></div><div class=privacynote>Public performance only · realized and unrealized values are labeled · private cash balance is never exposed.</div>';
+  var wins='<div class=pcards>'+pnlCard(W['24h'],'24H')+pnlCard(W['7d'],'7D')+pnlCard(W['30d'],'30D')+pnlCard(W['1y'],'1Y')+'</div>';
+  var copy='<div class=dsec><h4>Copyability <span class="saf '+cc+'" style="margin-left:6px">'+(cm||'—')+'x</span></h4><div style="font-size:13px;color:'+(cc=='g'?'var(--grn)':'var(--dim)')+'">'+esc(d.verdict)+'<div style="color:var(--mut);font-size:11px;margin-top:5px">Median trade multiple after the copy-haircut (you enter late + pay fees). Above 1.0x = a late copy still profits. Raw follower count lies — this is what a copier actually gets.</div></div></div>';
+  var bw=(d.best||d.worst)?'<div class=dsec><h4>Biggest hit / worst L</h4><div style="display:flex;gap:10px"><div class=bwc><div class=subn>best</div><div class=up>'+(d.best?esc(d.best.sym||'?')+' +$'+fmt(d.best.pnl).slice(1):'—')+'</div></div><div class=bwc><div class=subn>worst</div><div class=down>'+(d.worst?esc(d.worst.sym||'?')+' -$'+fmt(Math.abs(d.worst.pnl)).slice(1):'—')+'</div></div></div></div>':'';
+  var open=(d.open||[]).length?'<div class=dsec><h4>Open positions <span class=subn>· unrealized P&amp;L</span></h4><div class=rlist>'+d.open.map(function(o){return '<div class=ri style="display:flex;align-items:center;gap:9px"><span onclick="openCoin(\''+safeCa(o.mint)+'\')" style="cursor:pointer;flex:1;font-weight:600">'+esc(o.sym||'?')+'</span><span class="mono subn">$'+fmt(o.cost).slice(1)+' cost</span><span class="mono '+((o.pnl||0)>=0?'up':'down')+'">'+((o.pnl||0)>=0?'+':'-')+'$'+Math.abs(o.pnl||0).toLocaleString()+'</span><span class=copyb onclick="copyTrade(\''+safeCa(o.mint)+'\',\''+esc((o.sym||'').replace(/[\\'\"]/g,''))+'\',\''+uid+'\',event)">Copy</span></div>'}).join('')+'</div></div>':'';
+  var recent='<div class=dsec><h4>Closed positions <span class=subn>· realized P&amp;L</span></h4><div class=rlist>'+(d.recent||[]).map(function(t){var p=t.pnl>=0;return '<div class=ri style="display:flex;align-items:center;cursor:pointer" onclick="openCoin(\''+safeCa(t.mint)+'\')"><span style="flex:1">'+esc(t.sym||'?')+'</span><span class=subn style="margin-right:12px">'+(t.roi!=null?(t.roi>=0?'+':'')+t.roi+'%':'')+'</span><span class="mono '+(p?'up':'down')+'">'+(p?'+$':'-$')+fmt(Math.abs(t.pnl)).slice(1)+'</span></div>'}).join('')+'</div></div>';
+  var social='<div class=dsec><h4>Followers</h4><div id="xsoc_'+uid+'" class="dim">loading…</div></div>';
+  el.innerHTML=head+'<div style="padding:12px 16px 0"><div class=subn style="margin-bottom:7px">Verified realized P&amp;L · 24H / 7D / 30D / ALL</div>'+wins+'</div>'+copy+social+bw+open+recent;
+  renderSocial(uid);}
+async function loadFollowing(){var box=document.getElementById('v_copy');var f=getFollows();
+  var hdr='<div style="padding:16px 18px;border-bottom:1px solid var(--line)"><div style="font-weight:600;font-size:16px">Copy Trading <span style="color:var(--mut);font-weight:500;font-size:12px">— your traders, one-tap copies</span></div><div style="color:var(--dim);font-size:12.5px;margin-top:5px;max-width:680px">Follow the sharpest wallets and mirror their moves. Non-custodial — a copy just pre-fills your own wallet, you always confirm. PnL shown per window so you copy proven edge, not a lucky headline.</div></div>';
+  if(!f.length){box.innerHTML=hdr+emptyState('<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.6 stroke-linecap=round stroke-linejoin=round><circle cx=9 cy=8 r=3.2/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 6.2a3.2 3.2 0 0 1 0 6M17 14.5a5.5 5.5 0 0 1 3.5 5.5"/></svg>','No traders followed yet','Open the Leaderboard, tap a trader, and hit + Follow to build your one-tap copy feed.');return;}
+  box.innerHTML=hdr+'<div style="padding:16px;color:var(--mut)">loading your '+f.length+' trader'+(f.length>1?'s':'')+'…</div>';
+  var profs=await Promise.all(f.slice(0,15).map(function(x){return J(B+'api/traderprofile?uid='+encodeURIComponent(x.uid)).then(function(d){return[x,d]}).catch(function(){return[x,{}]})}));
+  var cards=profs.map(function(pr){var x=pr[0],d=pr[1]||{},id=d.ident||{},W=d.windows||{},w=W['24h']||{},w7=W['7d']||{};
+    var pic=safeUrl(id.pic||x.pic);var nm=esc(id.name||x.name||'trader');
+    var opens=(d.open||[]).slice(0,3).map(function(o){return '<span class=copyb style="margin:0" onclick="copyTrade(\''+safeCa(o.mint)+'\',\''+esc((o.sym||'').replace(/[\\'\"]/g,''))+'\',\''+x.uid+'\',event)">'+esc(o.sym||'?')+'</span>'}).join(' ');
+    return '<div class=fcard onclick="openTrader(\''+x.uid+'\',\''+jsq(id.name||x.name||'trader')+'\')"><div style="display:flex;align-items:center;gap:10px">'+(pic?'<img class=av style="width:34px;height:34px" src="'+pic+'">':'<div class=av style="width:34px;height:34px"></div>')+'<div style="flex:1;min-width:0"><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block">'+nm+'</b><span class=subn style="font-size:11px">7d '+((w7.pnl||0)>=0?'+':'-')+'$'+fmt(Math.abs(w7.pnl||0)).slice(1)+' · '+(w7.winrate!=null?w7.winrate+'% win':'—')+'</span></div><span class="mono '+((w.pnl||0)>=0?'up':'down')+'" style="font-size:13px">24h '+((w.pnl||0)>=0?'+':'-')+'$'+fmt(Math.abs(w.pnl||0)).slice(1)+'</span></div>'+(opens?'<div style="margin-top:9px;display:flex;flex-wrap:wrap;gap:6px" onclick="event.stopPropagation()"><span class=subn style="font-size:10.5px;align-self:center">holding:</span>'+opens+'</div>':'')+'</div>';
+  }).join('');
+  box.innerHTML=hdr+'<div class=fgrid>'+cards+'</div>';}
+function showLogin(){location.href=B+'wallet'}
+function payCcy(){try{return localStorage.getItem('t_payccy')==='usdc'?'usdc':'sol'}catch(e){return 'sol'}}
+function setPayCcy(c,ca,sym){try{localStorage.setItem('t_payccy',c)}catch(e){}
+  var f=document.getElementById('tradeframe');if(f&&ca){f.src=B+'wallet?embed=1&ca='+encodeURIComponent(ca)+'&side=buy&sym='+encodeURIComponent(sym||'')+(c==='usdc'?'&in=usdc':'');}
+  ['sol','usdc'].forEach(function(x){var b=document.getElementById('ccyb_'+x);if(b){b.style.background=(x===c?'var(--acc)':'transparent');b.style.color=(x===c?'#04120c':'var(--dim)');}});}
+// reflect wallet sign-in (state lives in the /wallet app; shared via same-origin localStorage)
+function solPrice(){try{var c=JSON.parse(localStorage.getItem('t_solpx')||'null');if(c&&Date.now()-c.t<300000)return Promise.resolve(c.p);}catch(e){}return fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd').then(function(r){return r.json()}).then(function(d){var p=(d&&d.solana&&d.solana.usd)||0;try{localStorage.setItem('t_solpx',JSON.stringify({p:p,t:Date.now()}))}catch(e){}return p}).catch(function(){return 0});}
+function renderPositions(){var me=getMyAddr();var el=document.getElementById('posrail');if(!el)return;
+  if(!me){el.innerHTML='<div class=ph><b>Your positions</b></div><div style="color:var(--mut);font-size:12.5px;padding:2px 0 8px;line-height:1.45">Sign in to see the coins you\'re holding \u2014 live value, at a glance.</div><button onclick="showLogin()" style="background:var(--acc);color:#04120c;border:0;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer;width:100%">Sign in</button>';return;}
+  authPost('/portfolio',{}).then(function(d){if(!d||d.ok===false)return;var el2=document.getElementById('posrail');if(!el2)return;var rows=(d&&d.rows)||[];
+    if(!rows.length){el2.innerHTML='<div class=ph><b>Your positions</b></div><div style="color:var(--mut);font-size:12.5px;padding:2px 0;line-height:1.45">No coins yet \u2014 every coin you buy shows up here instantly.</div>';return;}
+    var head='<div class=ph><b>Your positions</b><span class=pt>$'+Number(d.total_usd||0).toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div>';
+    var body=rows.map(function(p){var ch=p.ch24;var chc=ch>0?'up':(ch<0?'down':'subn');var chs=(ch!=null?(ch>0?'+':'')+Number(ch).toFixed(1)+'%':'');var img=safeUrl(p.image);var amt=Number(p.amount).toLocaleString(undefined,{maximumFractionDigits:p.amount<1?4:0});
+      return '<div class=posrow onclick="openCoin(\''+safeCa(p.mint)+'\')">'+(img?'<img class=pimg src="'+img+'" onerror="this.style.visibility=\'hidden\'">':'<div class=pimg></div>')+'<div class=pmid><div class=psym>'+esc(p.symbol||'')+'</div><div class=pamt>'+amt+'</div></div><div class=pend><div class=pval>'+(p.value_usd?'$'+Number(p.value_usd).toLocaleString(undefined,{maximumFractionDigits:2}):'\u2014')+'</div><div class="pch '+chc+'">'+chs+'</div></div></div>';}).join('');
+    el2.innerHTML=head+body;}).catch(function(){});
+}
+function loadBalWidget(){var me=getMyAddr();var el=document.getElementById('balwidget');if(!el)return;if(!me){el.innerHTML='<span class=signin onclick="showLogin()">Sign in</span>';return;}
+  Promise.all([J(B+'api/balance?addr='+encodeURIComponent(me)),solPrice()]).then(function(r){var el2=document.getElementById('balwidget');if(!el2)return;var bal=r[0]||{},px=r[1]||0;var sol=bal.sol||0;var cash=px?('$'+(sol*px).toFixed(2)):(sol.toFixed(3)+' ◎');
+    el2.innerHTML='<div onclick="showLogin()" style="display:flex;align-items:center;gap:9px;cursor:pointer" title="Open your wallet"><div style="text-align:right;line-height:1.15"><div style="font-weight:600;font-size:14px">'+cash+' <span style="color:var(--mut);font-weight:500;font-size:11.5px">cash</span></div><div style="color:var(--acc);font-weight:600;font-size:11px">Deposit</div></div><div style="width:31px;height:31px;border-radius:50%;background:linear-gradient(135deg,#b06bff,#2ed15e);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:#08120c;flex:none">'+esc((me.slice(0,1)||'A').toUpperCase())+'</div></div>';});}
+(function(){try{var w=JSON.parse(localStorage.getItem('terminal_wallet')||'null');
+  if(w&&w.address){try{authPost('/seen',{ref:(refParam().replace(/^&ref=/,'')||'')});}catch(e){}}
+  loadBalWidget();try{renderPositions()}catch(e){}
+}catch(e){}})();
+(function(){try{var ib=document.getElementById('instbtn');if(ib)ib.innerHTML=ZAP+' '+instAmt();}catch(e){}})();
+/* ===== command palette (⌘K) + keyboard shortcuts ===== */
+function syncBtab(v){document.querySelectorAll('.btabs .btab').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-v')===v)});}
+function inviteEarn(){goView('airdrop');setTimeout(function(){var r=document.getElementById('refbox');if(r){var c=r.parentNode;r.scrollIntoView({behavior:'smooth',block:'center'});c.style.transition='box-shadow .3s';c.style.boxShadow='0 0 0 2px var(--acc)';setTimeout(function(){c.style.boxShadow=''},1800);}},400);}
+function refHow(){var e=document.getElementById('refhow');if(e)e.style.display=(e.style.display==='none'||!e.style.display)?'block':'none';}
+function closeMoreDrawer(){var d=document.getElementById('mdrawer'),b=document.getElementById('mdrawerbd');if(d)d.classList.remove('on');if(b)b.classList.remove('on');setTimeout(function(){if(d&&!d.classList.contains('on'))d.remove();if(b&&!b.classList.contains('on'))b.remove();},280);}
+function toggleMoreDrawer(){if(document.getElementById('mdrawer')){closeMoreDrawer();return;}
+  var me=getMyAddr();var uname='';try{uname=localStorage.getItem('t_username')||''}catch(e){}
+  var av=(uname||me||'A').slice(0,1).toUpperCase();
+  var IC={star:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.9 6.7 19.5l1.2-6L3.4 9.3l6-.7L12 3Z"/></svg>',
+    trophy:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><path d="M6 4h12v4a6 6 0 0 1-12 0V4ZM6 6H3v1a3 3 0 0 0 3 3M18 6h3v1a3 3 0 0 1-3 3M9 20h6M10 16h4l1 4H9l1-4Z"/></svg>',
+    gift:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><rect x=3 y=8 width=18 height=5 rx=1/><path d="M5 13v8h14v-8M12 8v13M12 8C12 8 10.5 3 8 4S9.5 8 12 8ZM12 8c0 0 1.5-5 4-4S14.5 8 12 8Z"/></svg>',
+    bell:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
+    rocket:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><path d="M5 15c-2 1-2 5-2 5s4 0 5-2M9 12l3 3M15 3s5 0 6 6c-4 5-9 8-9 8l-5-5s3-5 8-9ZM14 9a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z"/></svg>',
+    bug:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><rect x=8 y=7 width=8 height=12 rx=4/><path d="M12 7V4M9 5l-2-2M15 5l2-2M8 11H3M21 11h-5M8 15H4M20 15h-4M8 19l-2 2M16 19l2 2"/></svg>',
+    wallet:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><rect x=3 y=6 width=18 height=13 rx=2/><path d="M16 12h2M3 9h18"/></svg>',
+    out:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>',copy:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 16l9 5 9-5M3 12l9 5 9-5"/></svg>',activity:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M3 12h4l2.5-7 5 14 2.5-7H21"/></svg>',drop:'<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><path d="M4 10a8 8 0 0 1 16 0M4 10l4 4M20 10l-4 4M12 10v11M8 14l4 7 4-7"/></svg>'};
+  function item(ic,label,onclick,cls){return '<div class="md-item '+(cls||'')+'" onclick="'+onclick+'">'+ic+'<span>'+label+'</span></div>';}
+  var acct=me?('<div class=md-acct><div class=md-av>'+esc(av)+'</div><div style="min-width:0"><div class=nm>'+esc(uname||'Your wallet')+'</div><div class=sub>'+esc(me.slice(0,4)+'\u2026'+me.slice(-4))+'</div></div></div>')
+    :('<div class=md-acct><div class=md-av>\u25c8</div><div><div class=nm>Not signed in</div><div class=sub onclick="closeMoreDrawer();showLogin()" style="cursor:pointer;color:var(--acc)">Sign in \u2192</div></div></div>');
+  var bd=document.createElement('div');bd.className='mdrawer-bd';bd.id='mdrawerbd';bd.onclick=closeMoreDrawer;
+  var d=document.createElement('div');d.className='mdrawer';d.id='mdrawer';
+  var _instaOn=(localStorage.getItem('as_instabuy')!=='0');var _defSz=localStorage.getItem('as_qbdefault')||'0.25';
+  var tradeSettings='<div class=md-sec>Trading</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 8px"><div style="min-width:0"><div style="font-size:13.5px;font-weight:600">\u26a1 Instant buy</div><div style="font-size:11px;color:var(--mut);margin-top:2px">One tap on a coin = buy. Off = opens the panel.</div></div><div class="sw'+(_instaOn?' on':'')+'" id=instasw onclick="toggleInstaBuy()"></div></div>'
+    +'<div style="padding:2px 8px 10px"><div style="font-size:10.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:7px">Default buy size</div><div id=bsizes style="display:flex;gap:6px">'+[0.1,0.25,0.5,1,2].map(function(a){return '<button class="bsz'+(String(a)===String(_defSz)?' on':'')+'" data-a="'+a+'" onclick="setBuyDefault('+a+')">'+a+'</button>'}).join('')+'</div></div>';
+  d.innerHTML=acct+tradeSettings
+    +'<div class=md-sec>Navigation</div>'
+    +item(IC.rocket,'The Drop \u2014 Launch',"mdGo('launch')")
+    +item(IC.activity,'Your portfolio',"openGuardian()")+item(IC.star,'Watchlist',"mdGo('watch')")
+    +item(IC.trophy,'Leaderboard',"mdGo('leaderboard')")
+    +item(IC.copy,'Copy trading',"mdGo('copy')")
+    +item(IC.activity,'Activity',"mdGo('activity')")
+    +item(IC.drop,'Airdrop',"mdGo('airdrop')")
+    +item(IC.gift,'Earn &amp; invite',"closeMoreDrawer();inviteEarn()")
+    +'<div class=md-sec>Settings</div>'
+    +item('<svg viewBox=\"0 0 24 24\" fill=none stroke=currentColor stroke-width=2 stroke-linejoin=round><path d=\"M12 3l7 4v5c0 4-3 7-7 9-4-2-7-5-7-9V7l7-4Z\"/><path d=\"M9 12l2 2 4-4\"/></svg>','What the badges mean',"closeMoreDrawer();openBadgeGuide()")
+    +item(IC.bell,'Notifications',"closeMoreDrawer();enableAlerts()")
+    +item(IC.rocket,'Feature updates',"mdWhatsNew()")
+    +item(IC.bug,'Report a bug',"mdBug()")
+    +'<div class=md-sec>Account</div>'
+    +item(IC.wallet,'Deposit',"closeMoreDrawer();location.href=B+'wallet'")
+    +item(IC.wallet,'Withdraw',"closeMoreDrawer();location.href=B+'wallet'")
+    +(me?item(IC.out,'Log out',"mdLogout()",'danger'):'');
+  document.body.appendChild(bd);document.body.appendChild(d);
+  requestAnimationFrame(function(){bd.classList.add('on');d.classList.add('on');});
+}
+function mdGo(v){closeMoreDrawer();goView(v);window.scrollTo(0,0);}
+function mdBug(){closeMoreDrawer();window.open('https://devbasedsolana.com/bugs','_blank');}
+function mdWhatsNew(){closeMoreDrawer();toast('New: withdraw any token \u00b7 BNB & Robinhood cross-chain \u00b7 1\u201330s charts \u00b7 referral rewards. More every week.',true);}
+function mdLogout(){try{localStorage.removeItem('terminal_wallet')}catch(e){}closeMoreDrawer();setTimeout(function(){location.reload()},120);}
+function toggleMoreDrawer_hook(){}
+function goView(v){var el=document.querySelector('.nav .lnk[data-view="'+v+'"]');if(el){nav(el);}else{VIEW=v;document.querySelectorAll('.nav .lnk').forEach(function(x){x.classList.remove('on')});document.querySelectorAll('.view').forEach(function(x){x.classList.remove('on')});var vv=document.getElementById('v_'+v);if(vv)vv.classList.add('on');try{renderPositions()}catch(e){}try{refresh()}catch(e){}}syncBtab(v);window.scrollTo(0,0);}
+function toggleMore(ev){if(ev)ev.stopPropagation();var n=document.getElementById('navmore');if(n)n.classList.toggle('open')}
+document.addEventListener('click',function(ev){var n=document.getElementById('navmore');if(n&&n.classList.contains('open')&&!n.contains(ev.target))n.classList.remove('open')});
+function btabGo(v,el){goView(v);window.scrollTo(0,0);}
+var CMDS=[
+ {t:'Discover',s:'ranked coins table',a:function(){goView('discover')}},
+ {t:'Pulse',s:'new · trending · graduated',a:function(){goView('pulse')}},
+ {t:'Proven Snipers',s:'the moat — wallets by true skill',a:function(){goView('snipers')}},
+ {t:'Model',s:'ML accuracy, live & honest',a:function(){goView('ml')}},
+ {t:'Watchlist',s:'your starred coins',a:function(){goView('watch')}},
+ {t:'Leaderboard',s:'top traders',a:function(){goView('leaderboard')}},
+ {t:'Activity',s:'smart-money feed',a:function(){goView('activity')}},
+ {t:'Open Wallet',s:'deposit · trade · withdraw',a:function(){location.href=B+'wallet'}},
+ {t:'Focus search',s:'paste a CA or search',a:function(){document.getElementById('search').focus()}}
+];
+var _pal=document.createElement('div');_pal.id='cmdk';_pal.className='cmdk';
+_pal.innerHTML='<div class=cmdk-box><input id=cmdk-in placeholder="Jump to a page, or paste a coin address…" autocomplete=off spellcheck=false><div id=cmdk-list class=cmdk-list></div><div class=cmdk-foot><span>↑↓ move</span><span>↵ open</span><span>esc close</span><span style="margin-left:auto">g d/p/s · / search</span></div></div>';
+document.body.appendChild(_pal);
+_pal.addEventListener('click',function(e){if(e.target===_pal)closeCmdk()});
+var _cmdkOpen=false,_cmdkSel=0,_cmdkItems=[],_gKey=false;
+function openCmdk(){_cmdkOpen=true;_pal.classList.add('on');var i=document.getElementById('cmdk-in');i.value='';renderCmdk('');setTimeout(function(){i.focus()},10);}
+function closeCmdk(){_cmdkOpen=false;_pal.classList.remove('on');}
+function renderCmdk(raw){var q=(raw||'').trim();var ql=q.toLowerCase();var ca=safeCa(q);_cmdkItems=[];
+  if(ca){_cmdkItems.push({t:'Open coin '+ca.slice(0,6)+'…',s:'safety, holders & trade',a:function(){openCoin(ca)}});}
+  CMDS.forEach(function(c){if(!ql||(c.t+' '+c.s).toLowerCase().indexOf(ql)>=0)_cmdkItems.push(c);});
+  _cmdkSel=0;
+  document.getElementById('cmdk-list').innerHTML=_cmdkItems.map(function(c,i){return '<div class="cmdk-item'+(i===0?' sel':'')+'" onmouseover="_cmdkSel='+i+';_upSel()" onclick="_cmdkRun('+i+')"><span class=cmdk-t>'+esc(c.t)+'</span><span class=cmdk-s>'+esc(c.s)+'</span></div>';}).join('')||'<div class=cmdk-empty>no matches</div>';}
+function _upSel(){var xs=document.querySelectorAll('#cmdk-list .cmdk-item');xs.forEach(function(e,i){e.classList.toggle('sel',i===_cmdkSel);});if(xs[_cmdkSel])xs[_cmdkSel].scrollIntoView({block:'nearest'});}
+function _cmdkRun(i){var c=_cmdkItems[i];if(c){closeCmdk();c.a();}}
+document.getElementById('cmdk-in').addEventListener('input',function(e){renderCmdk(e.target.value)});
+document.addEventListener('keydown',function(e){
+  if((e.metaKey||e.ctrlKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();_cmdkOpen?closeCmdk():openCmdk();return;}
+  if(_cmdkOpen){
+    if(e.key==='Escape'){closeCmdk();}
+    else if(e.key==='ArrowDown'){e.preventDefault();_cmdkSel=Math.min(_cmdkSel+1,_cmdkItems.length-1);_upSel();}
+    else if(e.key==='ArrowUp'){e.preventDefault();_cmdkSel=Math.max(_cmdkSel-1,0);_upSel();}
+    else if(e.key==='Enter'){e.preventDefault();_cmdkRun(_cmdkSel);}
+    return;}
+  var tag=(e.target.tagName||'').toLowerCase();if(tag==='input'||tag==='textarea')return;
+  if(e.key==='/'){e.preventDefault();document.getElementById('search').focus();}
+  else if(e.key==='?'){openCmdk();}
+  else if(_gKey){var mp={d:'discover',p:'pulse',s:'snipers',m:'ml',w:'watch',l:'leaderboard',a:'activity'};if(mp[e.key])goView(mp[e.key]);_gKey=false;}
+  else if(e.key==='g'){_gKey=true;setTimeout(function(){_gKey=false},800);}
+  else if(e.key==='Escape'){closeCoin();closeCmdk();}
+});
+/* PWA: installable app */
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('/sw.js').catch(function(){});}catch(e){}}
+var _dp=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_dp=e;var b=document.getElementById('installbtn');if(b)b.style.display='';});
+function dismissInstall(){try{localStorage.setItem('pwa_dismiss','1')}catch(e){}var b=document.getElementById('pwabar');if(b)b.remove();}
+function showInstallBar(){try{
+  if(document.getElementById('pwabar'))return;
+  var dm=false;try{dm=!!localStorage.getItem('pwa_dismiss')}catch(e){}
+  if(dm)return;
+  var standalone=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  if(standalone)return;
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(!isIOS&&!_dp)return;                       // android: wait for beforeinstallprompt
+  var SHARE='<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round><path d="M12 15V3M8 7l4-4 4 4M6 12v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7"/></svg>';
+  var bar=document.createElement('div');bar.className='pwabar';bar.id='pwabar';
+  var mid='<div class=pwa-txt><b>Install BasedAlpha</b>'+(isIOS
+    ?'<span>Tap '+SHARE+' then <b>Add to Home Screen</b> for the full app.</span>'
+    :'<span>Add it to your home screen for one-tap access.</span>')+'</div>';
+  var btns=isIOS?'<button class=pwa-x onclick="dismissInstall()">Dismiss</button>'
+                :'<button class=pwa-cta onclick="installApp()">Install</button><button class=pwa-x onclick="dismissInstall()">Later</button>';
+  bar.innerHTML='<img class=pwa-ic src="/appicon.svg" alt="">'+mid+btns;
+  document.body.appendChild(bar);
+}catch(e){}}
+setTimeout(showInstallBar,1200);
+window.addEventListener('beforeinstallprompt',function(){try{showInstallBar()}catch(e){}});
+window.addEventListener('appinstalled',function(){var b=document.getElementById('installbtn');if(b)b.style.display='none';});
+function installApp(){if(_dp){_dp.prompt();_dp.userChoice.finally(function(){_dp=null;var b=document.getElementById('installbtn');if(b)b.style.display='none';});}else{alert('On iPhone: tap the Share button, then “Add to Home Screen”.');}}
+function _b64u(s){var pad='='.repeat((4-s.length%4)%4);var b=(s+pad).replace(/-/g,'+').replace(/_/g,'/');var raw=atob(b);var a=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return a;}
+async function enableAlerts(){try{
+  if(!('serviceWorker' in navigator)||!('PushManager' in window)){alert('This browser doesn’t support push alerts. Try installing the app (⬇ Install) or use Chrome.');return;}
+  var perm=await Notification.requestPermission();
+  if(perm!=='granted'){alert('Allow notifications to get pinged when a proven sniper apes a coin.');return;}
+  var reg=await navigator.serviceWorker.ready;
+  var kr=await (await fetch(B+'api/push/key')).json();
+  if(!kr.key){alert('Alerts aren’t configured yet — try again shortly.');return;}
+  var sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:_b64u(kr.key)});
+  await fetch(B+'api/push/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sub:sub,addr:getMyAddr()})});
+  var b=document.getElementById('alertbtn');if(b){b.innerHTML=BELL+' Alerts on';b.style.color='var(--acc)';b.style.borderColor='var(--acc)';}
+  toast(getMyAddr()?'Alerts on — you\'ll get pinged for sniper apes + new followers':'Alerts on — sign up to also get follower pings',true);
+}catch(e){alert('Could not enable alerts: '+(e&&e.message||e));}}
+loadFlywheel();
+try{if(/^\/model\/?$/.test(location.pathname)){window._routeBoot=1;goView('ml');window._routeBoot=0;}else refresh();}catch(e){refresh();}
+window.addEventListener('popstate',function(){var v=/^\/model\/?$/.test(location.pathname)?'ml':'discover';window._routeBoot=1;goView(v);window._routeBoot=0;});
+setInterval(function(){if(!document.hidden&&!document.getElementById('cov').classList.contains('on'))refresh()},5000);
+setInterval(function(){if(!document.hidden)loadFlywheel()},30000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden){_refreshQueued=false;refresh();if(_chartCA){refreshChartLive();}}});
+setTimeout(loadFollowingRail,700);setInterval(function(){if(!document.hidden)loadFollowingRail()},45000);
+
+/* ===== launchpad ===== */
+var _lpTimer=null;
+function lpEmbed(u){try{u=String(u||"");var a=document.createElement("a");a.href=u;var h=(a.hostname||"").toLowerCase();if(h.slice(0,4)==="www.")h=h.slice(4);
+  var ok=["youtube.com","youtu.be","twitch.tv","player.twitch.tv","kick.com","streamable.com","x.com","twitter.com"];
+  if(ok.indexOf(h)<0)return "";
+  var src=u;
+  if(h==="youtube.com"){var id=new URLSearchParams(a.search).get("v")||"";if(!id&&a.pathname.indexOf("/live/")===0)id=a.pathname.split("/live/")[1];if(id)src="https://www.youtube.com/embed/"+id;}
+  else if(h==="youtu.be"){var id2=a.pathname.replace("/","");if(id2)src="https://www.youtube.com/embed/"+id2;}
+  else if(h==="twitch.tv"){var ch=a.pathname.replace("/","").split("/")[0];if(ch)src="https://player.twitch.tv/?channel="+encodeURIComponent(ch)+"&parent=basedalpha.fun&muted=true";}
+  return '<div style="margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#000"><div style="position:relative;padding-top:56.25%"><iframe src="'+src+'" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay;fullscreen;encrypted-media;picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"></iframe></div><div style="padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:.1em">\u25cf LIVE</div></div>';
+}catch(e){return "";}}
+var _lkLoaded=false;
+function lkLoad(cb){if(window.LivekitClient){cb();return;}var iv=setInterval(function(){if(window.LivekitClient){clearInterval(iv);cb();}},120);if(!_lkLoaded){_lkLoaded=true;var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/livekit-client@2/dist/livekit-client.umd.min.js";document.head.appendChild(sc);}}
+var _lkRoom=null;
+function _lkStage(){return document.getElementById("lkStage");}
+function basedGoLive(){
+  var t="";try{t=localStorage.getItem("bug_tok")||"";}catch(e){}
+  if(!t){t=prompt("Enter your host key to go live:");if(!t)return;try{localStorage.setItem("bug_tok",t);}catch(e){}}
+  lkLoad(function(){
+    J(B+"api/live/token?publish=1&room=drop&t="+encodeURIComponent(t)).then(function(d){
+      if(!d||!d.ok||!d.publish){toast("Host key rejected \u2014 can\u2019t go live.",false);return;}
+      var LK=window.LivekitClient;var room=new LK.Room({adaptiveStream:true,dynacast:true});_lkRoom=room;
+      room.connect(d.url,d.token).then(function(){return room.localParticipant.setCameraEnabled(true);})
+        .then(function(){return room.localParticipant.setMicrophoneEnabled(true);})
+        .then(function(){
+          toast("You\u2019re LIVE \ud83d\udd34",true);
+          var host=_lkStage();if(!host)return;host.innerHTML="";
+          var pub=room.localParticipant.getTrackPublication(LK.Track.Source.Camera);
+          if(pub&&pub.track){var v=document.createElement("video");v.autoplay=true;v.muted=true;v.playsInline=true;v.style.cssText="width:100%;border-radius:12px;background:#000;aspect-ratio:16/9";pub.track.attach(v);host.appendChild(v);host.insertAdjacentHTML("beforeend","<div style=\"font-family:var(--mono);font-size:11px;color:var(--red);margin-top:6px\">\u25cf LIVE \u2014 you are broadcasting</div>");}
+        }).catch(function(e){toast("Go live failed: "+(e&&e.message||e),false);});
+    });
+  });
+}
+function basedEndLive(){if(_lkRoom){try{_lkRoom.disconnect();}catch(e){}_lkRoom=null;}var host=_lkStage();if(host)host.innerHTML="";toast("Stream ended",true);}
+function basedWatch(){
+  lkLoad(function(){
+    J(B+"api/live/token?room=drop").then(function(d){
+      if(!d||!d.ok){toast("Streaming not available.",false);return;}
+      var LK=window.LivekitClient;var room=new LK.Room({adaptiveStream:true});_lkRoom=room;
+      var host=_lkStage();if(host)host.innerHTML="<div style=\"font-family:var(--mono);font-size:12px;color:var(--mut)\">connecting\u2026</div>";
+      room.on(LK.RoomEvent.TrackSubscribed,function(track){
+        var h=_lkStage();if(!h)return;
+        if(track.kind==="video"){h.innerHTML="";var v=document.createElement("video");v.autoplay=true;v.playsInline=true;v.style.cssText="width:100%;border-radius:12px;background:#000;aspect-ratio:16/9";track.attach(v);h.appendChild(v);h.insertAdjacentHTML("beforeend","<div style=\"font-family:var(--mono);font-size:11px;color:var(--red);margin-top:6px\">\u25cf LIVE</div>");}
+        else if(track.kind==="audio"){var a=document.createElement("audio");a.autoplay=true;track.attach(a);h.appendChild(a);}
+      });
+      room.connect(d.url,d.token).then(function(){
+        setTimeout(function(){var h=_lkStage();if(h&&room.remoteParticipants&&room.remoteParticipants.size===0)h.innerHTML="<div style=\"font-family:var(--mono);font-size:12px;color:var(--mut)\">Nobody is streaming this drop right now. Check back at drop time.</div>";},2600);
+      }).catch(function(){var h=_lkStage();if(h)h.innerHTML="<div style=\"font-family:var(--mono);font-size:12px;color:var(--mut)\">Stream unavailable.</div>";});
+    });
+  });
+}
+function startDropCountdown(){try{J(B+'api/launches').then(function(d){if(!d)return;var e=document.getElementById('lpQueue');if(e&&d.submissions!=null)e.textContent=d.submissions+' in the queue';var host=document.getElementById('lpDrop');if(host&&d.drop){var dr=d.drop;host.innerHTML='<div class=lp-hero style="margin-bottom:14px;text-align:left;display:flex;gap:16px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:220px"><div class=lp-eyebrow>Live now &middot; today\u2019s drop</div><div style="font-size:23px;font-weight:600">'+esc(dr.name||'')+' <span class=mono style="color:var(--mut);font-size:15px">$'+esc(dr.symbol||'')+'</span></div><div style="color:var(--dim);font-size:14px;margin-top:6px">'+esc(dr.blurb||'')+'</div></div>'+(dr.ca?'<button class="lp-btn pri" onclick="openCoin(\''+safeCa(dr.ca)+'\')">Trade it</button>':'')+'</div>';try{if(dr.stream){var _em=lpEmbed(dr.stream);if(_em)host.insertAdjacentHTML('beforeend',_em);}}catch(_e){}}else if(host){host.innerHTML='';}});}catch(e){}
+  if(_lpTimer)return;
+  function tick(){
+    var el=document.getElementById('lpH'); if(!el)return;
+    var now=new Date();
+    var t=new Date(now); t.setHours(20,0,0,0);
+    if(t.getTime()<=now.getTime()) t.setDate(t.getDate()+1);
+    var d=Math.max(0,Math.floor((t.getTime()-now.getTime())/1000));
+    var h=Math.floor(d/3600), m=Math.floor((d%3600)/60), sc=d%60;
+    var pad=function(n){return (n<10?'0':'')+n;};
+    document.getElementById('lpH').textContent=pad(h);
+    document.getElementById('lpM').textContent=pad(m);
+    document.getElementById('lpS').textContent=pad(sc);
+  }
+  tick(); _lpTimer=setInterval(tick,1000);
+}
+function lpScrollSubmit(){var e=document.getElementById('lpSubmit');if(e)e.scrollIntoView({behavior:'smooth',block:'start'});}
+function lpNotify(){
+  try{var me=getMyAddr();}catch(e){var me='';}
+  try{localStorage.setItem('lp_notify','1');}catch(e){}
+  toast('You\u2019re on the list \u2014 we\u2019ll ping you before the next drop.',true);
+}
+async function lpSubmit(){
+  var name=(document.getElementById('lpName').value||'').trim();
+  var tick=(document.getElementById('lpTicker').value||'').trim();
+  var desc=(document.getElementById('lpDesc').value||'').trim();
+  var terms=document.getElementById('lpTerms').checked;
+  if(!name||!tick){toast('Add a project name and ticker.',false);return;}
+  if(!/^[A-Za-z0-9]{2,16}$/.test(tick)){toast('Ticker must be 2 to 16 letters or numbers.',false);return;}
+  if(!terms){toast('Please accept the safety rules \u2014 they are what make your coin trusted.',false);return;}
+  if(!getMyAddr()){toast('Sign in to submit your coin for a drop',false);try{if(typeof showLogin==='function')showLogin();}catch(e){}return;}
+  var payload={name:name,ticker:tick,terms:terms,desc:desc,x:(document.getElementById('lpX').value||'').trim(),tg:(document.getElementById('lpTg').value||'').trim(),img:(document.getElementById('lpImg').value||'').trim()};
+  try{payload.wallet=getMyAddr()||'';}catch(e){}
+  var _b=document.querySelector('#lpSubmit .lp-btn.pri');var _bt='';if(_b){_bt=_b.textContent;_b.textContent='Submitting...';_b.disabled=true;}
+  var res=await authPost('/launch/submit',payload);
+  if(_b){_b.textContent=_bt;_b.disabled=false;}
+  if(!res){toast('Network hiccup - try again in a moment.',false);return;}
+  if(res.ok===false){toast(res.error||'Could not submit - check your details.',false);return;}
+  try{var q=JSON.parse(localStorage.getItem('lp_submissions')||'[]');q.push(payload);localStorage.setItem('lp_submissions',JSON.stringify(q));}catch(e){}
+  var pos=(res.queued!=null?res.queued:'-');
+  var host=document.querySelector('#lpSubmit .lp-form');
+  document.getElementById('lpName').value='';document.getElementById('lpTicker').value='';document.getElementById('lpDesc').value='';document.getElementById('lpX').value='';document.getElementById('lpTg').value='';document.getElementById('lpImg').value='';document.getElementById('lpTerms').checked=false;
+  if(host){window._lpForm=host;host.style.display='none';var done=document.getElementById('lpDoneCard');if(!done){done=document.createElement('div');done.id='lpDoneCard';done.className='lp-form';host.parentNode.insertBefore(done,host.nextSibling);}done.style.display='';
+   done.innerHTML='<div style="text-align:center;padding:10px 6px">'
+    +'<div style="width:56px;height:56px;border-radius:50%;background:rgba(55,227,154,.12);border:1px solid #173021;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--acc)"><svg viewBox="0 0 24 24" width=28 height=28 fill=none stroke=currentColor stroke-width=2.4 stroke-linecap=round stroke-linejoin=round><path d="M20 6 9 17l-5-5"/></svg></div>'
+    +'<div style="font-size:20px;font-weight:600;margin-bottom:6px">You\u2019re in the queue</div>'
+    +'<div style="color:var(--dim);font-size:14px;max-width:460px;margin:0 auto"><b style="color:var(--txt)">$'+esc(tick.toUpperCase())+'</b> \u2014 '+esc(name)+' is submitted. <span style="color:var(--acc);font-weight:600">#'+pos+' in the queue.</span></div>'
+    +'<div style="color:var(--mut);font-size:12.5px;max-width:460px;margin:8px auto 16px">We review every submission by hand and reach out on X / Telegram before your drop slot. Only vetted projects go live \u2014 that\u2019s the whole point.</div>'
+    +'<button class="lp-btn ghost" onclick="lpSubmitAnother()">Submit another</button></div>';
+  }else{toast('Submitted for review - we will reach out on X/TG.',true);}
+}
+function lpSubmitAnother(){var d=document.getElementById('lpDoneCard');if(d)d.style.display='none';if(window._lpForm)window._lpForm.style.display='';var e=document.getElementById('lpSubmit');if(e)e.scrollIntoView({behavior:'smooth',block:'start'});}
+
