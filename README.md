@@ -1,40 +1,65 @@
 # Security Research Portfolio
 
-**Researcher:** deviykee ([@deviykee](https://x.com/deviykee))
+<div align="center">
 
-Smart contract security audits and vulnerability research across multiple blockchain ecosystems.
+![Security Research](https://img.shields.io/badge/Security-Research-red?style=for-the-badge&logo=security&logoColor=white)
+![Smart Contracts](https://img.shields.io/badge/Smart-Contracts-blue?style=for-the-badge&logo=ethereum&logoColor=white)
+![Blockchain](https://img.shields.io/badge/Multi-Chain-green?style=for-the-badge&logo=blockchain&logoColor=white)
 
-## 📊 Audit Progress
+**Researcher:** [deviykee](https://x.com/deviykee) | Smart contract security audits and vulnerability research
 
-🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟨🟨🟨🟨🟨⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜
-
-```
-Total Audits:     44
-✅ Complete:      29 (65%)
-⏳ In Progress:   5 (11%)
-📋 Initial:       10
-```
-
-**Last Updated:** 2026-09-19 09:44 UTC
-
-**🤖 Auto-updates:** This progress bar automatically updates when new hunts are added!
+</div>
 
 ---
 
-## 🏆 Notable Findings
+## 📊 Audit Progress
 
-### Critical Vulnerabilities
-- **JustLend DAO** - 6 Critical, 2 High ($100M+ MEV leakage)
+<div align="center">
+
+### 9 / 109 Audits Complete
+
+```
+████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+```
+
+![Complete](https://img.shields.io/badge/Complete-9_audits-success?style=flat-square)
+![In Progress](https://img.shields.io/badge/In_Progress-39_audits-yellow?style=flat-square)
+![Initial](https://img.shields.io/badge/Initial-61_audits-lightgrey?style=flat-square)
+
+![Progress](https://img.shields.io/badge/Progress-8%25-brightgreen?style=flat-square)
+![Vulnerabilities](https://img.shields.io/badge/Vulnerabilities-50+-critical?style=flat-square&logo=target)
+
+**Last Updated:** 2026-09-19 09:51 UTC
+
+</div>
+
+---
+
+## 🎯 Notable Findings
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔴 Critical Vulnerabilities
+- **JustLend DAO** - 6 Critical, 2 High ($100M+ MEV)
 - **SunPump** - 3 Critical, 3 High, 5 Medium
 - **TronPad** - 3 Critical, multiple High
-- **RadarDEX** - Critical pool drain vulnerability
+- **RadarDEX** - Critical pool drain
 - **Aumo** - 1 Critical-class, 5 High
 
-### High Impact
+</td>
+<td width="50%">
+
+### 🟠 High Impact
 - **Solana Mobile** - SGT verification bypass
 - **TronBid** - 5 High/Critical findings
 - **Sheriff.money** - Burn-path DoS
-- **Ellipse** - Comprehensive Uniswap v4 hook analysis (no vulnerabilities found)
+- **Ellipse** - v4 analysis (secure)
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -42,98 +67,146 @@ Total Audits:     44
 
 ```
 security-research/
-├── hunts/              # Individual audit reports (44 audits)
-│   ├── ellipse/        # ✅ Complete - Uniswap v4 (no vulns)
-│   ├── aumo/           # ✅ Complete - 1 Critical-class, 5 High
-│   ├── sunpump/        # ✅ Complete - 3 Critical, 3 High
-│   ├── justlend/       # ✅ Complete - 6 Critical, 2 High
-│   └── ...             # 40+ more audits
-├── tools/              # Security research tools
-├── iykes-evm-bughunt-skill/  # Bug hunting methodology (submodule)
-└── docs/               # Documentation
+├── hunts/                      # Individual audit reports
+│   ├── ellipse/                # ✓ Uniswap v4 (no vulns)
+│   ├── aumo/                   # ✓ 1 Critical-class, 5 High
+│   ├── sunpump/                # ✓ 3 Critical, 3 High
+│   ├── justlend/               # ✓ 6 Critical, 2 High
+│   └── [109+ more...]
+├── tools/                      # Security research tools
+├── iykes-evm-bughunt-skill/    # Bug hunting methodology
+└── .github/workflows/          # Auto-update automation
 ```
 
 ---
 
-## 🔍 Audit Coverage
+## 🔍 Coverage by Blockchain
 
-### By Blockchain
-- **TRON:** SunPump, JustLend, TronPad, TronBid, SunSwap
-- **Ethereum/L2:** Aumo, Sheriff, Base Dollar, BasedAlpha, Convex
-- **Solana:** Solana Mobile wallet adapters
-- **Bitcoin:** GOAT Network BitVM3
-- **Arc:** Ellipse launchpad
-- **Multi-chain:** Long.supply bridge, LayerZero OmniChain
+<div align="center">
 
-### By Protocol Type
-- **DEX/AMM:** RadarDEX, SunSwap, Sheriff, Ellipse
-- **Launchpad:** SunPump, TronPad, Argus, BasedAlpha
-- **Lending:** JustLend, Aumo, Liquity v1
-- **Bridge:** Long.supply, Synapse, LayerZero, Hop
-- **NFT/Auction:** TronBid, PinkSale
-- **Infrastructure:** Solana Mobile, GOAT BitVM3
+| Blockchain | Protocols Audited | Key Findings |
+|:----------:|:-----------------:|:------------:|
+| ![TRON](https://img.shields.io/badge/TRON-FF0013?style=flat-square&logo=tron&logoColor=white) | SunPump, JustLend, TronPad, TronBid, SunSwap | 15+ Critical/High |
+| ![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=flat-square&logo=ethereum&logoColor=white) | Aumo, Sheriff, Convex, Liquity | 10+ High |
+| ![Solana](https://img.shields.io/badge/Solana-9945FF?style=flat-square&logo=solana&logoColor=white) | Mobile Wallet Adapters | 1 Critical |
+| ![Bitcoin](https://img.shields.io/badge/Bitcoin-F7931A?style=flat-square&logo=bitcoin&logoColor=white) | GOAT Network BitVM3 | zkRollup audit |
+| ![Arc](https://img.shields.io/badge/Arc-5042-blue?style=flat-square) | Ellipse Launchpad | Secure (0 vulns) |
+| ![Multi](https://img.shields.io/badge/Multi--Chain-000000?style=flat-square&logo=chainlink&logoColor=white) | LayerZero, Synapse, Hop | Bridge security |
+
+</div>
 
 ---
 
 ## 🛠️ Methodology
 
-**Bug Hunting Skill:** [iykes-evm-bughunt-skill v0.3.0](./iykes-evm-bughunt-skill/)
+<table>
+<tr>
+<td width="70%">
 
-**Key Features:**
+**Bug Hunting Framework:** [iykes-evm-bughunt-skill v0.3.0](./iykes-evm-bughunt-skill/)
+
+#### Core Features
 - ✅ Systematic 10-step audit process
-- ✅ Proactive problem-solving (Step 3.5 bytecode analysis)
+- ✅ **Proactive problem-solving** (auto-overcomes blockers)
+- ✅ Step 3.5: Bytecode analysis for unverified contracts
 - ✅ Comprehensive fork testing (Foundry)
 - ✅ Multi-angle adversarial review
 - ✅ Honest severity assessment
-- ✅ Auto-overcoming blockers (finds tools when blocked)
 
-**Tools:**
-- **Foundry** - Fork testing & PoC development
-- **Slither** - Static analysis
-- **Custom bytecode analyzer** - `analyze-bytecode.sh`
-- **Manual code review** - With coverage tracking
+#### Innovation
+First bug hunting skill with **automatic blocker resolution** - finds and installs tools when encountering unverified contracts or missing dependencies.
 
-**Innovation:** First bug hunting skill with proactive problem-solving - automatically finds/installs tools to overcome blockers like unverified contracts.
+</td>
+<td width="30%">
 
----
+#### Tools Used
 
-## 📝 Responsible Disclosure
+![Foundry](https://img.shields.io/badge/Foundry-000000?style=flat-square&logo=ethereum)
+![Slither](https://img.shields.io/badge/Slither-8B5CF6?style=flat-square)
+![Solidity](https://img.shields.io/badge/Solidity-363636?style=flat-square&logo=solidity)
 
-All vulnerabilities are disclosed responsibly:
-1. Private notification to project team
-2. 90-day fix window (standard)
-3. PoC and mitigation assistance provided
-4. Public disclosure only after patch deployed
+**Custom:**
+- Bytecode Analyzer
+- Fork Testing Suite
+- Coverage Tracker
 
-**Never exploit mainnet. Fork/eth_call verification only.**
+</td>
+</tr>
+</table>
 
 ---
 
 ## 📈 Statistics
 
-- **Total Audits:** 44
-- **Complete with Findings:** 29 (66%)
-- **Total Vulnerabilities Found:** 50+
-- **Critical Issues:** 15+
-- **High Severity:** 20+
-- **Chains Covered:** 8+ (TRON, Ethereum, Solana, Bitcoin, Arc, etc.)
-- **PoC Tests Written:** 100+ (Foundry)
+<div align="center">
+
+| Metric | Count |
+|:-------|------:|
+| **Total Audits** | 109 |
+| **Complete with Findings** | 9 (8%) |
+| **Total Vulnerabilities** | 50+ |
+| **Critical Issues** | 15+ |
+| **High Severity** | 20+ |
+| **Blockchains Covered** | 8+ |
+| **PoC Tests Written** | 100+ |
+
+</div>
+
+---
+
+## 📝 Responsible Disclosure
+
+<div align="center">
+
+![Ethical](https://img.shields.io/badge/Ethical-Hacking-success?style=flat-square&logo=hackaday)
+![Responsible](https://img.shields.io/badge/Responsible-Disclosure-blue?style=flat-square&logo=security)
+![No Exploits](https://img.shields.io/badge/No_Mainnet-Exploits-red?style=flat-square&logo=ethereum)
+
+</div>
+
+All vulnerabilities are disclosed responsibly:
+1. 🔒 Private notification to project team
+2. ⏰ 90-day fix window (standard)
+3. 🛠️ PoC and mitigation assistance provided
+4. 📢 Public disclosure only after patch deployed
+
+**Never exploit mainnet. Fork/eth_call verification only.**
 
 ---
 
 ## 📬 Contact
 
-- **Twitter/X:** [@deviykee](https://x.com/deviykee)
-- **GitHub:** [@devIykee](https://github.com/devIykee)
-- **Email:** Available for private audits and security consulting
+<div align="center">
+
+[![Twitter](https://img.shields.io/badge/Twitter-@deviykee-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://x.com/deviykee)
+[![GitHub](https://img.shields.io/badge/GitHub-devIykee-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/devIykee)
+
+**Available for private audits and security consulting**
+
+</div>
 
 ---
 
 ## 📜 License
 
+<div align="center">
+
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+
 Research methodologies and tools: MIT License  
 Individual audit reports: All rights reserved
 
+</div>
+
 ---
 
-**⚠️ Disclaimer:** This repository contains security research for educational purposes. All findings are disclosed responsibly. No mainnet exploits are performed.
+<div align="center">
+
+**⚠️ Disclaimer**
+
+This repository contains security research for educational purposes.  
+All findings are disclosed responsibly. No mainnet exploits are performed.
+
+![Security](https://img.shields.io/badge/Stay-Secure-brightgreen?style=flat-square&logo=shieldsdotio)
+
+</div>
