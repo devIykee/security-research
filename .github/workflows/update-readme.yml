@@ -1,0 +1,182 @@
+name: Update README Stats
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'hunts/**'
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Count hunts and update README
+        run: |
+          # Count total hunt directories (excluding utility dirs)
+          TOTAL=$(find hunts/ -maxdepth 1 -type d | grep -v "^hunts/$" | grep -v "_meta\|_triage\|_master\|_verified" | wc -l)
+
+          # Count complete hunts (have FINAL or COMPLETE reports)
+          COMPLETE=$(find hunts/*/  -maxdepth 1 \( -name "*FINAL*REPORT*.md" -o -name "*COMPLETE*.md" -o -name "FINDINGS-MASTER.md" \) 2>/dev/null | wc -l)
+
+          # Count in-progress (have INTAKE or coverage but no final report)
+          IN_PROGRESS=$(find hunts/*/ -maxdepth 1 \( -name "INTAKE.md" -o -name "coverage.md" \) 2>/dev/null | \
+                        while read file; do
+                          dir=$(dirname "$file")
+                          if ! ls "$dir"/*FINAL*REPORT*.md "$dir"/*COMPLETE*.md 2>/dev/null | grep -q .; then
+                            echo "$dir"
+                          fi
+                        done | sort -u | wc -l)
+
+          # Calculate percentages
+          COMPLETE_PCT=$((COMPLETE * 100 / TOTAL))
+          IN_PROGRESS_PCT=$((IN_PROGRESS * 100 / TOTAL))
+
+          # Generate progress bar
+          COMPLETE_BARS=$((COMPLETE_PCT / 2))
+          IN_PROGRESS_BARS=$((IN_PROGRESS_PCT / 2))
+          EMPTY_BARS=$((50 - COMPLETE_BARS - IN_PROGRESS_BARS))
+
+          PROGRESS_BAR=$(printf '🟩%.0s' $(seq 1 $COMPLETE_BARS))
+          PROGRESS_BAR="${PROGRESS_BAR}$(printf '🟨%.0s' $(seq 1 $IN_PROGRESS_BARS))"
+          PROGRESS_BAR="${PROGRESS_BAR}$(printf '⬜%.0s' $(seq 1 $EMPTY_BARS))"
+
+          # Update README.md
+          cat > README.md << EOF
+          # Security Research Portfolio
+
+          **Researcher:** deviykee ([@deviykee](https://x.com/deviykee))
+
+          Smart contract security audits and vulnerability research across multiple blockchain ecosystems.
+
+          ## 📊 Audit Progress
+
+          ${PROGRESS_BAR}
+
+          \`\`\`
+          Total Audits:     ${TOTAL}
+          ✅ Complete:      ${COMPLETE} (${COMPLETE_PCT}%)
+          ⏳ In Progress:   ${IN_PROGRESS} (${IN_PROGRESS_PCT}%)
+          📋 Initial:       $((TOTAL - COMPLETE - IN_PROGRESS))
+          \`\`\`
+
+          **Last Updated:** $(date -u +"%Y-%m-%d %H:%M UTC")
+
+          ---
+
+          ## 🏆 Notable Findings
+
+          ### Critical Vulnerabilities
+          - **JustLend DAO** - 6 Critical, 2 High (\$100M+ MEV leakage)
+          - **SunPump** - 3 Critical, 3 High, 5 Medium
+          - **TronPad** - 3 Critical, multiple High
+          - **RadarDEX** - Critical pool drain vulnerability
+          - **Aumo** - 1 Critical-class, 5 High
+
+          ### High Impact
+          - **Solana Mobile** - SGT verification bypass
+          - **TronBid** - 5 High/Critical findings
+          - **Sheriff.money** - Burn-path DoS
+          - **Ellipse** - Comprehensive v4 hook analysis (no vulnerabilities)
+
+          ---
+
+          ## 📁 Repository Structure
+
+          \`\`\`
+          security-research/
+          ├── hunts/              # Individual audit reports
+          │   ├── ellipse/        # ✅ Complete - Uniswap v4 (no vulns)
+          │   ├── aumo/           # ✅ Complete - 1 Critical-class, 5 High
+          │   ├── sunpump/        # ✅ Complete - 3 Critical, 3 High
+          │   ├── justlend/       # ✅ Complete - 6 Critical, 2 High
+          │   └── ...             # 40+ more audits
+          ├── tools/              # Security research tools
+          ├── iykes-evm-bughunt-skill/  # Bug hunting methodology
+          └── docs/               # Documentation
+          \`\`\`
+
+          ---
+
+          ## 🔍 Audit Coverage
+
+          ### By Blockchain
+          - **TRON:** SunPump, JustLend, TronPad, TronBid, SunSwap
+          - **Ethereum/L2:** Aumo, Sheriff, Base Dollar, BasedAlpha
+          - **Solana:** Solana Mobile wallet adapters
+          - **Bitcoin:** GOAT Network BitVM3
+          - **Arc:** Ellipse launchpad
+          - **Multi-chain:** Long.supply bridge, LZ OmniChain
+
+          ### By Protocol Type
+          - **DEX/AMM:** RadarDEX, SunSwap, Sheriff, Ellipse
+          - **Launchpad:** SunPump, TronPad, Argus, BasedAlpha
+          - **Lending:** JustLend, Aumo, Liquity v1
+          - **Bridge:** Long.supply, Synapse, LayerZero
+          - **NFT/Auction:** TronBid, PinkSale
+          - **Infrastructure:** Solana Mobile, GOAT BitVM3
+
+          ---
+
+          ## 🛠️ Methodology
+
+          **Bug Hunting Skill:** [iykes-evm-bughunt-skill v0.3.0](./iykes-evm-bughunt-skill/)
+
+          **Key Features:**
+          - ✅ Systematic 10-step audit process
+          - ✅ Proactive problem-solving (Step 3.5 bytecode analysis)
+          - ✅ Comprehensive fork testing (Foundry)
+          - ✅ Multi-angle adversarial review
+          - ✅ Honest severity assessment
+
+          **Tools:**
+          - Foundry (fork testing & PoC development)
+          - Slither (static analysis)
+          - Custom bytecode analyzer (\`analyze-bytecode.sh\`)
+          - Manual code review with coverage tracking
+
+          ---
+
+          ## 📝 Responsible Disclosure
+
+          All vulnerabilities are disclosed responsibly:
+          1. Private notification to project team
+          2. 90-day fix window (standard)
+          3. PoC and mitigation assistance provided
+          4. Public disclosure only after patch deployed
+
+          **Never exploit mainnet. Fork/eth_call verification only.**
+
+          ---
+
+          ## 📬 Contact
+
+          - **Twitter/X:** [@deviykee](https://x.com/deviykee)
+          - **GitHub:** [@devIykee](https://github.com/devIykee)
+          - **Email:** Available for private audits and security consulting
+
+          ---
+
+          ## 📜 License
+
+          Research methodologies and tools: MIT License
+          Individual audit reports: All rights reserved
+
+          ---
+
+          **⚠️ Disclaimer:** This repository contains security research for educational purposes. All findings are disclosed responsibly. No mainnet exploits are performed.
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --staged --quiet || git commit -m "chore: Auto-update audit statistics [skip ci]"
+          git push

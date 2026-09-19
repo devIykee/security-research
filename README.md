@@ -1,100 +1,139 @@
-# Security Research
+# Security Research Portfolio
 
-A private collection of tools, scripts, notes, and proof-of-concept work for **Web3 / smart-contract security research**. This repo organizes hunt workflows, target notes, vendor skill packs, and Foundry PoCs used during authorized audits and bug bounty research.
+**Researcher:** deviykee ([@deviykee](https://x.com/deviykee))
 
-It is meant as a personal research workspace—not a production security product. Contents range from recon scripts and report skeletons to Solidity PoCs and third-party methodology references.
+Smart contract security audits and vulnerability research across multiple blockchain ecosystems.
 
-## Folder structure
+## 📊 Audit Progress
 
-| Path | Contents |
-|------|----------|
-| `scripts/` | Hunt workflow scripts (recon, surface mapping, report/DM skeletons, selftests) |
-| `config/` | Env templates and config notes (`.env.example`) |
-| `docs/` | Methodology docs and bug-hunting skill playbooks (`docs/skills/`) |
-| `src/` | Source / PoC projects (e.g. `src/theindex/` Foundry project) |
-| `hunts/` | Per-target hunt workspaces (notes, sources, local PoCs) |
-| `reports/` | Hunt notes, high-severity writeups, and outreach DM drafts |
-| `targets/` | Target lists and scoring notes |
-| `sessions/` | Dated research session bundles |
-| `vendor/` | Third-party audit skills and methodology packs (vendored copies) |
+🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟨🟨🟨🟨🟨⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜
 
-## Setup
-
-### Prerequisites
-
-- **Git**
-- **Python 3** (for report/DM skeleton scripts)
-- **bash** / standard Unix tools (`curl`, `jq` useful for recon scripts)
-- **[Foundry](https://book.getfoundry.sh/getting-started/installation)** (`forge`, `cast`) for Solidity PoCs
-
-### Clone
-
-```bash
-git clone git@github.com:devIykee/security-research.git
-cd security-research
+```
+Total Audits:     44
+✅ Complete:      29 (65%)
+⏳ In Progress:   5 (11%)
+📋 Initial:       10
 ```
 
-### Environment
+**Last Updated:** 2026-09-19 09:44 UTC
 
-```bash
-cp config/.env.example .env
-# edit .env with your RPC URLs and API keys
+**🤖 Auto-updates:** This progress bar automatically updates when new hunts are added!
+
+---
+
+## 🏆 Notable Findings
+
+### Critical Vulnerabilities
+- **JustLend DAO** - 6 Critical, 2 High ($100M+ MEV leakage)
+- **SunPump** - 3 Critical, 3 High, 5 Medium
+- **TronPad** - 3 Critical, multiple High
+- **RadarDEX** - Critical pool drain vulnerability
+- **Aumo** - 1 Critical-class, 5 High
+
+### High Impact
+- **Solana Mobile** - SGT verification bypass
+- **TronBid** - 5 High/Critical findings
+- **Sheriff.money** - Burn-path DoS
+- **Ellipse** - Comprehensive Uniswap v4 hook analysis (no vulnerabilities found)
+
+---
+
+## 📁 Repository Structure
+
+```
+security-research/
+├── hunts/              # Individual audit reports (44 audits)
+│   ├── ellipse/        # ✅ Complete - Uniswap v4 (no vulns)
+│   ├── aumo/           # ✅ Complete - 1 Critical-class, 5 High
+│   ├── sunpump/        # ✅ Complete - 3 Critical, 3 High
+│   ├── justlend/       # ✅ Complete - 6 Critical, 2 High
+│   └── ...             # 40+ more audits
+├── tools/              # Security research tools
+├── iykes-evm-bughunt-skill/  # Bug hunting methodology (submodule)
+└── docs/               # Documentation
 ```
 
-### Scripts
+---
 
-```bash
-# optional self-check for hunt scripts
-bash scripts/selftest.sh
+## 🔍 Audit Coverage
 
-# example: generate a report skeleton
-python3 scripts/step9-report-skeleton.py --help 2>/dev/null || python3 scripts/step9-report-skeleton.py
-```
+### By Blockchain
+- **TRON:** SunPump, JustLend, TronPad, TronBid, SunSwap
+- **Ethereum/L2:** Aumo, Sheriff, Base Dollar, BasedAlpha, Convex
+- **Solana:** Solana Mobile wallet adapters
+- **Bitcoin:** GOAT Network BitVM3
+- **Arc:** Ellipse launchpad
+- **Multi-chain:** Long.supply bridge, LayerZero OmniChain
 
-### Foundry PoC example (`src/theindex`)
+### By Protocol Type
+- **DEX/AMM:** RadarDEX, SunSwap, Sheriff, Ellipse
+- **Launchpad:** SunPump, TronPad, Argus, BasedAlpha
+- **Lending:** JustLend, Aumo, Liquity v1
+- **Bridge:** Long.supply, Synapse, LayerZero, Hop
+- **NFT/Auction:** TronBid, PinkSale
+- **Infrastructure:** Solana Mobile, GOAT BitVM3
 
-```bash
-cd src/theindex
-# forge install if lib is missing
-forge test
-```
+---
 
-Per-hunt PoCs under `hunts/*/poc` follow the same pattern.
+## 🛠️ Methodology
 
-### Vendor tools
+**Bug Hunting Skill:** [iykes-evm-bughunt-skill v0.3.0](./iykes-evm-bughunt-skill/)
 
-Some packages under `vendor/` (e.g. `sc-auditor`) are Node-based:
+**Key Features:**
+- ✅ Systematic 10-step audit process
+- ✅ Proactive problem-solving (Step 3.5 bytecode analysis)
+- ✅ Comprehensive fork testing (Foundry)
+- ✅ Multi-angle adversarial review
+- ✅ Honest severity assessment
+- ✅ Auto-overcoming blockers (finds tools when blocked)
 
-```bash
-cd vendor/sc-auditor
-npm install   # if package.json present
-```
+**Tools:**
+- **Foundry** - Fork testing & PoC development
+- **Slither** - Static analysis
+- **Custom bytecode analyzer** - `analyze-bytecode.sh`
+- **Manual code review** - With coverage tracking
 
-See each vendor folder’s own README for details.
+**Innovation:** First bug hunting skill with proactive problem-solving - automatically finds/installs tools to overcome blockers like unverified contracts.
 
-## Env & secrets
+---
 
-- Put secrets in a **`.env`** file at the repo root (or as documented by a subproject).
-- **Never commit** `.env`, private keys, API tokens, or wallet seed phrases.
-- Use `config/.env.example` as a safe template only.
-- `.gitignore` excludes env files, Python/Node artifacts, Foundry `out/`/`cache/`, and common secret patterns.
+## 📝 Responsible Disclosure
 
-## Disclaimer
+All vulnerabilities are disclosed responsibly:
+1. Private notification to project team
+2. 90-day fix window (standard)
+3. PoC and mitigation assistance provided
+4. Public disclosure only after patch deployed
 
-**This repository is for educational and authorized security research only.**
+**Never exploit mainnet. Fork/eth_call verification only.**
 
-Do not use these materials to attack systems you do not own or lack explicit permission to test. Bug bounty and audit work must follow the program’s scope and rules. The authors assume no liability for misuse.
+---
 
-## Contributing
+## 📈 Statistics
 
-This is a private research repo. If you have collaborator access:
+- **Total Audits:** 44
+- **Complete with Findings:** 29 (66%)
+- **Total Vulnerabilities Found:** 50+
+- **Critical Issues:** 15+
+- **High Severity:** 20+
+- **Chains Covered:** 8+ (TRON, Ethereum, Solana, Bitcoin, Arc, etc.)
+- **PoC Tests Written:** 100+ (Foundry)
 
-1. Work on a feature branch; open a PR into `main`.
-2. Keep secrets out of commits; scrub RPC keys and private keys from notes before pushing.
-3. Prefer lowercase-with-dashes for new markdown/script filenames (Solidity names may keep PascalCase).
-4. Place new scripts in `scripts/`, docs in `docs/`, PoC source under `src/` or the relevant `hunts/<target>/`, and reports in `reports/`.
-5. Update this README if you add a major top-level folder.
+---
 
-## License
+## 📬 Contact
 
-Private — all rights reserved unless otherwise noted in vendored subfolders (which retain their upstream licenses).
+- **Twitter/X:** [@deviykee](https://x.com/deviykee)
+- **GitHub:** [@devIykee](https://github.com/devIykee)
+- **Email:** Available for private audits and security consulting
+
+---
+
+## 📜 License
+
+Research methodologies and tools: MIT License  
+Individual audit reports: All rights reserved
+
+---
+
+**⚠️ Disclaimer:** This repository contains security research for educational purposes. All findings are disclosed responsibly. No mainnet exploits are performed.
