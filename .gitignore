@@ -120,3 +120,4 @@ hunts/_verified-contracts/**/
 .agents/
 .skills/
 geminiHunnts/
+iykes-evm-bughunt-skill/
