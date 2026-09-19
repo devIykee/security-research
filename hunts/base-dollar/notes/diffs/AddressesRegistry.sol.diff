@@ -1,0 +1,54 @@
+--- upstream-template/contracts/src/AddressesRegistry.sol	2026-08-23 14:22:27.848576641 +0100
++++ basedollar/contracts/src/AddressesRegistry.sol	2026-08-23 14:21:45.041599665 +0100
+@@ -25,6 +25,7 @@
+     ICollateralRegistry public collateralRegistry;
+     IBoldToken public boldToken;
+     IWETH public WETH;
++    IAeroManager public aeroManager;
+ 
+     // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, some borrowing operation restrictions are applied
+     uint256 public immutable CCR;
+@@ -41,6 +42,9 @@
+     // Liquidation penalty for troves redistributed
+     uint256 public immutable LIQUIDATION_PENALTY_REDISTRIBUTION;
+ 
++    //Debt Limit
++    uint256 public debtLimit;
++
+     error InvalidCCR();
+     error InvalidMCR();
+     error InvalidBCR();
+@@ -74,13 +78,14 @@
+         uint256 _mcr,
+         uint256 _bcr,
+         uint256 _scr,
++        uint256 _debtLimit,
+         uint256 _liquidationPenaltySP,
+         uint256 _liquidationPenaltyRedistribution
+     ) Ownable(_owner) {
+-        if (_ccr <= 1e18 || _ccr >= 2e18) revert InvalidCCR();
+-        if (_mcr <= 1e18 || _mcr >= 2e18) revert InvalidMCR();
++        if (_ccr <= 1e18 || _ccr >= 3e18 || _ccr <= _scr || _ccr <= _mcr) revert InvalidCCR();
++        if (_mcr <= 1e18 || _mcr >= 3e18 || _mcr < _scr) revert InvalidMCR();
+         if (_bcr < 5e16 || _bcr >= 50e16) revert InvalidBCR();
+-        if (_scr <= 1e18 || _scr >= 2e18) revert InvalidSCR();
++        if (_scr <= 1e18 || _scr >= 3e18) revert InvalidSCR();
+         if (_liquidationPenaltySP < MIN_LIQUIDATION_PENALTY_SP) revert SPPenaltyTooLow();
+         if (_liquidationPenaltySP > _liquidationPenaltyRedistribution) revert SPPenaltyGtRedist();
+         if (_liquidationPenaltyRedistribution > MAX_LIQUIDATION_PENALTY_REDISTRIBUTION) revert RedistPenaltyTooHigh();
+@@ -89,6 +94,7 @@
+         SCR = _scr;
+         MCR = _mcr;
+         BCR = _bcr;
++        debtLimit = _debtLimit;
+         LIQUIDATION_PENALTY_SP = _liquidationPenaltySP;
+         LIQUIDATION_PENALTY_REDISTRIBUTION = _liquidationPenaltyRedistribution;
+     }
+@@ -112,6 +118,7 @@
+         collateralRegistry = _vars.collateralRegistry;
+         boldToken = _vars.boldToken;
+         WETH = _vars.WETH;
++        aeroManager = _vars.aeroManager;
+ 
+         emit CollTokenAddressChanged(address(_vars.collToken));
+         emit BorrowerOperationsAddressChanged(address(_vars.borrowerOperations));

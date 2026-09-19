@@ -1,0 +1,91 @@
+--- upstream-template/contracts/src/BorrowerOperations.sol	2026-08-23 14:22:27.848576641 +0100
++++ basedollar/contracts/src/BorrowerOperations.sol	2026-08-23 14:21:45.041599665 +0100
+@@ -2,7 +2,7 @@
+ 
+ pragma solidity 0.8.24;
+ 
+-import "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
++import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+ 
+ import "./Interfaces/IBorrowerOperations.sol";
+ import "./Interfaces/IAddressesRegistry.sol";
+@@ -16,8 +16,6 @@
+ import "./Types/LatestBatchData.sol";
+ 
+ contract BorrowerOperations is LiquityBase, AddRemoveManagers, IBorrowerOperations {
+-    using SafeERC20 for IERC20;
+-
+     // --- Connected contract declarations ---
+ 
+     IERC20 internal immutable collToken;
+@@ -44,6 +42,9 @@
+     // Extra buffer of collateral ratio to join a batch or adjust a trove inside a batch (on top of MCR)
+     uint256 public immutable BCR;
+ 
++    // Minimum annual interest rate for redemption protected branches
++    uint256 public immutable MIN_USER_SET_INTEREST_RATE;
++
+     /*
+     * Mapping from TroveId to individual delegate for interest rate setting.
+     *
+@@ -164,7 +165,7 @@
+ 
+     event ShutDown(uint256 _tcr);
+ 
+-    constructor(IAddressesRegistry _addressesRegistry)
++    constructor(IAddressesRegistry _addressesRegistry, bool _isRedemptionProtectedBranch)
+         AddRemoveManagers(_addressesRegistry)
+         LiquityBase(_addressesRegistry)
+     {
+@@ -194,6 +195,14 @@
+ 
+         // Allow funds movements between Liquity contracts
+         collToken.approve(address(activePool), type(uint256).max);
++
++        // Set the minimum annual interest rate for redemption protected branches or normal branches.
++        //@dev note: BO is very close to contract size limit, so we need to keep this as a constant.
++        if(_isRedemptionProtectedBranch) {
++            MIN_USER_SET_INTEREST_RATE = MIN_ANNUAL_INTEREST_RATE_REDEMPTION_PROTECTED_INITIAL;
++        } else {
++            MIN_USER_SET_INTEREST_RATE = MIN_ANNUAL_INTEREST_RATE;
++        }
+     }
+ 
+     // --- Borrower Trove Operations ---
+@@ -336,6 +345,7 @@
+         _requireUserAcceptsUpfrontFee(_change.upfrontFee, _maxUpfrontFee);
+ 
+         vars.entireDebt = _change.debtIncrease + _change.upfrontFee;
++        require(troveManager.getDebtLimit() >= troveManager.getEntireBranchDebt() + vars.entireDebt);
+         _requireAtLeastMinDebt(vars.entireDebt);
+ 
+         vars.ICR = LiquityMath._computeCR(_collAmount, vars.entireDebt, vars.price);
+@@ -1280,6 +1290,8 @@
+         IActivePool _activePool
+     ) internal {
+         if (_troveChange.debtIncrease > 0) {
++            // Check if the debt limit is exceeded only when increasing debt.
++            require(troveManager.getDebtLimit() >= troveManager.getEntireBranchDebt());
+             _boldToken.mint(withdrawalReceiver, _troveChange.debtIncrease);
+         } else if (_troveChange.debtDecrease > 0) {
+             _boldToken.burn(msg.sender, _troveChange.debtDecrease);
+@@ -1296,7 +1308,7 @@
+ 
+     function _pullCollAndSendToActivePool(IActivePool _activePool, uint256 _amount) internal {
+         // Send Coll tokens from sender to active pool
+-        collToken.safeTransferFrom(msg.sender, address(_activePool), _amount);
++        collToken.transferFrom(msg.sender, address(_activePool), _amount);
+         // Make sure Active Pool accountancy is right
+         _activePool.accountForReceivedColl(_amount);
+     }
+@@ -1492,8 +1504,8 @@
+         }
+     }
+ 
+-    function _requireValidAnnualInterestRate(uint256 _annualInterestRate) internal pure {
+-        if (_annualInterestRate < MIN_ANNUAL_INTEREST_RATE) {
++    function _requireValidAnnualInterestRate(uint256 _annualInterestRate) internal view {
++        if (_annualInterestRate < MIN_USER_SET_INTEREST_RATE) {
+             revert InterestRateTooLow();
+         }
+         if (_annualInterestRate > MAX_ANNUAL_INTEREST_RATE) {

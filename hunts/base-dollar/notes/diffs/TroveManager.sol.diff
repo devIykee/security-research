@@ -1,0 +1,52 @@
+--- upstream-template/contracts/src/TroveManager.sol	2026-08-23 14:22:27.877895141 +0100
++++ basedollar/contracts/src/TroveManager.sol	2026-08-23 14:21:45.056613465 +0100
+@@ -38,6 +38,11 @@
+     // the protocol triggers the shutdown of the borrow market and permanently disables all borrowing operations except for closing Troves.
+     uint256 internal immutable SCR;
+ 
++    // Maximum debt allowed on this branch
++    //Current debt on this branch is tracked via getEntireBranchDebt() in LiquityBase.sol
++    uint256 internal debtLimit;
++    uint256 internal initialDebtLimit;
++
+     // Liquidation penalty for troves offset to the SP
+     uint256 internal immutable LIQUIDATION_PENALTY_SP;
+     // Liquidation penalty for troves redistributed
+@@ -190,6 +195,8 @@
+         CCR = _addressesRegistry.CCR();
+         MCR = _addressesRegistry.MCR();
+         SCR = _addressesRegistry.SCR();
++        debtLimit = _addressesRegistry.debtLimit();
++        initialDebtLimit = debtLimit;
+         LIQUIDATION_PENALTY_SP = _addressesRegistry.LIQUIDATION_PENALTY_SP();
+         LIQUIDATION_PENALTY_REDISTRIBUTION = _addressesRegistry.LIQUIDATION_PENALTY_REDISTRIBUTION();
+ 
+@@ -223,6 +230,10 @@
+         return TroveIds[_index];
+     }
+ 
++    function getPriceFeed() external view returns (IPriceFeed) {
++        return priceFeed;
++    }
++
+     // --- Trove Liquidation functions ---
+ 
+     // --- Inner single liquidation functions ---
+@@ -2003,4 +2014,17 @@
+         Troves[_troveId].interestBatchManager = address(0);
+         Troves[_troveId].batchDebtShares = 0;
+     }
++
++    function getDebtLimit() external view returns (uint256){
++        return debtLimit;
++    }
++
++    function getInitialDebtLimit() external view returns (uint256){
++        return initialDebtLimit;
++    }
++
++    function setDebtLimit(uint256 _newDebtLimit) external {
++        _requireCallerIsCollateralRegistry();
++        debtLimit = _newDebtLimit;
++    }
+ }

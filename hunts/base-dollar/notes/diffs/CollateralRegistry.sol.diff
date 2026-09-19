@@ -1,0 +1,399 @@
+--- upstream-template/contracts/src/CollateralRegistry.sol	2026-08-23 14:22:27.848576641 +0100
++++ basedollar/contracts/src/CollateralRegistry.sol	2026-08-23 14:21:45.041599665 +0100
+@@ -6,81 +6,145 @@
+ 
+ import "./Interfaces/ITroveManager.sol";
+ import "./Interfaces/IBoldToken.sol";
++import "./Interfaces/IAddressesRegistry.sol";
++import "./Interfaces/IActivePool.sol";
+ import "./Dependencies/Constants.sol";
+ import "./Dependencies/LiquityMath.sol";
+ 
+ import "./Interfaces/ICollateralRegistry.sol";
++import "./Interfaces/IAeroManager.sol";
+ 
+ contract CollateralRegistry is ICollateralRegistry {
+     // See: https://github.com/ethereum/solidity/issues/12587
+-    uint256 public immutable totalCollaterals;
++    uint256 public totalCollaterals;
+ 
+-    IERC20Metadata internal immutable token0;
+-    IERC20Metadata internal immutable token1;
+-    IERC20Metadata internal immutable token2;
+-    IERC20Metadata internal immutable token3;
+-    IERC20Metadata internal immutable token4;
+-    IERC20Metadata internal immutable token5;
+-    IERC20Metadata internal immutable token6;
+-    IERC20Metadata internal immutable token7;
+-    IERC20Metadata internal immutable token8;
+-    IERC20Metadata internal immutable token9;
+-
+-    ITroveManager internal immutable troveManager0;
+-    ITroveManager internal immutable troveManager1;
+-    ITroveManager internal immutable troveManager2;
+-    ITroveManager internal immutable troveManager3;
+-    ITroveManager internal immutable troveManager4;
+-    ITroveManager internal immutable troveManager5;
+-    ITroveManager internal immutable troveManager6;
+-    ITroveManager internal immutable troveManager7;
+-    ITroveManager internal immutable troveManager8;
+-    ITroveManager internal immutable troveManager9;
++    uint256 private constant MAX_REDEEMABLE_BRANCHES = 10;
++
++    //standard, redeemable branches are capped at 10 total
++    IERC20Metadata[] internal redeemableBranchesTokens;
++    ITroveManager[] internal redeemableBranchesTroveManagers;
++
++    //special, non-redeemable branches
++    IERC20Metadata[] internal nonRedeemableBranchesTokens;
++    ITroveManager[] internal nonRedeemableBranchesTroveManagers;
++
++    IAeroManager public aeroManager;
+ 
+     IBoldToken public immutable boldToken;
+ 
++    /// @dev Set to true when any branch added via `createNewBranch` uses Aero LP collateral
++    bool public hasAeroLPCollateralBranch;
++
+     uint256 public baseRate;
+ 
++    address public collateralGovernor;
++    address public governor;
++
++    address public pendingGovernor;
++    uint256 public pendingGovernorTimestamp;
++
+     // The timestamp of the latest fee operation (redemption or new Bold issuance)
+     uint256 public lastFeeOperationTime = block.timestamp;
+ 
+     event BaseRateUpdated(uint256 _baseRate);
+     event LastFeeOpTimeUpdated(uint256 _lastFeeOpTime);
+-
+-    constructor(IBoldToken _boldToken, IERC20Metadata[] memory _tokens, ITroveManager[] memory _troveManagers) {
++    event CollateralBranchAdded(uint256 _totalCollaterals, uint256 _index, IERC20Metadata _token, ITroveManager _troveManager, bool _isRedeemable);
++    event CollateralGovernorUpdated(address oldGovernor, address newGovernor);
++    event GovernorProposed(address indexed pendingGovernor, uint256 activateAtTimestamp);
++    event GovernorProposalCancelled(address indexed cancelledGovernor);
++    event GovernorUpdated(address oldGovernor, address newGovernor);
++    event AeroManagerUpdated(address oldAeroManager, address newAeroManager);
++
++    /// @dev The constructor assumes only redeemable branches
++    /// @param _boldToken The address of the bold token
++    /// @param _tokens The collateral tokens of initial redeemable branches
++    /// @param _troveManagers The trove managers of initial redeemable branches
++    /// @param _aeroManager The aero manager
++    /// @param _governor The address of the governor
++    constructor(IBoldToken _boldToken, IERC20Metadata[] memory _tokens, ITroveManager[] memory _troveManagers, IAeroManager _aeroManager, address _governor) {
+         uint256 numTokens = _tokens.length;
+         require(numTokens > 0, "Collateral list cannot be empty");
+-        require(numTokens <= 10, "Collateral list too long");
++        require(numTokens <= MAX_REDEEMABLE_BRANCHES, "Collateral list too long");
+         totalCollaterals = numTokens;
+ 
+         boldToken = _boldToken;
++        aeroManager = _aeroManager;
+ 
+-        token0 = _tokens[0];
+-        token1 = numTokens > 1 ? _tokens[1] : IERC20Metadata(address(0));
+-        token2 = numTokens > 2 ? _tokens[2] : IERC20Metadata(address(0));
+-        token3 = numTokens > 3 ? _tokens[3] : IERC20Metadata(address(0));
+-        token4 = numTokens > 4 ? _tokens[4] : IERC20Metadata(address(0));
+-        token5 = numTokens > 5 ? _tokens[5] : IERC20Metadata(address(0));
+-        token6 = numTokens > 6 ? _tokens[6] : IERC20Metadata(address(0));
+-        token7 = numTokens > 7 ? _tokens[7] : IERC20Metadata(address(0));
+-        token8 = numTokens > 8 ? _tokens[8] : IERC20Metadata(address(0));
+-        token9 = numTokens > 9 ? _tokens[9] : IERC20Metadata(address(0));
+-
+-        troveManager0 = _troveManagers[0];
+-        troveManager1 = numTokens > 1 ? _troveManagers[1] : ITroveManager(address(0));
+-        troveManager2 = numTokens > 2 ? _troveManagers[2] : ITroveManager(address(0));
+-        troveManager3 = numTokens > 3 ? _troveManagers[3] : ITroveManager(address(0));
+-        troveManager4 = numTokens > 4 ? _troveManagers[4] : ITroveManager(address(0));
+-        troveManager5 = numTokens > 5 ? _troveManagers[5] : ITroveManager(address(0));
+-        troveManager6 = numTokens > 6 ? _troveManagers[6] : ITroveManager(address(0));
+-        troveManager7 = numTokens > 7 ? _troveManagers[7] : ITroveManager(address(0));
+-        troveManager8 = numTokens > 8 ? _troveManagers[8] : ITroveManager(address(0));
+-        troveManager9 = numTokens > 9 ? _troveManagers[9] : ITroveManager(address(0));
++        require(_tokens.length == _troveManagers.length, "Tokens and trove managers must have the same length");
++        //standard, redeemable branches
++        for(uint256 i = 0; i < _tokens.length; i++){
++            redeemableBranchesTokens.push(_tokens[i]);
++            redeemableBranchesTroveManagers.push(_troveManagers[i]);
++        }
++
++        collateralGovernor = _governor;
++        governor = _governor;
+ 
+         // Initialize the baseRate state variable
+         baseRate = INITIAL_BASE_RATE;
+         emit BaseRateUpdated(INITIAL_BASE_RATE);
+     }
++    
++    /// @notice Creates a new branch for the collateral registry
++    /// @dev If the new branch is redeemable, it will be added to the redeemable branches array, but only 10 are allowed
++    /// Also, make sure that it doesn't already exist. Do not add a new branch using an existing known trove manager. Governor is expected to be trusted on this.
++    /// @param _addressesRegistry The addresses registry for the new branch
++    /// @param _isRedeemable Whether the new branch is redeemable
++    function createNewBranch(IAddressesRegistry _addressesRegistry, bool _isRedeemable) external {
++        require(msg.sender == collateralGovernor, "CR: Only collateral governor can create new branches");
++
++        IERC20Metadata _token = _addressesRegistry.collToken();
++        ITroveManager _troveManager = _addressesRegistry.troveManager();
++        address _stabilityPool = address(_addressesRegistry.stabilityPool());
++        address _borrowerOperations = address(_addressesRegistry.borrowerOperations());
++        IActivePool _activePool = _addressesRegistry.activePool();
++
++        require(address(_token) != address(0), "CR: Token cannot be the zero address");
++        require(address(_troveManager) != address(0), "CR: Trove manager cannot be the zero address");
++        require(address(_token) != address(boldToken), "CR: Token cannot be the bold token");
++        require(_stabilityPool != address(0), "CR: Stability pool cannot be the zero address");
++        require(_borrowerOperations != address(0), "CR: Borrower operations cannot be the zero address");
++        require(address(_activePool) != address(0), "CR: Active pool cannot be the zero address");
++        require(address(_activePool) == address(_troveManager.activePool()), "CR: Active pool does not match trove manager");
++        
++        bool _isAeroLPCollateral = _activePool.isAeroLPCollateral();
++        if (_isAeroLPCollateral) {
++            require(
++                address(aeroManager) == address(_addressesRegistry.aeroManager())
++                && _activePool.aeroManagerAddress() == address(aeroManager), 
++                "CR: AeroManager address mismatch"
++            );
++        }
++
++        uint256 index;
++        if(_isRedeemable){
++            require(redeemableBranchesTokens.length < MAX_REDEEMABLE_BRANCHES, "CR: Max 10 redeemable branches");
++            index = redeemableBranchesTokens.length;
++            redeemableBranchesTokens.push(_token);
++            redeemableBranchesTroveManagers.push(_troveManager);
++        } else {
++            index = nonRedeemableBranchesTokens.length;
++            nonRedeemableBranchesTokens.push(_token);
++            nonRedeemableBranchesTroveManagers.push(_troveManager);
++        }
++        
++        // Add branch addresses in bold token
++        boldToken.setBranchAddressesViaCollateralRegistry(
++            address(_troveManager), 
++            _stabilityPool, 
++            _borrowerOperations, 
++            address(_activePool)
++        );
++        
++        totalCollaterals++;
++        emit CollateralBranchAdded(totalCollaterals, index, _token, _troveManager, _isRedeemable);
++
++        // If AERO LP collateral, add to AeroManager
++        if (_isAeroLPCollateral) {
++            hasAeroLPCollateralBranch = true;
++            aeroManager.addActivePool(address(_activePool));
++        }
++    }
+ 
+     struct RedemptionTotals {
+         uint256 numCollaterals;
+@@ -97,7 +161,7 @@
+ 
+         RedemptionTotals memory totals;
+ 
+-        totals.numCollaterals = totalCollaterals;
++        totals.numCollaterals = redeemableBranchesTokens.length;
+         uint256[] memory unbackedPortions = new uint256[](totals.numCollaterals);
+         uint256[] memory prices = new uint256[](totals.numCollaterals);
+ 
+@@ -273,32 +337,99 @@
+ 
+     // getters
+ 
++    /// @notice Get the token for a specific redeemable branch
++    /// @param _index The index of token in redeemable branches array
++    /// @return The token for the redeemable branch
+     function getToken(uint256 _index) external view returns (IERC20Metadata) {
+-        if (_index == 0) return token0;
+-        else if (_index == 1) return token1;
+-        else if (_index == 2) return token2;
+-        else if (_index == 3) return token3;
+-        else if (_index == 4) return token4;
+-        else if (_index == 5) return token5;
+-        else if (_index == 6) return token6;
+-        else if (_index == 7) return token7;
+-        else if (_index == 8) return token8;
+-        else if (_index == 9) return token9;
+-        else revert("Invalid index");
++        return redeemableBranchesTokens[_index];
+     }
+ 
++    /// @notice Get the token for a specific non-redeemable branch
++    /// @param _index The index of token in non-redeemable branches array
++    /// @return The token for the non-redeemable branch
++    function getNonRedeemableToken(uint256 _index) external view returns(IERC20Metadata){
++        return nonRedeemableBranchesTokens[_index];
++    }
++
++    /// @notice Get the trove manager for a specific redeemable branch
++    /// @dev ONLY returns the redeemable troves. Since this is only used for redemptions this is ideal.
++    /// @param _index The index of trove manager in redeemable branches array
++    /// @return The trove manager for the redeemable branch
+     function getTroveManager(uint256 _index) public view returns (ITroveManager) {
+-        if (_index == 0) return troveManager0;
+-        else if (_index == 1) return troveManager1;
+-        else if (_index == 2) return troveManager2;
+-        else if (_index == 3) return troveManager3;
+-        else if (_index == 4) return troveManager4;
+-        else if (_index == 5) return troveManager5;
+-        else if (_index == 6) return troveManager6;
+-        else if (_index == 7) return troveManager7;
+-        else if (_index == 8) return troveManager8;
+-        else if (_index == 9) return troveManager9;
+-        else revert("Invalid index");
++        return redeemableBranchesTroveManagers[_index];
++    }
++
++    /// @notice Get the trove manager for a specific non-redeemable branch
++    /// @dev ONLY returns the non-redeemable troves.
++    /// @param _index The index of trove manager in non-redeemable branches array
++    /// @return The trove manager for the non-redeemable branch
++    function getNonRedeemableTroveManager(uint256 _index) public view returns(ITroveManager){
++        return nonRedeemableBranchesTroveManagers[_index];
++    }
++
++    /// @notice Get all trove managers (redeemable and non-redeemable)
++    /// @dev Just used for front end as a helper and is not a core feature.
++    function getAllTroveManagers() external view returns(ITroveManager[] memory){
++        ITroveManager[] memory allTroveManagers = new ITroveManager[](redeemableBranchesTroveManagers.length + nonRedeemableBranchesTroveManagers.length);
++        for(uint256 i = 0; i < redeemableBranchesTroveManagers.length; i++){
++            allTroveManagers[i] = redeemableBranchesTroveManagers[i];
++        }
++        for(uint256 i = 0; i < nonRedeemableBranchesTroveManagers.length; i++){
++            allTroveManagers[redeemableBranchesTroveManagers.length + i] = nonRedeemableBranchesTroveManagers[i];
++        }
++        return allTroveManagers;
++    }
++
++    /// @notice Get all redeemable trove managers
++    function getTroveManagers() external view returns(ITroveManager[] memory){
++        return redeemableBranchesTroveManagers;
++    }
++
++    /// @notice Get all non-redeemable trove managers
++    function getNonRedeemableTroveManagers() external view returns(ITroveManager[] memory){
++        return nonRedeemableBranchesTroveManagers;
++    }
++
++    /// @notice Update the debt limit for a specific redeemable TroveManager
++    /// @dev Decreases are unrestricted. Increases must satisfy at least one of the following conditions:
++    /// (1) the new limit does not exceed 2x the current debt limit, or
++    /// (2) the new limit does not exceed the initial debt limit.
++    /// @param _indexTroveManager The index of the trove manager from redeemable branches array
++    /// @param _newDebtLimit The new debt limit
++    function updateDebtLimit(uint256 _indexTroveManager, uint256 _newDebtLimit) external onlyGovernor {
++        uint256 currentDebtLimit = getTroveManager(_indexTroveManager).getDebtLimit();
++        if (_newDebtLimit > currentDebtLimit) {
++            require(_newDebtLimit <= currentDebtLimit * 2 || _newDebtLimit <= getTroveManager(_indexTroveManager).getInitialDebtLimit(), "CollateralRegistry: Debt limit increase by more than 2x is not allowed");
++        }
++        getTroveManager(_indexTroveManager).setDebtLimit(_newDebtLimit);
++    }
++
++    /// @notice Get the debt limit for a specific redeemable TroveManager
++    /// @param _indexTroveManager The index of the trove manager from redeemable branches array
++    /// @return The debt limit for the redeemable trove manager
++    function getDebtLimit(uint256 _indexTroveManager) external view returns (uint256) {
++        return getTroveManager(_indexTroveManager).getDebtLimit();
++    }
++
++    /// @notice Update the debt limit for a specific non-redeemable TroveManager
++    /// @dev Decreases are unrestricted. Increases must satisfy at least one of the following conditions:
++    /// (1) the new limit does not exceed 2x the current debt limit, or
++    /// (2) the new limit does not exceed the initial debt limit.
++    /// @param _indexTroveManager The index of the trove manager from non-redeemable branches array
++    /// @param _newDebtLimit The new debt limit
++    function updateNonRedeemableDebtLimit(uint256 _indexTroveManager, uint256 _newDebtLimit) external onlyGovernor {
++        uint256 currentDebtLimit = getNonRedeemableTroveManager(_indexTroveManager).getDebtLimit();
++        if (_newDebtLimit > currentDebtLimit) {
++            require(_newDebtLimit <= currentDebtLimit * 2 || _newDebtLimit <= getNonRedeemableTroveManager(_indexTroveManager).getInitialDebtLimit(), "CollateralRegistry: Debt limit increase by more than 2x is not allowed");
++        }
++        getNonRedeemableTroveManager(_indexTroveManager).setDebtLimit(_newDebtLimit);
++    }
++
++    /// @notice Get the debt limit for a specific non-redeemable TroveManager
++    /// @param _indexTroveManager The index of the trove manager from non-redeemable branches array
++    /// @return The debt limit for the non-redeemable trove manager
++    function getNonRedeemableDebtLimit(uint256 _indexTroveManager) external view returns (uint256) {
++        return getNonRedeemableTroveManager(_indexTroveManager).getDebtLimit();
+     }
+ 
+     // require functions
+@@ -313,4 +444,73 @@
+     function _requireAmountGreaterThanZero(uint256 _amount) internal pure {
+         require(_amount > 0, "CollateralRegistry: Amount must be greater than zero");
+     }
++
++    /**
++     * @notice Propose a new governor. The proposed address must call acceptGovernor() after the timelock has passed.
++     */
++    function proposeGovernor(address _newGovernor) external onlyGovernor {
++        require(_newGovernor != address(0), "CR: Governor cannot be zero address");
++        require(_newGovernor != governor, "CR: Already governor");
++
++        pendingGovernor = _newGovernor;
++        pendingGovernorTimestamp = block.timestamp;
++
++        emit GovernorProposed(_newGovernor, block.timestamp + GOVERNOR_TRANSFER_TIMELOCK);
++    }
++
++    /**
++     * @notice Accept the governor role. Callable by the pending governor after the timelock has passed.
++     */
++    function acceptGovernor() external {
++        require(msg.sender == pendingGovernor, "CR: Caller is not pending governor");
++        require(
++            block.timestamp >= pendingGovernorTimestamp + GOVERNOR_TRANSFER_TIMELOCK,
++            "CR: Governor transfer timelock not passed"
++        );
++
++        address oldGovernor = governor;
++        governor = pendingGovernor;
++        pendingGovernor = address(0);
++        pendingGovernorTimestamp = 0;
++
++        emit GovernorUpdated(oldGovernor, governor);
++    }
++
++    /**
++     * @notice Cancel a pending governor proposal. Callable by the current governor.
++     */
++    function cancelGovernorProposal() external onlyGovernor {
++        require(pendingGovernor != address(0), "CR: No pending governor");
++        address cancelled = pendingGovernor;
++        pendingGovernor = address(0);
++        pendingGovernorTimestamp = 0;
++        emit GovernorProposalCancelled(cancelled);
++    }
++
++    /// @notice Update the AeroManager address
++    /// @dev Only allowed before any Aero LP collateral branch has been added
++    /// @param _newAeroManager The new AeroManager address
++    function updateAeroManager(IAeroManager _newAeroManager) external onlyGovernor {
++        require(!hasAeroLPCollateralBranch, "CR: Cannot update AeroManager with Aero LP collateral branches");
++        require(address(_newAeroManager) != address(0), "CR: AeroManager cannot be zero address");
++        require(address(_newAeroManager) != address(aeroManager), "CR: AeroManager already set to this address");
++        address oldAeroManager = address(aeroManager);
++        aeroManager = _newAeroManager;
++        emit AeroManagerUpdated(oldAeroManager, address(_newAeroManager));
++    }
++
++    /// @notice Update the collateral governor
++    /// @param _newCollateralGovernor The new collateral governor address
++    function updateCollateralGovernor(address _newCollateralGovernor) external onlyGovernor {
++        require(_newCollateralGovernor != collateralGovernor, "CR: Collateral governor already set to this address");
++        address oldGovernor = collateralGovernor;
++        collateralGovernor = _newCollateralGovernor;
++        emit CollateralGovernorUpdated(oldGovernor, _newCollateralGovernor);
++    }
++
++    /// @dev Restricts the function to the governor
++    modifier onlyGovernor() {
++        require(msg.sender == governor, "CollateralRegistry: Only governor can call this function");
++        _;
++    }
+ }

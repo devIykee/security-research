@@ -1,0 +1,83 @@
+--- upstream-template/contracts/src/BoldToken.sol	2026-08-23 14:22:27.848576641 +0100
++++ basedollar/contracts/src/BoldToken.sol	2026-08-23 14:21:45.041599665 +0100
+@@ -17,8 +17,8 @@
+  */
+ 
+ contract BoldToken is Ownable, IBoldToken, ERC20Permit {
+-    string internal constant _NAME = "BOLD Stablecoin";
+-    string internal constant _SYMBOL = "BOLD";
++    string internal constant _NAME = "Base Dollar";
++    string internal constant _SYMBOL ="BD";
+ 
+     // --- Addresses ---
+ 
+@@ -56,6 +56,44 @@
+         emit ActivePoolAddressAdded(_activePoolAddress);
+     }
+ 
++    /// @notice Set the branch addresses via the collateral registry
++    /// @dev Only collateral registry can call this function when adding a new branch.
++    /// @param _troveManagerAddress The address of the trove manager in branch
++    /// @param _stabilityPoolAddress The address of the stability pool in branch
++    /// @param _borrowerOperationsAddress The address of the borrower operations in branch
++    /// @param _activePoolAddress The address of the active pool in branch
++    function setBranchAddressesViaCollateralRegistry(
++        address _troveManagerAddress,
++        address _stabilityPoolAddress,
++        address _borrowerOperationsAddress,
++        address _activePoolAddress
++    ) external {
++        //only collateral registry can call this function
++        _requireCallerIsCollateralRegistry();
++
++        //set branch addresses, but do not allow overriding existing values.
++        require(!troveManagerAddresses[_troveManagerAddress], "BoldToken: TroveManager address already set");
++        require(!stabilityPoolAddresses[_stabilityPoolAddress], "BoldToken: StabilityPool address already set");
++        require(!borrowerOperationsAddresses[_borrowerOperationsAddress], "BoldToken: BorrowerOperations address already set");
++        require(!activePoolAddresses[_activePoolAddress], "BoldToken: ActivePool address already set");
++        
++        troveManagerAddresses[_troveManagerAddress] = true;
++        emit TroveManagerAddressAdded(_troveManagerAddress);
++
++        stabilityPoolAddresses[_stabilityPoolAddress] = true;
++        emit StabilityPoolAddressAdded(_stabilityPoolAddress);
++
++        borrowerOperationsAddresses[_borrowerOperationsAddress] = true;
++        emit BorrowerOperationsAddressAdded(_borrowerOperationsAddress);
++
++        activePoolAddresses[_activePoolAddress] = true;
++        emit ActivePoolAddressAdded(_activePoolAddress);
++    }
++
++    /// @notice Set the collateral registry address
++    /// @dev One-time function to set the collateral registry address and renounces ownership at deployment.
++    /// Only owner can call this function. Assumes deployer is owner.
++    /// @param _collateralRegistryAddress The address of the collateral registry
+     function setCollateralRegistry(address _collateralRegistryAddress) external override onlyOwner {
+         collateralRegistryAddress = _collateralRegistryAddress;
+         emit CollateralRegistryAddressChanged(_collateralRegistryAddress);
+@@ -75,11 +113,15 @@
+         _burn(_account, _amount);
+     }
+ 
++    /// @notice Send BOLD tokens to the stability pool for depositor
++    /// @dev Only stability pool can call this function
+     function sendToPool(address _sender, address _poolAddress, uint256 _amount) external override {
+         _requireCallerIsStabilityPool();
+         _transfer(_sender, _poolAddress, _amount);
+     }
+ 
++    /// @notice Return BOLD tokens from the stability pool to the depositor
++    /// @dev Only stability pool can call this function
+     function returnFromPool(address _poolAddress, address _receiver, uint256 _amount) external override {
+         _requireCallerIsStabilityPool();
+         _transfer(_poolAddress, _receiver, _amount);
+@@ -128,4 +170,8 @@
+     function _requireCallerIsStabilityPool() internal view {
+         require(stabilityPoolAddresses[msg.sender], "BoldToken: Caller is not the StabilityPool");
+     }
++
++    function _requireCallerIsCollateralRegistry() internal view {
++        require(msg.sender == collateralRegistryAddress, "BoldToken: Caller is not the CollateralRegistry");
++    }
+ }
