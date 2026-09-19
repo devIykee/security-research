@@ -1,0 +1,2237 @@
+[
+{
+"slug": "etherfi-stake",
+"name": "ether.fi Stake",
+"tvl": 3681157282,
+"cat": "onchain-capital-allocator",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "exod",
+"name": "Exod",
+"tvl": 3392911199,
+"cat": "rwa",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "steakhouse-financial",
+"name": "Steakhouse Financial",
+"llama_name": "Steakhouse Financial",
+"tvl": 3124266073,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://www.steakhouse.financial/",
+"twitter": "SteakhouseFi",
+"chains": [
+"Corn",
+"Solana",
+"Unichain",
+"Polygon",
+"Robinhood Chain",
+"Katana",
+"Monad",
+"Arbitrum",
+"Ethereum",
+"Base"
+],
+"addr": "null",
+"audit_links": null
+},
+{
+"slug": "usdcx",
+"name": "USDCx",
+"llama_name": "USDCx",
+"tvl": 3113676048,
+"cat": "stablecoin-wrapper",
+"status": "no-audits",
+"url": "https://www.circle.com/xreserve",
+"twitter": "circle",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "tether-gold",
+"name": "Tether Gold",
+"llama_name": "Tether Gold",
+"tvl": 3108457723,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://gold.tether.to/",
+"twitter": "tethergold",
+"chains": [
+"Ethereum",
+"Monad",
+"Avalanche",
+"Arbitrum",
+"Polygon",
+"Plasma",
+"Celo",
+"Ink"
+],
+"addr": "0x68749665ff8d2d112fa859aa293f07a622782f38",
+"audit_links": null
+},
+{
+"slug": "arbitrum-nitro",
+"name": "Arbitrum Nitro",
+"llama_name": "Arbitrum Nitro",
+"tvl": 2689828469,
+"cat": "mev",
+"status": "no-audits",
+"url": "https://arbitrum.foundation/",
+"twitter": "arbitrum",
+"chains": [
+"Robinhood Chain"
+],
+"addr": "arbitrum:0x912ce59144191c1204e64559fe8253a0e49e6548",
+"audit_links": null
+},
+{
+"slug": "grove-finance",
+"name": "Grove Finance",
+"llama_name": "Grove Finance",
+"tvl": 2411957024,
+"cat": "onchain-capital-allocator",
+"status": "no-audits",
+"url": "https://data.grove.finance/",
+"twitter": "grovedotfinance",
+"chains": [
+"Avalanche",
+"Base",
+"Plume Mainnet",
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "base-bridge",
+"name": "Base Bridge",
+"tvl": 2198018004,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "paxos-gold",
+"name": "Paxos Gold",
+"llama_name": "Paxos Gold",
+"tvl": 1910147301,
+"cat": "stablecoin-issuer",
+"status": "no-audits",
+"url": "https://paxos.com/paxgold/",
+"twitter": "Paxos",
+"chains": [
+"Ethereum"
+],
+"addr": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+"audit_links": null
+},
+{
+"slug": "sentora",
+"name": "Sentora",
+"llama_name": "Sentora",
+"tvl": 1893768491,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://sentora.com/",
+"twitter": "SentoraHQ",
+"chains": [
+"Ink",
+"Solana",
+"Tempo",
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "gauntlet",
+"name": "Gauntlet",
+"tvl": 1410619506,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "usdd",
+"name": "USDD",
+"llama_name": "USDD",
+"tvl": 1285788436,
+"cat": "cdp",
+"status": "no-audits",
+"url": "https://usdd.io/",
+"twitter": "usddio",
+"chains": [
+"Ethereum",
+"Binance",
+"Tron"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "anemoy-capital",
+"name": "Anemoy Capital",
+"llama_name": "Anemoy Capital",
+"tvl": 871935948,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.anemoy.io",
+"twitter": "anemoycapital",
+"chains": [
+"Ethereum",
+"Base",
+"Celo"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "bitwise-uscc",
+"name": "Bitwise USCC",
+"llama_name": "Bitwise USCC",
+"tvl": 814596011,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://superstate.com/",
+"twitter": "superstatefunds",
+"chains": [
+"Ethereum",
+"Plume Mainnet",
+"Solana"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "wisdomtree",
+"name": "WisdomTree",
+"llama_name": "WisdomTree",
+"tvl": 752008621,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.wisdomtreeprime.com/",
+"twitter": "WisdomTreePrime",
+"chains": [
+"Ethereum",
+"Stellar"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "superchain",
+"name": "Superchain",
+"llama_name": "Superchain",
+"tvl": 524946950,
+"cat": "services",
+"status": "no-audits",
+"url": "https://optimism.io/",
+"twitter": "Optimism",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "obol",
+"name": "Obol",
+"llama_name": "Obol",
+"tvl": 472365588,
+"cat": "staking-pool",
+"status": "no-audits",
+"url": "https://obol.org/",
+"twitter": "Obol_Collective",
+"chains": [
+"Ethereum"
+],
+"addr": "0x0b010000b7624eb9b3dfbc279673c76e9d29d5f7",
+"audit_links": null
+},
+{
+"slug": "meth-protocol",
+"name": "mETH Protocol",
+"llama_name": "mETH Protocol",
+"tvl": 447678899,
+"cat": "liquid-staking",
+"status": "no-audits",
+"url": "https://www.methprotocol.xyz/",
+"twitter": "mETHProtocol",
+"chains": [
+"Ethereum"
+],
+"addr": "0x9f0c013016e8656bc256f948cd4b79ab25c7b94d",
+"audit_links": null
+},
+{
+"slug": "k3-capital",
+"name": "K3 Capital",
+"tvl": 390144588,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "coinbase-wrapped-staked-eth",
+"name": "Coinbase Wrapped Staked ETH",
+"llama_name": "Coinbase Wrapped Staked ETH",
+"tvl": 352528053,
+"cat": "liquid-staking",
+"status": "no-audits",
+"url": "https://www.coinbase.com/price/coinbase-wrapped-staked-eth",
+"twitter": "coinbase",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "polymarket-us",
+"name": "Polymarket US",
+"tvl": 344716117,
+"cat": "prediction-market",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "world-chain",
+"name": "World Chain",
+"llama_name": "World Chain",
+"tvl": 330794456,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://world.org/",
+"twitter": "worldcoin",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "robinhood-chain-bridge",
+"name": "Robinhood Chain Bridge",
+"llama_name": "Robinhood Chain Bridge",
+"tvl": 310707398,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://robinhood.com/us/en/chain/",
+"twitter": "RobinhoodCrypto",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "linea-bridge",
+"name": "Linea Bridge",
+"tvl": 258887686,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "hyperithm",
+"name": "Hyperithm",
+"llama_name": "Hyperithm",
+"tvl": 256383265,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://www.hyperithm.com",
+"twitter": "hyperithm",
+"chains": [
+"Solana",
+"XRPL EVM",
+"Plasma",
+"Binance",
+"Katana",
+"Stable",
+"Hyperliquid L1",
+"Arbitrum",
+"Monad",
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "bitfi-btc",
+"name": "BitFi BTC",
+"llama_name": "BitFi BTC",
+"tvl": 252612338,
+"cat": "basis-trading",
+"status": "no-audits",
+"url": "https://www.bitfi.one/",
+"twitter": "Bitfi_Org",
+"chains": [
+"AILayer"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "bouncebit-cedefi-yield",
+"name": "BounceBit CeDeFi Yield",
+"llama_name": "BounceBit CeDeFi Yield",
+"tvl": 228871743,
+"cat": "basis-trading",
+"status": "no-audits",
+"url": "https://portal.bouncebit.io/",
+"twitter": "bounce_bit",
+"chains": [
+"Base",
+"Ethereum",
+"Solana",
+"Binance",
+"BounceBit"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "aster-spot",
+"name": "Aster Spot",
+"llama_name": "Aster Spot",
+"tvl": 226511756,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://www.asterdex.com",
+"twitter": "Aster_DEX",
+"chains": [
+"Off Chain"
+],
+"addr": "bsc:0x000ae314e2a2172a039b26378814c252734f556a",
+"audit_links": null
+},
+{
+"slug": "cooler-loans",
+"name": "Cooler Loans",
+"llama_name": "Cooler Loans",
+"tvl": 215120927,
+"cat": "lending",
+"status": "no-audits",
+"url": "https://app.olympusdao.finance/#/lending/cooler",
+"twitter": "OlympusDAO",
+"chains": [
+"Ethereum"
+],
+"addr": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
+"audit_links": null
+},
+{
+"slug": "buzz-farming",
+"name": "Buzz Farming",
+"llama_name": "Buzz Farming",
+"tvl": 202874848,
+"cat": "farm",
+"status": "no-audits",
+"url": "https://buzz.bsquared.network/farming",
+"twitter": "BSquaredNetwork",
+"chains": [
+"BSquared"
+],
+"addr": "bsc:0x783c3f003f172c6ac5ac700218a357d2d66ee2a2",
+"audit_links": null
+},
+{
+"slug": "rocketswap-anubis",
+"name": "RocketSwap Anubis",
+"llama_name": "RocketSwap Anubis",
+"tvl": 192805184,
+"cat": "dexes",
+"status": "no-audits",
+"url": "",
+"twitter": "Rocket_Swap_",
+"chains": [
+"Anubis"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "clearstar",
+"name": "Clearstar",
+"tvl": 174128058,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "saturn",
+"name": "Saturn",
+"llama_name": "Saturn",
+"tvl": 172529946,
+"cat": "stablecoin-wrapper",
+"status": "no-audits",
+"url": "https://app.saturn.credit/",
+"twitter": "saturn_credit",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "kpk",
+"name": "KPK",
+"tvl": 161795486,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "digift",
+"name": "DigiFT",
+"tvl": 159875628,
+"cat": "rwa",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "rockawayx",
+"name": "RockawayX",
+"llama_name": "RockawayX",
+"tvl": 147693198,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://rockawayx.com/",
+"twitter": "Rockaway_X",
+"chains": [
+"Etherlink",
+"Plume Mainnet",
+"Binance",
+"Solana",
+"Base",
+"Sei",
+"Pharos",
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "pinksale",
+"name": "PinkSale",
+"tvl": 143572195,
+"cat": "launchpad",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "telos-consilium",
+"name": "Telos Consilium",
+"tvl": 141130657,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "starknet-bridge",
+"name": "Starknet Bridge",
+"llama_name": "Starknet Bridge",
+"tvl": 140500977,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://starkgate.starknet.io",
+"twitter": "Starknet",
+"chains": [
+"Ethereum"
+],
+"addr": "0xCa14007Eff0dB1f8135f4C25B34De49AB0d42766",
+"audit_links": null
+},
+{
+"slug": "r25",
+"name": "R25",
+"llama_name": "R25",
+"tvl": 131272556,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.r25.xyz/",
+"twitter": "R25Official",
+"chains": [
+"Pharos"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "yield-basis",
+"name": "Yield Basis",
+"llama_name": "Yield Basis",
+"tvl": 129889394,
+"cat": "leveraged-farming",
+"status": "no-audits",
+"url": "https://yieldbasis.com/",
+"twitter": "yieldbasis",
+"chains": [
+"Ethereum"
+],
+"addr": "0x01791f726b4103694969820be083196cc7c045ff",
+"audit_links": null
+},
+{
+"slug": "mantle-bridge",
+"name": "Mantle Bridge",
+"tvl": 121530077,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "avalanche-core-bridge",
+"name": "Avalanche Core Bridge",
+"tvl": 117163474,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "zksync-era-txbridge",
+"name": "zkSync Era txBridge",
+"tvl": 110183033,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "valos",
+"name": "Valos",
+"llama_name": "Valos",
+"tvl": 110109209,
+"cat": "rwa",
+"status": "no-audits",
+"url": "",
+"twitter": "Valos_io",
+"chains": [
+"Monad"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "nexus-mutual",
+"name": "Nexus Mutual",
+"llama_name": "Nexus Mutual",
+"tvl": 86263034,
+"cat": "insurance",
+"status": "no-audits",
+"url": "https://nexusmutual.io/",
+"twitter": "NexusMutual",
+"chains": [
+"Ethereum"
+],
+"addr": "0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b",
+"audit_links": [
+"https://nexusmutual.gitbook.io/docs/helpful-resources/audits-and-security"
+]
+},
+{
+"slug": "armitage-by-wintermute",
+"name": "Armitage by Wintermute",
+"llama_name": "Armitage by Wintermute",
+"tvl": 83989218,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://armitage.wintermute.com",
+"twitter": "wintermute_t",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "hyperlane",
+"name": "Hyperlane",
+"llama_name": "Hyperlane",
+"tvl": 77362964,
+"cat": "cross-chain-bridge",
+"status": "no-audits",
+"url": "https://www.hyperlane.xyz/",
+"twitter": "hyperlane",
+"chains": [
+"Swellchain",
+"Plume",
+"Mint",
+"Celo",
+"Vana",
+"xDai",
+"Plasma",
+"Metis",
+"BSquared",
+"Unichain",
+"Sonic",
+"Avalanche",
+"Linea",
+"Mantle",
+"Base",
+"Optimism",
+"Blast",
+"Ethereum",
+"Zora",
+"Binance",
+"Sei",
+"Mode",
+"Polygon",
+"Scroll",
+"Hyperliquid L1",
+"Arbitrum",
+"Ink"
+],
+"addr": "arbitrum:0xc9d23ed2adb0f551369946bd377f8644ce1ca5c4",
+"audit_links": null
+},
+{
+"slug": "matrixdock-xaum",
+"name": "MatrixDock XAUM",
+"llama_name": "MatrixDock XAUM",
+"tvl": 72384848,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.matrixdock.com/home",
+"twitter": "matrixdock",
+"chains": [
+"Sui",
+"Ethereum",
+"Plume Mainnet",
+"Solana",
+"Binance"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "re7-labs",
+"name": "Re7 Labs",
+"tvl": 71948715,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "stakelink-index",
+"name": "stake.link index",
+"tvl": 69292698,
+"cat": "liquid-staking",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "galaxy-curation",
+"name": "Galaxy Curation",
+"llama_name": "Galaxy Curation",
+"tvl": 68729699,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://www.galaxy.com/",
+"twitter": "galaxyhq",
+"chains": [
+"Ethereum",
+"Base"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "pulsechain-bridge",
+"name": "PulseChain Bridge",
+"tvl": 65127096,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "stusdt",
+"name": "stUSDT",
+"llama_name": "stUSDT",
+"tvl": 62844662,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://stusdt.io/#/home",
+"twitter": "stusdtio",
+"chains": [
+"Ethereum",
+"Tron"
+],
+"addr": "tron:TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3",
+"audit_links": null
+},
+{
+"slug": "ultrayield-vaults",
+"name": "UltraYield Vaults",
+"llama_name": "UltraYield Vaults",
+"tvl": 57729419,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://ultrayield.app/",
+"twitter": "ultrayieldapp",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "tydro",
+"name": "Tydro",
+"llama_name": "Tydro",
+"tvl": 56546612,
+"cat": "lending",
+"status": "no-audits",
+"url": "https://tydro.com/",
+"twitter": "tydrohq",
+"chains": [
+"Ink"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "zama",
+"name": "Zama",
+"tvl": 55924561,
+"cat": "privacy",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "polygon-zkevm-bridge",
+"name": "Polygon zkEVM Bridge",
+"tvl": 55345104,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "pulsex-v1",
+"name": "PulseX V1",
+"tvl": 54301788,
+"cat": "dexes",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "sdai",
+"name": "sDAI",
+"tvl": 54116396,
+"cat": "yield",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "blast-bridge",
+"name": "Blast Bridge",
+"llama_name": "Blast Bridge",
+"tvl": 51989456,
+"cat": "farm",
+"status": "no-audits",
+"url": "https://blast.io/en/bridge",
+"twitter": "Blast_L2",
+"chains": [
+"Ethereum"
+],
+"addr": "blast:0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+"audit_links": null
+},
+{
+"slug": "azx-perps",
+"name": "AZX Perps",
+"llama_name": "AZX Perps",
+"tvl": 51574781,
+"cat": "interface",
+"status": "no-audits",
+"url": "https://www.azverse.xyz",
+"twitter": "AZverse_Global",
+"chains": [
+"Off Chain"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "nado-spot",
+"name": "Nado Spot",
+"llama_name": "Nado Spot",
+"tvl": 47899483,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://app.nado.xyz?join=sP6or8A",
+"twitter": "nadohq",
+"chains": [
+"Ink"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "puffer-stake",
+"name": "Puffer Stake",
+"llama_name": "Puffer Stake",
+"tvl": 45931170,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://www.puffer.fi/restake",
+"twitter": "puffer_finance",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "flux-finance",
+"name": "Flux Finance",
+"llama_name": "Flux Finance",
+"tvl": 44512069,
+"cat": "lending",
+"status": "no-audits",
+"url": "https://fluxfinance.com",
+"twitter": "FluxDeFi",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "rysk-v1",
+"name": "Rysk V1",
+"llama_name": "Rysk V1",
+"tvl": 41406615,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://app.rysk.finance",
+"twitter": "ryskfinance",
+"chains": [
+"Arbitrum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "spectra-v2",
+"name": "Spectra V2",
+"tvl": 41306638,
+"cat": "yield-aggregator",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "ao-bridge",
+"name": "AO Bridge",
+"llama_name": "AO Bridge",
+"tvl": 37856564,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://ao.arweave.net/",
+"twitter": "aoTheComputer",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "dydx-v3",
+"name": "dYdX V3",
+"tvl": 37807350,
+"cat": "derivatives",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "project-x",
+"name": "Project X",
+"tvl": 37766610,
+"cat": "dexes",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "tulipa-capital",
+"name": "Tulipa Capital",
+"tvl": 37583812,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "hyperbeat-lst",
+"name": "Hyperbeat LST",
+"llama_name": "Hyperbeat LST",
+"tvl": 37499771,
+"cat": "yield-aggregator",
+"status": "no-audits",
+"url": "https://app.hyperbeat.org/staking",
+"twitter": "0xhyperbeat",
+"chains": [
+"Hyperliquid L1"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "aegis-jusd",
+"name": "Aegis JUSD",
+"llama_name": "Aegis JUSD",
+"tvl": 35839902,
+"cat": "basis-trading",
+"status": "no-audits",
+"url": "https://app.aegis.im",
+"twitter": "aegis_im",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "sonic-gateway",
+"name": "Sonic Gateway",
+"tvl": 35092245,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "scroll-bridge",
+"name": "Scroll Bridge",
+"tvl": 34536806,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "hemi-staking",
+"name": "Hemi Staking",
+"llama_name": "Hemi Staking",
+"tvl": 33146185,
+"cat": "farm",
+"status": "no-audits",
+"url": "https://app.hemi.xyz/en/stake/dashboard/",
+"twitter": "hemi_xyz",
+"chains": [
+"Hemi"
+],
+"addr": "0xeb964a1a6fab73b8c72a0d15c7337fa4804f484d",
+"audit_links": null
+},
+{
+"slug": "plasma-saving-vaults",
+"name": "Plasma Saving Vaults",
+"llama_name": "Plasma Saving Vaults",
+"tvl": 32923483,
+"cat": "onchain-capital-allocator",
+"status": "no-audits",
+"url": "https://app.plasma.to/",
+"twitter": "Plasma",
+"chains": [
+"Plasma"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "altura",
+"name": "Altura",
+"llama_name": "Altura",
+"tvl": 32399958,
+"cat": "liquidity-manager",
+"status": "no-audits",
+"url": "https://app.altura.trade",
+"twitter": "alturax",
+"chains": [
+"Hyperliquid L1"
+],
+"addr": "hyperliquid:0xd0ee0cf300dfb598270cd7f4d0c6e0d8f6e13f29",
+"audit_links": [
+"https://docs.altura.trade/audit"
+]
+},
+{
+"slug": "mantle-restaking",
+"name": "Mantle Restaking",
+"llama_name": "Mantle Restaking",
+"tvl": 32278587,
+"cat": "liquid-restaking",
+"status": "no-audits",
+"url": "https://www.methprotocol.xyz/",
+"twitter": "mETHProtocol",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": [
+"https://docs.mantle.xyz/meth/security/audits"
+]
+},
+{
+"slug": "gami-labs",
+"name": "Gami Labs",
+"llama_name": "Gami Labs",
+"tvl": 30140965,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://gamilabs.io/",
+"twitter": "GamiLabs",
+"chains": [
+"Base",
+"Robinhood Chain",
+"Hemi",
+"Ethereum",
+"Stellar",
+"Avalanche",
+"Flare"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "3f",
+"name": "3F",
+"llama_name": "3F",
+"tvl": 29125983,
+"cat": "rwa-lending",
+"status": "no-audits",
+"url": "https://www.3f.xyz/",
+"twitter": "3f_xyz",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "suibridge",
+"name": "SuiBridge",
+"llama_name": "SuiBridge",
+"tvl": 27799518,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://bridge.sui.io",
+"twitter": "SuiNetwork",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "goplus-locker-v2",
+"name": "GoPlus Locker V2",
+"llama_name": "GoPlus Locker V2",
+"tvl": 27771084,
+"cat": "token-locker",
+"status": "no-audits",
+"url": "https://gopluslabs.io",
+"twitter": "GoPlusSecurity",
+"chains": [
+"Ethereum",
+"Arbitrum",
+"Base",
+"Binance"
+],
+"addr": "base:0x0c1dc73159e30c4b06170f2593d3118968a0dca5",
+"audit_links": null
+},
+{
+"slug": "pharaoh-v3",
+"name": "Pharaoh V3",
+"llama_name": "Pharaoh V3",
+"tvl": 26849576,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://www.phar.gg/",
+"twitter": "PharaohExchange",
+"chains": [
+"Avalanche"
+],
+"addr": "avax:0x13A466998Ce03Db73aBc2d4DF3bBD845Ed1f28E7",
+"audit_links": null
+},
+{
+"slug": "manta-cedefi",
+"name": "Manta CeDeFi",
+"llama_name": "Manta CeDeFi",
+"tvl": 26493055,
+"cat": "basis-trading",
+"status": "no-audits",
+"url": "https://cedefi.manta.network",
+"twitter": "MantaNetwork",
+"chains": [
+"Manta"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "native-swap",
+"name": "Native Swap",
+"tvl": 25929936,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "lisk-bridge",
+"name": "Lisk Bridge",
+"llama_name": "Lisk Bridge",
+"tvl": 25385383,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://lisk.com",
+"twitter": "Lisk",
+"chains": [
+"Ethereum"
+],
+"addr": "0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f",
+"audit_links": null
+},
+{
+"slug": "royco-v2",
+"name": "Royco V2",
+"llama_name": "Royco V2",
+"tvl": 24477054,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://www.royco.org",
+"twitter": "roycoprotocol",
+"chains": [
+"Avalanche",
+"Base",
+"Arbitrum",
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "sygnum-fiusd-liquidity-fund",
+"name": "Sygnum FIUSD Liquidity Fund",
+"llama_name": "Sygnum FIUSD Liquidity Fund",
+"tvl": 23901872,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.sygnum.com/",
+"twitter": "sygnumofficial",
+"chains": [
+"zkSync Era"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "hakutora",
+"name": "Hakutora",
+"llama_name": "Hakutora",
+"tvl": 23746409,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://hakutora.xyz",
+"twitter": "0xhakutora",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "t-rize",
+"name": "T RIZE",
+"llama_name": "T RIZE",
+"tvl": 23000000,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.t-rize.io",
+"twitter": "trize_io",
+"chains": [
+"Base"
+],
+"addr": "base:0x9818b6c09f5ecc843060927e8587c427c7c93583",
+"audit_links": null
+},
+{
+"slug": "gravity-by-galxe",
+"name": "Gravity by Galxe",
+"llama_name": "Gravity by Galxe",
+"tvl": 22934806,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://gravity.xyz/",
+"twitter": "GravityChain",
+"chains": [
+"Ethereum"
+],
+"addr": "0x9c7beba8f6ef6643abd725e45a4e8387ef260649",
+"audit_links": null
+},
+{
+"slug": "metis-bridge",
+"name": "Metis Bridge",
+"tvl": 22865351,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "ink-bridge",
+"name": "Ink Bridge",
+"llama_name": "Ink Bridge",
+"tvl": 22046985,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://inkonchain.com/bridge",
+"twitter": "inkonchain",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "manta-pacific",
+"name": "Manta Pacific",
+"tvl": 21155638,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "arcus-spot",
+"name": "Arcus Spot",
+"llama_name": "Arcus Spot",
+"tvl": 20680754,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://arcus.xyz/",
+"twitter": "arcus_xyz",
+"chains": [
+"Robinhood Chain"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "rocksolid-network",
+"name": "RockSolid Network",
+"llama_name": "RockSolid Network",
+"tvl": 20443106,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://rocksolid.network/",
+"twitter": "rocksolidhq",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "gaib",
+"name": "GAIB",
+"llama_name": "GAIB",
+"tvl": 20115671,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://aid.gaib.ai",
+"twitter": "gaib_ai",
+"chains": [
+"Ethereum",
+"Base",
+"Arbitrum",
+"Binance"
+],
+"addr": null,
+"audit_links": [
+"https://docs.gaib.ai/audits"
+]
+},
+{
+"slug": "glif",
+"name": "GLIF",
+"llama_name": "GLIF",
+"tvl": 19914663,
+"cat": "liquid-staking",
+"status": "no-audits",
+"url": "https://glif.io",
+"twitter": "glifio",
+"chains": [
+"Base",
+"Filecoin"
+],
+"addr": "filecoin:0x2a0aaf86b2fa64e88d3739091e7773106f3ebcf5",
+"audit_links": null
+},
+{
+"slug": "blur-bids",
+"name": "Blur Bids",
+"tvl": 19880420,
+"cat": "nft-marketplace",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "moonlander",
+"name": "Moonlander",
+"llama_name": "Moonlander",
+"tvl": 19206410,
+"cat": "derivatives",
+"status": "no-audits",
+"url": "https://moonlander.trade/",
+"twitter": "MoonlanderTrade",
+"chains": [
+"Cronos",
+"Cronos zkEVM"
+],
+"addr": "cronos_zkevm:0xe8E4A973Bb36E1714c805F88e2eb3A89f195D04f",
+"audit_links": null
+},
+{
+"slug": "block-analitica",
+"name": "Block Analitica",
+"tvl": 19199102,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "cryptocom-liquid-staking",
+"name": "Crypto.com Liquid Staking",
+"tvl": 18952724,
+"cat": "liquid-staking",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "anthias-labs",
+"name": "Anthias Labs",
+"llama_name": "Anthias Labs",
+"tvl": 18277473,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://anthias.xyz",
+"twitter": "anthiasxyz",
+"chains": [
+"Base"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "cronos-zkevm-bridge",
+"name": "Cronos zkEVM Bridge",
+"llama_name": "Cronos zkEVM Bridge",
+"tvl": 17722956,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://zkevm.cronos.org/",
+"twitter": "cronos_chain",
+"chains": [
+"Ethereum"
+],
+"addr": "0x28ff2e4dd1b58efeb0fc138602a28d5ae81e44e2",
+"audit_links": null
+},
+{
+"slug": "katana-prelaunch",
+"name": "Katana Pre-Launch",
+"tvl": 17550100,
+"cat": "farm",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "catfee-staking-vault",
+"name": "CatFee Staking Vault",
+"llama_name": "CatFee Staking Vault",
+"tvl": 17152832,
+"cat": "staking-pool",
+"status": "no-audits",
+"url": "https://catfee.io/staking/",
+"twitter": "CatFeeio",
+"chains": [
+"Tron"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "y10k-capital",
+"name": "Y10K Capital",
+"llama_name": "Y10K Capital",
+"tvl": 16889224,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://www.y10k.capital/",
+"twitter": "y10kcapital",
+"chains": [
+"Ethereum",
+"Sei"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "strato",
+"name": "STRATO",
+"llama_name": "STRATO",
+"tvl": 16653879,
+"cat": "cdp",
+"status": "no-audits",
+"url": "https://app.strato.nexus/",
+"twitter": "strato_net",
+"chains": [
+"Strato"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "infrared-finance",
+"name": "Infrared Finance",
+"tvl": 16418472,
+"cat": "liquid-staking",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "agni-finance",
+"name": "Agni Finance",
+"tvl": 15238520,
+"cat": "dexes",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "superearn",
+"name": "SuperEarn",
+"llama_name": "SuperEarn",
+"tvl": 14914839,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://superearn.io/",
+"twitter": "SuperEarnX",
+"chains": [
+"Klaytn"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "geth",
+"name": "GETH",
+"llama_name": "GETH",
+"tvl": 14399016,
+"cat": "liquid-staking",
+"status": "no-audits",
+"url": "https://guarda.com/staking/ethereum-staking/",
+"twitter": "GuardaWallet",
+"chains": [
+"Ethereum"
+],
+"addr": "0x3802c218221390025bceabbad5d8c59f40eb74b8",
+"audit_links": null
+},
+{
+"slug": "zoo-finance",
+"name": "Zoo Finance",
+"llama_name": "Zoo Finance",
+"tvl": 13966023,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://zoofi.io",
+"twitter": "ZooFinanceIO",
+"chains": [
+"Base",
+"Binance",
+"Arbitrum",
+"Story",
+"Sei",
+"Berachain"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "stobox",
+"name": "Stobox",
+"llama_name": "Stobox",
+"tvl": 13952059,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.stobox.io",
+"twitter": "StoboxCompany",
+"chains": [
+"Binance",
+"Polygon",
+"Arbitrum"
+],
+"addr": "0xa6422e3e219ee6d4c1b18895275fe43556fd50ed",
+"audit_links": null
+},
+{
+"slug": "estate-protocol",
+"name": "Estate Protocol",
+"llama_name": "Estate Protocol",
+"tvl": 13947389,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.estateprotocol.com",
+"twitter": "EstateProtocol",
+"chains": [
+"Arbitrum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "summerfi-pro",
+"name": "Summer.fi Pro",
+"tvl": 12904933,
+"cat": "yield-aggregator",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "hyperswap-v2",
+"name": "HyperSwap V2",
+"tvl": 12606325,
+"cat": "interface",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "cassa",
+"name": "Cassa",
+"llama_name": "Cassa",
+"tvl": 12559124,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://www.cassa.fyi/",
+"twitter": "Cassa_fyi",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "alphaping",
+"name": "AlphaPing",
+"tvl": 11901515,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "predict-fun",
+"name": "Predict Fun",
+"tvl": 11601014,
+"cat": "prediction-market",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "arbitrum-nova-bridge",
+"name": "Arbitrum Nova Bridge",
+"tvl": 11564062,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "bouncebit-prime",
+"name": "BounceBit Prime",
+"llama_name": "BounceBit Prime",
+"tvl": 11444687,
+"cat": "basis-trading",
+"status": "no-audits",
+"url": "https://prime.bouncebit.io/",
+"twitter": "bounce_bit",
+"chains": [
+"Ethereum",
+"Binance"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "hypercall",
+"name": "Hypercall",
+"llama_name": "Hypercall",
+"tvl": 11427595,
+"cat": "options",
+"status": "no-audits",
+"url": "https://hypercall.xyz/",
+"twitter": "SynapseProtocol",
+"chains": [
+"Hyperliquid L1"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "sophon-bridge",
+"name": "Sophon Bridge",
+"tvl": 11197843,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "flrfarm",
+"name": "FLRFarm",
+"tvl": 11114711,
+"cat": "yield",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "taiko-bridge",
+"name": "Taiko Bridge",
+"tvl": 10558738,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "sx-rollup-bridge",
+"name": "SX Rollup Bridge",
+"tvl": 10499912,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "kaio",
+"name": "KAIO",
+"tvl": 10499804,
+"cat": "rwa",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "fulcrom-amm",
+"name": "Fulcrom AMM",
+"llama_name": "Fulcrom AMM",
+"tvl": 10478618,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://fulcrom.finance",
+"twitter": "FulcromFinance",
+"chains": [
+"Cronos"
+],
+"addr": "cronos:0x83afb1c32e5637acd0a452d87c3249f4a9f0013a",
+"audit_links": null
+},
+{
+"slug": "mev-capital",
+"name": "MEV Capital",
+"tvl": 10161001,
+"cat": "risk-curators",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "wildcat-protocol",
+"name": "Wildcat Protocol",
+"llama_name": "Wildcat Protocol",
+"tvl": 9935590,
+"cat": "uncollateralized-lending",
+"status": "no-audits",
+"url": "https://wildcat.finance",
+"twitter": "WildcatFi",
+"chains": [
+"Plasma",
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "kava-mint",
+"name": "Kava Mint",
+"llama_name": "Kava Mint",
+"tvl": 9850047,
+"cat": "cdp",
+"status": "no-audits",
+"url": "https://www.kava.io/",
+"twitter": "KAVA_CHAIN",
+"chains": [
+"Kava"
+],
+"addr": null,
+"audit_links": [
+"https://www.certik.org/projects/kava"
+]
+},
+{
+"slug": "antarctic",
+"name": "Antarctic",
+"llama_name": "Antarctic",
+"tvl": 9667356,
+"cat": "derivatives",
+"status": "no-audits",
+"url": "https://www.antarctic.exchange/",
+"twitter": "Antarctic_EX",
+"chains": [
+"Arbitrum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "growihf",
+"name": "GrowiHF",
+"llama_name": "GrowiHF",
+"tvl": 9491108,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://hf.growi.fi/",
+"twitter": "GrowiFinance",
+"chains": [
+"Hyperliquid L1",
+"Hibachi"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "katana-dex",
+"name": "Katana DEX",
+"llama_name": "Katana DEX",
+"tvl": 9376338,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://app.roninchain.com/swap#/swap",
+"twitter": "AxieInfinity",
+"chains": [
+"Ronin"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "vena-finance",
+"name": "Vena Finance",
+"llama_name": "Vena Finance",
+"tvl": 9351159,
+"cat": "lending",
+"status": "no-audits",
+"url": " ",
+"twitter": "venafinance",
+"chains": [
+"Fluent"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "plasma-one",
+"name": "Plasma One",
+"llama_name": "Plasma One",
+"tvl": 9305660,
+"cat": "crypto-card-issuer",
+"status": "no-audits",
+"url": "https://www.plasma.to/one",
+"twitter": "Plasma",
+"chains": [
+"Plasma"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "kumbaya",
+"name": "Kumbaya",
+"llama_name": "Kumbaya",
+"tvl": 9091436,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://www.kumbaya.xyz/",
+"twitter": "kumbaya_xyz",
+"chains": [
+"MegaETH"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "tempo-fee-amm",
+"name": "Tempo Fee AMM",
+"llama_name": "Tempo Fee AMM",
+"tvl": 8411609,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://tempo.xyz/",
+"twitter": "tempo",
+"chains": [
+"Tempo"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "privacy-pools",
+"name": "Privacy Pools",
+"llama_name": "Privacy Pools",
+"tvl": 8341873,
+"cat": "privacy",
+"status": "no-audits",
+"url": "https://privacypools.com/",
+"twitter": "0xbowio",
+"chains": [
+"Optimism",
+"Ethereum",
+"Arbitrum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "syncswap",
+"name": "SyncSwap",
+"tvl": 8301323,
+"cat": "dexes",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "smartdex",
+"name": "SmartDEX",
+"tvl": 8192856,
+"cat": "dexes",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "megaeth-bridge",
+"name": "MegaETH Bridge",
+"llama_name": "MegaETH Bridge",
+"tvl": 7954335,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://www.megaeth.com/",
+"twitter": "megaeth",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "boros",
+"name": "Boros",
+"llama_name": "Boros",
+"tvl": 7637445,
+"cat": "interest-rate-derivatives",
+"status": "no-audits",
+"url": "https://boros.pendle.finance/markets",
+"twitter": "boros_fi",
+"chains": [
+"Arbitrum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "templar-protocol",
+"name": "Templar Protocol",
+"tvl": 7515986,
+"cat": "lending",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "bulbaswap-v2",
+"name": "BulbaSwap V2",
+"llama_name": "BulbaSwap V2",
+"tvl": 7511441,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://bulbaswap.io",
+"twitter": "BulbaSwap",
+"chains": [
+"Morph"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "uraniumio",
+"name": "Uranium.io",
+"tvl": 7493410,
+"cat": "rwa",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "tau-labs",
+"name": "TAU Labs",
+"llama_name": "TAU Labs",
+"tvl": 7491121,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://www.628labs.xyz/",
+"twitter": "628Labs",
+"chains": [
+"Plasma",
+"Flow",
+"Base",
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "capyfi",
+"name": "Capyfi",
+"tvl": 7287662,
+"cat": "lending",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "alphagrowth",
+"name": "alphagrowth",
+"llama_name": "alphagrowth",
+"tvl": 7037337,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://app.euler.finance/governor/alphagrowth?network=unichain",
+"twitter": "alphagrowth1",
+"chains": [
+"Ethereum",
+"Linea",
+"Base",
+"Unichain",
+"Monad"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "pac-finance",
+"name": "Pac Finance",
+"tvl": 7017651,
+"cat": "lending",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "stablehodl",
+"name": "StableHodl",
+"llama_name": "StableHodl",
+"tvl": 6358194,
+"cat": "yield",
+"status": "no-audits",
+"url": "https://stablehodl.com/",
+"twitter": "StableHodl",
+"chains": [
+"Polygon",
+"Binance",
+"Ethereum",
+"HeLa"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "perpl",
+"name": "Perpl",
+"llama_name": "Perpl",
+"tvl": 6335302,
+"cat": "derivatives",
+"status": "no-audits",
+"url": "https://perpl.xyz/",
+"twitter": "perpltrade",
+"chains": [
+"Monad"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "merlinswap",
+"name": "MerlinSwap",
+"tvl": 6330948,
+"cat": "dexes",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "keyring",
+"name": "Keyring",
+"llama_name": "Keyring",
+"tvl": 6221539,
+"cat": "risk-curators",
+"status": "no-audits",
+"url": "https://app.euler.finance/governor/keyring?network=avalanche",
+"twitter": "KeyringNetwork",
+"chains": [
+"Avalanche"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "potatoswap-v2",
+"name": "PotatoSwap V2",
+"tvl": 5942268,
+"cat": "dexes",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "hypervault",
+"name": "HyperVault",
+"llama_name": "HyperVault",
+"tvl": 5911704,
+"cat": "yield-aggregator",
+"status": "no-audits",
+"url": "",
+"twitter": "hypervaultfi",
+"chains": [
+"Hyperliquid L1"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "kava-lend",
+"name": "Kava Lend",
+"tvl": 5906098,
+"cat": "lending",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "intentx",
+"name": "IntentX",
+"tvl": 5680315,
+"cat": "derivatives",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "eclipse-bridge",
+"name": "Eclipse Bridge",
+"tvl": 5577855,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "omniyield",
+"name": "OmniYield",
+"tvl": 5420013,
+"cat": "yield-aggregator",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "up-v2",
+"name": "up v2",
+"llama_name": "up v2",
+"tvl": 5377555,
+"cat": "dexes",
+"status": "no-audits",
+"url": "https://up33.xyz/",
+"twitter": "uponrh",
+"chains": [
+"Robinhood Chain"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "hibachi-bridge",
+"name": "Hibachi Bridge",
+"llama_name": "Hibachi Bridge",
+"tvl": 5286865,
+"cat": "canonical-bridge",
+"status": "no-audits",
+"url": "https://hibachi.xyz/",
+"twitter": "hibachi_xyz",
+"chains": [
+"Arbitrum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "eva-markets",
+"name": "eva Markets",
+"llama_name": "eva Markets",
+"tvl": 5276228,
+"cat": "rwa",
+"status": "no-audits",
+"url": "https://www.eva.markets",
+"twitter": "eva_markets",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": [
+"https://docs.flyingtulip.com/risks/"
+]
+},
+{
+"slug": "syntropia",
+"name": "Syntropia",
+"llama_name": "Syntropia",
+"tvl": 5236778,
+"cat": "yield-aggregator",
+"status": "no-audits",
+"url": "https://syntropia.ai/",
+"twitter": "syntropia_ai",
+"chains": [
+"Ethereum"
+],
+"addr": null,
+"audit_links": null
+},
+{
+"slug": "thruster-v2",
+"name": "Thruster V2",
+"tvl": 5109572,
+"cat": "dexes",
+"status": "no-audits",
+"err": true
+},
+{
+"slug": "harvest-finance",
+"name": "Harvest Finance",
+"tvl": 14977196,
+"cat": "yield-aggregator",
+"status": "partial-unaudited",
+"err": true
+},
+{
+"slug": "aerodrome-v1",
+"name": "Aerodrome V1",
+"tvl": 254823561,
+"cat": "launchpad",
+"status": "fork-of-audited",
+"err": true
+},
+{
+"slug": "thorchain-dex",
+"name": "THORChain DEX",
+"tvl": 13013164,
+"cat": "dexes",
+"status": "fork-of-audited",
+"err": true
+}
+]

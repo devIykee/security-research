@@ -1,0 +1,170 @@
+etherfi-stake	ether.fi Stake	3681157282	onchain-capital-allocator	no-audits
+exod	Exod	3392911199	rwa	no-audits
+steakhouse-financial	Steakhouse Financial	3124266073	risk-curators	no-audits
+usdcx	USDCx	3113676048	stablecoin-wrapper	no-audits
+tether-gold	Tether Gold	3108457723	rwa	no-audits
+arbitrum-nitro	Arbitrum Nitro	2689828469	mev	no-audits
+grove-finance	Grove Finance	2411957024	onchain-capital-allocator	no-audits
+base-bridge	Base Bridge	2198018004	canonical-bridge	no-audits
+paxos-gold	Paxos Gold	1910147301	stablecoin-issuer	no-audits
+sentora	Sentora	1893768491	risk-curators	no-audits
+gauntlet	Gauntlet	1410619506	risk-curators	no-audits
+usdd	USDD	1285788436	cdp	no-audits
+anemoy-capital	Anemoy Capital	871935948	rwa	no-audits
+bitwise-uscc	Bitwise USCC	814596011	rwa	no-audits
+wisdomtree	WisdomTree	752008621	rwa	no-audits
+superchain	Superchain	524946950	services	no-audits
+obol	Obol	472365588	staking-pool	no-audits
+meth-protocol	mETH Protocol	447678899	liquid-staking	no-audits
+k3-capital	K3 Capital	390144588	risk-curators	no-audits
+coinbase-wrapped-staked-eth	Coinbase Wrapped Staked ETH	352528053	liquid-staking	no-audits
+polymarket-us	Polymarket US	344716117	prediction-market	no-audits
+world-chain	World Chain	330794456	canonical-bridge	no-audits
+robinhood-chain-bridge	Robinhood Chain Bridge	310707398	canonical-bridge	no-audits
+linea-bridge	Linea Bridge	258887686	canonical-bridge	no-audits
+hyperithm	Hyperithm	256383265	risk-curators	no-audits
+bitfi-btc	BitFi BTC	252612338	basis-trading	no-audits
+bouncebit-cedefi-yield	BounceBit CeDeFi Yield	228871743	basis-trading	no-audits
+aster-spot	Aster Spot	226511756	yield	no-audits
+cooler-loans	Cooler Loans	215120927	lending	no-audits
+buzz-farming	Buzz Farming	202874848	farm	no-audits
+rocketswap-anubis	RocketSwap Anubis	192805184	dexes	no-audits
+clearstar	Clearstar	174128058	risk-curators	no-audits
+saturn	Saturn	172529946	stablecoin-wrapper	no-audits
+kpk	KPK	161795486	risk-curators	no-audits
+digift	DigiFT	159875628	rwa	no-audits
+rockawayx	RockawayX	147693198	risk-curators	no-audits
+pinksale	PinkSale	143572195	launchpad	no-audits
+telos-consilium	Telos Consilium	141130657	risk-curators	no-audits
+starknet-bridge	Starknet Bridge	140500977	canonical-bridge	no-audits
+r25	R25	131272556	rwa	no-audits
+yield-basis	Yield Basis	129889394	leveraged-farming	no-audits
+mantle-bridge	Mantle Bridge	121530077	canonical-bridge	no-audits
+avalanche-core-bridge	Avalanche Core Bridge	117163474	canonical-bridge	no-audits
+zksync-era-txbridge	zkSync Era txBridge	110183033	canonical-bridge	no-audits
+valos	Valos	110109209	rwa	no-audits
+nexus-mutual	Nexus Mutual	86263034	insurance	no-audits
+armitage-by-wintermute	Armitage by Wintermute	83989218	risk-curators	no-audits
+hyperlane	Hyperlane	77362964	cross-chain-bridge	no-audits
+matrixdock-xaum	MatrixDock XAUM	72384848	rwa	no-audits
+re7-labs	Re7 Labs	71948715	risk-curators	no-audits
+stakelink-index	stake.link index	69292698	liquid-staking	no-audits
+galaxy-curation	Galaxy Curation	68729699	risk-curators	no-audits
+pulsechain-bridge	PulseChain Bridge	65127096	canonical-bridge	no-audits
+stusdt	stUSDT	62844662	rwa	no-audits
+ultrayield-vaults	UltraYield Vaults	57729419	risk-curators	no-audits
+tydro	Tydro	56546612	lending	no-audits
+zama	Zama	55924561	privacy	no-audits
+polygon-zkevm-bridge	Polygon zkEVM Bridge	55345104	canonical-bridge	no-audits
+pulsex-v1	PulseX V1	54301788	dexes	no-audits
+sdai	sDAI	54116396	yield	no-audits
+blast-bridge	Blast Bridge	51989456	farm	no-audits
+azx-perps	AZX Perps	51574781	interface	no-audits
+nado-spot	Nado Spot	47899483	dexes	no-audits
+puffer-stake	Puffer Stake	45931170	yield	no-audits
+flux-finance	Flux Finance	44512069	lending	no-audits
+rysk-v1	Rysk V1	41406615	yield	no-audits
+spectra-v2	Spectra V2	41306638	yield-aggregator	no-audits
+ao-bridge	AO Bridge	37856564	canonical-bridge	no-audits
+dydx-v3	dYdX V3	37807350	derivatives	no-audits
+project-x	Project X	37766610	dexes	no-audits
+tulipa-capital	Tulipa Capital	37583812	risk-curators	no-audits
+hyperbeat-lst	Hyperbeat LST	37499771	yield-aggregator	no-audits
+aegis-jusd	Aegis JUSD	35839902	basis-trading	no-audits
+sonic-gateway	Sonic Gateway	35092245	canonical-bridge	no-audits
+scroll-bridge	Scroll Bridge	34536806	canonical-bridge	no-audits
+hemi-staking	Hemi Staking	33146185	farm	no-audits
+plasma-saving-vaults	Plasma Saving Vaults	32923483	onchain-capital-allocator	no-audits
+altura	Altura	32399958	liquidity-manager	no-audits
+mantle-restaking	Mantle Restaking	32278587	liquid-restaking	no-audits
+gami-labs	Gami Labs	30140965	risk-curators	no-audits
+3f	3F	29125983	rwa-lending	no-audits
+suibridge	SuiBridge	27799518	canonical-bridge	no-audits
+goplus-locker-v2	GoPlus Locker V2	27771084	token-locker	no-audits
+pharaoh-v3	Pharaoh V3	26849576	dexes	no-audits
+manta-cedefi	Manta CeDeFi	26493055	basis-trading	no-audits
+native-swap	Native Swap	25929936	risk-curators	no-audits
+lisk-bridge	Lisk Bridge	25385383	canonical-bridge	no-audits
+royco-v2	Royco V2	24477054	yield	no-audits
+sygnum-fiusd-liquidity-fund	Sygnum FIUSD Liquidity Fund	23901872	rwa	no-audits
+hakutora	Hakutora	23746409	risk-curators	no-audits
+t-rize	T RIZE	23000000	rwa	no-audits
+gravity-by-galxe	Gravity by Galxe	22934806	canonical-bridge	no-audits
+metis-bridge	Metis Bridge	22865351	canonical-bridge	no-audits
+ink-bridge	Ink Bridge	22046985	canonical-bridge	no-audits
+manta-pacific	Manta Pacific	21155638	canonical-bridge	no-audits
+arcus-spot	Arcus Spot	20680754	dexes	no-audits
+rocksolid-network	RockSolid Network	20443106	yield	no-audits
+gaib	GAIB	20115671	rwa	no-audits
+glif	GLIF	19914663	liquid-staking	no-audits
+blur-bids	Blur Bids	19880420	nft-marketplace	no-audits
+moonlander	Moonlander	19206410	derivatives	no-audits
+block-analitica	Block Analitica	19199102	risk-curators	no-audits
+cryptocom-liquid-staking	Crypto.com Liquid Staking	18952724	liquid-staking	no-audits
+anthias-labs	Anthias Labs	18277473	risk-curators	no-audits
+cronos-zkevm-bridge	Cronos zkEVM Bridge	17722956	canonical-bridge	no-audits
+katana-prelaunch	Katana Pre-Launch	17550100	farm	no-audits
+catfee-staking-vault	CatFee Staking Vault	17152832	staking-pool	no-audits
+y10k-capital	Y10K Capital	16889224	risk-curators	no-audits
+strato	STRATO	16653879	cdp	no-audits
+infrared-finance	Infrared Finance	16418472	liquid-staking	no-audits
+agni-finance	Agni Finance	15238520	dexes	no-audits
+superearn	SuperEarn	14914839	yield	no-audits
+geth	GETH	14399016	liquid-staking	no-audits
+zoo-finance	Zoo Finance	13966023	yield	no-audits
+stobox	Stobox	13952059	rwa	no-audits
+estate-protocol	Estate Protocol	13947389	rwa	no-audits
+summerfi-pro	Summer.fi Pro	12904933	yield-aggregator	no-audits
+hyperswap-v2	HyperSwap V2	12606325	interface	no-audits
+cassa	Cassa	12559124	risk-curators	no-audits
+alphaping	AlphaPing	11901515	risk-curators	no-audits
+predict-fun	Predict Fun	11601014	prediction-market	no-audits
+arbitrum-nova-bridge	Arbitrum Nova Bridge	11564062	canonical-bridge	no-audits
+bouncebit-prime	BounceBit Prime	11444687	basis-trading	no-audits
+hypercall	Hypercall	11427595	options	no-audits
+sophon-bridge	Sophon Bridge	11197843	canonical-bridge	no-audits
+flrfarm	FLRFarm	11114711	yield	no-audits
+taiko-bridge	Taiko Bridge	10558738	canonical-bridge	no-audits
+sx-rollup-bridge	SX Rollup Bridge	10499912	canonical-bridge	no-audits
+kaio	KAIO	10499804	rwa	no-audits
+fulcrom-amm	Fulcrom AMM	10478618	dexes	no-audits
+mev-capital	MEV Capital	10161001	risk-curators	no-audits
+wildcat-protocol	Wildcat Protocol	9935590	uncollateralized-lending	no-audits
+kava-mint	Kava Mint	9850047	cdp	no-audits
+antarctic	Antarctic	9667356	derivatives	no-audits
+growihf	GrowiHF	9491108	yield	no-audits
+katana-dex	Katana DEX	9376338	dexes	no-audits
+vena-finance	Vena Finance	9351159	lending	no-audits
+plasma-one	Plasma One	9305660	crypto-card-issuer	no-audits
+kumbaya	Kumbaya	9091436	dexes	no-audits
+tempo-fee-amm	Tempo Fee AMM	8411609	dexes	no-audits
+privacy-pools	Privacy Pools	8341873	privacy	no-audits
+syncswap	SyncSwap	8301323	dexes	no-audits
+smartdex	SmartDEX	8192856	dexes	no-audits
+megaeth-bridge	MegaETH Bridge	7954335	canonical-bridge	no-audits
+boros	Boros	7637445	interest-rate-derivatives	no-audits
+templar-protocol	Templar Protocol	7515986	lending	no-audits
+bulbaswap-v2	BulbaSwap V2	7511441	dexes	no-audits
+uraniumio	Uranium.io	7493410	rwa	no-audits
+tau-labs	TAU Labs	7491121	risk-curators	no-audits
+capyfi	Capyfi	7287662	lending	no-audits
+alphagrowth	alphagrowth	7037337	risk-curators	no-audits
+pac-finance	Pac Finance	7017651	lending	no-audits
+stablehodl	StableHodl	6358194	yield	no-audits
+perpl	Perpl	6335302	derivatives	no-audits
+merlinswap	MerlinSwap	6330948	dexes	no-audits
+keyring	Keyring	6221539	risk-curators	no-audits
+potatoswap-v2	PotatoSwap V2	5942268	dexes	no-audits
+hypervault	HyperVault	5911704	yield-aggregator	no-audits
+kava-lend	Kava Lend	5906098	lending	no-audits
+intentx	IntentX	5680315	derivatives	no-audits
+eclipse-bridge	Eclipse Bridge	5577855	canonical-bridge	no-audits
+omniyield	OmniYield	5420013	yield-aggregator	no-audits
+up-v2	up v2	5377555	dexes	no-audits
+hibachi-bridge	Hibachi Bridge	5286865	canonical-bridge	no-audits
+eva-markets	eva Markets	5276228	rwa	no-audits
+syntropia	Syntropia	5236778	yield-aggregator	no-audits
+thruster-v2	Thruster V2	5109572	dexes	no-audits
+harvest-finance	Harvest Finance	14977196	yield-aggregator	partial-unaudited
+aerodrome-v1	Aerodrome V1	254823561	launchpad	fork-of-audited
+thorchain-dex	THORChain DEX	13013164	dexes	fork-of-audited
