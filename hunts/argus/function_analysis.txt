@@ -1,0 +1,26 @@
+# Argus Token Implementation - Function Analysis
+
+## Key Functions Found
+1. graduate() - 0xd3618cca - Graduates token to Uniswap
+2. taxProcessor() - 0xf3635019 - Tax collection address
+3. swapBack(uint256,uint256) - 0x751f978c - Swap taxes back
+4. taxExpiry() - 0x9963b6a4 - When taxes expire
+5. currentTaxes() - 0xeb1e7387 - Current tax rates
+6. tokenIsToken0() - 0x856bfdb8 - Position in Uniswap pair
+7. uniswapV3SwapCallback() - 0xfa461e33 - V3 callback handler
+8. owner() - 0x8da5cb5b - Owner address
+9. setShare(address,uint256) - 0x14b6ca96 - Set holder share
+
+## Architecture Pattern
+- Bonding curve phase → graduation to Uniswap V3
+- Tax mechanism with expiry
+- Tax swapback functionality
+- Holder rewards/shares system
+
+## Critical Areas to Investigate (Launchpad Bug Classes)
+1. Migration pool squat (v3) - graduate() with no price check
+2. Tax manipulation before/after graduation
+3. Reentrancy in swapBack
+4. Access control on graduate()
+5. Fee-on-transfer compatibility
+6. Initial liquidity parameters

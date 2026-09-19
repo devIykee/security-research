@@ -1,0 +1,8 @@
+[profile.default]
+src = "test"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+
+[rpc_endpoints]
+arc = "https://rpc.mainnet.arc.io"
