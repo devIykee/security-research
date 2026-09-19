@@ -1,0 +1,3 @@
+[submodule "hunts/ellipse/poc/lib/forge-std"]
+	path = hunts/ellipse/poc/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
