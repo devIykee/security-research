@@ -1,0 +1,1 @@
+{"match": {"language": "Solidity", "compiler": "solc", "compilerVersion": "0.6.11+commit.5ef660b1", "compilerSettings": {"metadata": {"bytecodeHash": "ipfs"}, "libraries": {}, "optimizer": {"runs": 100, "enabled": true}, "evmVersion": "istanbul", "remappings": []}, "name": "LUSDToken", "fullyQualifiedName": "contracts/LUSDToken.sol:LUSDToken"}}
