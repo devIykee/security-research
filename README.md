@@ -44,7 +44,7 @@ i find vulnerabilities in smart contracts and DeFi protocols across Solana and E
 | target | chain | vulnerability class | severity | status | date | report |
 |--------|-------|---------------------|----------|--------|------|--------|
 | TollyPad | Arc | pool initialization race (TOCTOU) | critical | under review | aug 2026 | [report](hunts/tollylabs/CRITICAL-FINDING-pool-init-race.md) |
-| Solana Mobile | Solana | SGT zero-balance ATA bypass | critical | bounty submitted | aug 2026 | [report](hunts/solana-mobile/REPORT.md) |
+| Solana Mobile | Solana | SGT zero-balance ATA bypass | low | bounty submitted | jul 2026 | private audit |
 | Aumo | EVM | dust redeem full liquidation (O(TVL) loss) | high (critical-class) | disclosed, private | aug 2026 | [report](hunts/aumo/reports/FINDINGS-MASTER.md) |
 | Aumo | EVM | unrealizable NAV allows preferential drain | high | disclosed, private | aug 2026 | [report](hunts/aumo/reports/FINDINGS-MASTER.md) |
 | SunPump | TRON | graduation migration MEV/flash arbitrage | critical | research | aug 2026 | [report](hunts/sunpump/FINDINGS.md) |
