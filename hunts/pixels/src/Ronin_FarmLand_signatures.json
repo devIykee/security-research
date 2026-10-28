@@ -1,0 +1,234 @@
+{
+  "0x00000000": [
+    "fulfillBasicOrder_efficient_6GL6yc((address,uint256,uint256,address,address,address,uint256,uint256,uint8,uint256,uint256,bytes32,uint256,bytes32,bytes32,uint256,(uint256,address)[],bytes))",
+    "createCollectionN2M_000oEFvt(bytes,bytes32,bytes32)",
+    "opPoke_optimized_397084999((uint128,uint32),(bytes32,address,bytes),(uint8,bytes32,bytes32))",
+    "f7836435186477227(address)",
+    "relay0JqUC4ht0CQz()",
+    "wfjizxua(uint256,uint256[])",
+    "multiEbVLjf(address[],uint256[])",
+    "call_g0oyU7o(address,uint256,bytes32,bytes)",
+    "execute_44g58pv()",
+    "ROOT4146650865()",
+    "mintEfficientN2M_001Z5BWH()",
+    "unknownA_3306129543710()",
+    "selfCallPayVerifyCall537021665()",
+    "buyAndFree22457070633(uint256)",
+    "createBasicEdition_efficient_d3ea1b36((string,string),address,bytes,bytes32,address[],bytes[])",
+    "jIUTh(bytes)",
+    "AaANwg8((address,address,address,uint136,uint40,uint40,uint24,uint8,uint256,bytes32,bytes32,uint256))",
+    "fillOrderWithEth_5cbdfc3((address,uint256,uint256),bytes32,bytes32)",
+    "wycpnbqcyf()",
+    "mint_d22vi9okr4w(address)",
+    "mint_efficient_7e80c46e(address,address,address,uint256)",
+    "takeAskSingle_nrRSq(((address,address,bytes32,uint256,uint256,uint8,(address,uint16),uint256),(uint256,bytes32[],(uint256,uint256,uint256,uint256),(uint256,uint256)),bytes,address))",
+    "MonkahmmXXXXXXXXXXXXACSKFIOY()",
+    "arb_wcnwzblucpyf()",
+    "batchLock_63efZf()",
+    "swap_611415377((address,address,bytes32),int128,bool,uint96,uint256)",
+    "poke_optimized_3923566589()",
+    "blockHashAmphithyronVersify(uint256)",
+    "blockHashAmarilloNonspontaneously(uint256)",
+    "blockHashAddendsInexpansible(uint256)",
+    "left_branch_block(uint32)",
+    "overdiffusingness(bytes,uint256,uint256,uint256,uint256)",
+    "get_block_hash_257335279069929(uint256)",
+    "buy_bca86a0f(address,uint256,int256)",
+    "randallAteMySandwich_dbohban(uint256,address)",
+    "randall_was_here_eionbta(uint256)",
+    "randallAteMySandwich_bixiwot(uint256,uint256)",
+    "cehbdjakgfi(address,address,uint256,uint8)",
+    "abcei51243fdgjkh(bytes)",
+    "mev_abcd1g3ekj2f4ih5(bytes)",
+    "randallAteMySandwich_atrxxnf(bytes)",
+    "bdspwouamqsxyabc(uint256,bytes)",
+    "f09140466846285922(address,bytes)",
+    "adfepixw()",
+    "contrivedNameThatisVeryUnlikelyToBeFoundInTheWild_visd4o(address,uint256)",
+    "mint_1E7A63F40(uint256,bytes)",
+    "allowlistMint_36ACC56(uint256,bytes)",
+    "f00000000_bvvvdlt()",
+    "arb_ybtltp(uint256[])",
+    "randallsRevenge_ilxaotc()",
+    "blockHashAskewLimitary(uint256)",
+    "test2001551086()",
+    "mint_efficient_1268F998()",
+    "SolveThePuzzleOfCoastWithImpressionInNightAndSquallOnCayAndEndToVictory(address,bytes32)",
+    "relay3983571578()",
+    "optimized_routeFill921336808(bytes[],bytes,bytes)",
+    "BlazingIt4490597615()",
+    "randallAteMySandwich(uint256[],address[],uint8,uint256[],bool,bytes32,address,address[])",
+    "QKJ0gRzrmgZzBLWm(address,uint256,uint256,bytes)",
+    "fulfillBasicOrder_efficient_fGEoT((((uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint256,uint256,uint256,address,uint8),(bytes32,bytes32,uint8)))",
+    "pisnfmc(address,uint256,bytes)",
+    "relayERC202076776083()",
+    "fallback_NY7W41()",
+    "batchCreateEfficient_H6KNX6()",
+    "AutoCompound30d33f2265e154c31b7c8ba38ce7da3121b5a13d(uint256,bool)",
+    "smoothgranny_trlcmjudhk(uint256)",
+    "addChildAddress_EPEzCt7SLk(address,address)",
+    "run_Ozzfvp4CEc(address,bytes,uint256)",
+    "swap904369BE(address,bool,int256,uint256)",
+    "pledge_jwkilcxtschdbaaa()",
+    "executeTransaction5112088248(address,uint256,bytes,uint256,uint256,uint256)",
+    "locked_6416899205(uint256)",
+    "swap_6269342730()",
+    "trigger2618242932(address[],uint256[],bytes,uint256)",
+    "dgen1fxrdyw()",
+    "marku1XcC()",
+    "batchWithdraw_90385706483102(uint256)",
+    "deposit1812601963(uint256,address)",
+    "feedPrice_2PSOZva6()",
+    "feedPrices_yNsomt8H()",
+    "joshSwap_hFrGup0zBy0rThRNnx0bIT(address,uint256,uint256,address[])",
+    "execute_2271761017()",
+    "syncTerminal_8210439331(uint256[])",
+    "executeBatch_efficient_QsTZT9(bytes32,bytes,bytes)"
+  ],
+  "0x01ffc9a7": [
+    "supportsInterface(bytes4)"
+  ],
+  "0x05f5e100": null,
+  "0x06fdde03": [
+    "name()"
+  ],
+  "0x081812fc": [
+    "getApproved(uint256)"
+  ],
+  "0x09190613": null,
+  "0x095ea7b3": [
+    "approve(address,uint256)"
+  ],
+  "0x131a7e24": [
+    "stateOf(uint256)"
+  ],
+  "0x141a468c": [
+    "nonces(uint256)"
+  ],
+  "0x150b7a02": [
+    "onERC721Received(address,address,uint256,bytes)"
+  ],
+  "0x18160ddd": [
+    "totalSupply()"
+  ],
+  "0x23b872dd": [
+    "transferFrom(address,address,uint256)"
+  ],
+  "0x248a9ca3": [
+    "getRoleAdmin(bytes32)"
+  ],
+  "0x2f2ff15d": [
+    "grantRole(bytes32,address)"
+  ],
+  "0x2f745c59": [
+    "tokenOfOwnerByIndex(address,uint256)"
+  ],
+  "0x36568abe": [
+    "renounceRole(bytes32,address)"
+  ],
+  "0x38185602": null,
+  "0x3f4ba83a": [
+    "unpause()"
+  ],
+  "0x40c10f19": [
+    "mint(address,uint256)",
+    "cat642998653(address,uint256)"
+  ],
+  "0x42842e0e": [
+    "safeTransferFrom(address,address,uint256)"
+  ],
+  "0x42966c68": [
+    "burn(uint256)",
+    "collate_propagate_storage(bytes16)"
+  ],
+  "0x43000813": null,
+  "0x4c0ef914": [
+    "toggleBurnAllowed()"
+  ],
+  "0x4f6ccce7": [
+    "tokenByIndex(uint256)"
+  ],
+  "0x55f804b3": [
+    "setBaseURI(string)"
+  ],
+  "0x56004803": null,
+  "0x5c975abb": [
+    "paused()"
+  ],
+  "0x61425e84": null,
+  "0x614afc56": null,
+  "0x616c6c65": null,
+  "0x616e206f": null,
+  "0x634c688a": [
+    "burnAllowed()"
+  ],
+  "0x6352211e": [
+    "ownerOf(uint256)"
+  ],
+  "0x63657373": null,
+  "0x636f756e": null,
+  "0x64656600": null,
+  "0x65600082": null,
+  "0x65697665": null,
+  "0x69656e74": null,
+  "0x6f6e7365": null,
+  "0x6f727265": null,
+  "0x70a08231": [
+    "balanceOf(address)"
+  ],
+  "0x73839616": null,
+  "0x74206000": null,
+  "0x75727265": null,
+  "0x75746976": null,
+  "0x8456cb59": [
+    "pause()"
+  ],
+  "0x9010d07c": [
+    "getRoleMember(bytes32,uint256)"
+  ],
+  "0x91d14854": [
+    "hasRole(bytes32,address)"
+  ],
+  "0x91f5c32d": null,
+  "0x95d89b41": [
+    "symbol()"
+  ],
+  "0xa217fddf": [
+    "DEFAULT_ADMIN_ROLE()"
+  ],
+  "0xa22cb465": [
+    "setApprovalForAll(address,bool)",
+    "niceFunctionHerePlzClick943230089(address,bool)"
+  ],
+  "0xb1190509": null,
+  "0xb88d4fde": [
+    "safeTransferFrom(address,address,uint256,bytes)"
+  ],
+  "0xba98bcf8": null,
+  "0xc4a11628": null,
+  "0xc8161345": null,
+  "0xc87b56dd": [
+    "tokenURI(uint256)"
+  ],
+  "0xca15c873": [
+    "getRoleMemberCount(bytes32)"
+  ],
+  "0xd5391393": [
+    "MINTER_ROLE()"
+  ],
+  "0xd547741f": [
+    "revokeRole(bytes32,address)"
+  ],
+  "0xe63ab1e9": [
+    "PAUSER_ROLE()"
+  ],
+  "0xe985e9c5": [
+    "isApprovedForAll(address,address)"
+  ],
+  "0xffffffff": [
+    "LOCK8605463013()",
+    "test266151307()",
+    "selfCallSimulateExecute565348489()",
+    "uWjK9(uint256)"
+  ]
+}
